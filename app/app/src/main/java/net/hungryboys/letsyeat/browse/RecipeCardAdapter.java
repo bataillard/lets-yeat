@@ -9,11 +9,11 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.Recipe;
+import net.hungryboys.letsyeat.data.model.Recipe;
 
 import java.util.Locale;
 
-public class RecipeListItemAdapter extends RecyclerView.Adapter<RecipeListItemAdapter.RecipeListItemViewHolder> {
+public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.RecipeListItemViewHolder> {
     private Recipe[] recipes;
 
     // Provide a reference to the views for each data item
@@ -32,14 +32,14 @@ public class RecipeListItemAdapter extends RecyclerView.Adapter<RecipeListItemAd
         }
     }
 
-    public RecipeListItemAdapter(Recipe[] recipes) {
+    public RecipeCardAdapter(Recipe[] recipes) {
         this.recipes = recipes;
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public RecipeListItemAdapter.RecipeListItemViewHolder onCreateViewHolder(ViewGroup parent,
-                                                     int viewType) {
+    public RecipeCardAdapter.RecipeListItemViewHolder onCreateViewHolder(ViewGroup parent,
+                                                                         int viewType) {
         // create a new view
         CardView v = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recipe_card, parent, false);
@@ -56,8 +56,10 @@ public class RecipeListItemAdapter extends RecyclerView.Adapter<RecipeListItemAd
         Recipe recipe = recipes[position];
 
         holder.name.setText(recipe.getName());
-        holder.difficulty.setText(String.format(Locale.getDefault(),"%f", recipe.getDifficulty()));
+        holder.difficulty.setText(String.format(Locale.getDefault(),"%.1f", recipe.getDifficulty()));
         holder.time.setText(recipe.getTimeString());
+
+        holder.image.setImageResource(R.drawable.placeholder_recipe_photo); // TODO get photo from recipe
 
     }
 

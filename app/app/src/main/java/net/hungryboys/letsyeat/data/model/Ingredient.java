@@ -1,4 +1,4 @@
-package net.hungryboys.letsyeat.data;
+package net.hungryboys.letsyeat.data.model;
 
 public class Ingredient {
     private final String name;
