@@ -5,6 +5,7 @@ import android.app.Activity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.hungryboys.letsyeat.MainActivity;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.ui.login.LoginViewModel;
 import net.hungryboys.letsyeat.ui.login.LoginViewModelFactory;
@@ -75,6 +77,14 @@ public class LoginActivity extends AppCompatActivity {
 
                 //Complete and destroy login activity once successful
                 finish();
+
+                // Pass user details to new activity and start it
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra("user_details", loginResult.getSuccess());
+                startActivity(intent);
+
+
+
             }
         });
 
