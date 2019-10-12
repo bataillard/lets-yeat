@@ -1,14 +1,14 @@
-package net.hungryboys.letsyeat.data;
-
-import net.hungryboys.letsyeat.R;
+package net.hungryboys.letsyeat.data.model;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 
 /**
  * Immutable class representing a recipe, as received by HTTP API
  */
 public class Recipe {
+    private final RecipeID id;
     private final String url;
     private final String name;
     private final String pictureUrl;
@@ -22,12 +22,14 @@ public class Recipe {
                 {Ingredient.placeholder(), Ingredient.placeholder(), Ingredient.placeholder()};
         String[] tags = {"italian", "beef", "cheap"};
 
-        return new Recipe("https://www.budgetbytes.com/the-best-weeknight-pasta-sauce/",
+        return new Recipe(RecipeID.placeholder(),
+                "https://www.budgetbytes.com/the-best-weeknight-pasta-sauce/",
                 "Pasta Bolognese", "", 170, 3.0, ingredients, tags);
     }
 
-    public Recipe(String url, String name, String pictureUrl, int time, double difficulty,
+    public Recipe(RecipeID id, String url, String name, String pictureUrl, int time, double difficulty,
                   Ingredient[] ingredients, String[] tags) {
+        this.id = id;
         this.url = url;
         this.name = name;
         this.pictureUrl = pictureUrl;

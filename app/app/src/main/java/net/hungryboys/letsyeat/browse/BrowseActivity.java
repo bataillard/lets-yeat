@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.Recipe;
+import net.hungryboys.letsyeat.data.model.Recipe;
 
 
 public class BrowseActivity extends AppCompatActivity {
@@ -32,7 +32,7 @@ public class BrowseActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new RecipeListItemAdapter(recipes);
+        mAdapter = new RecipeCardAdapter(recipes);
         recyclerView.setAdapter(mAdapter);
     }
 }
