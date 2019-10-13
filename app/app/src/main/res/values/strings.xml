@@ -17,4 +17,12 @@
     <string name="placeholder_recipe_name">Pasta Bolognese</string>
     <string name="placeholder_recipe_time">1:50</string>
     <string name="placeholder_recipe_difficulty">3</string>
+    <string name="calendar">Calendar</string>
+    <string name="groceries">Groceries</string>
+    <string name="yeat">YEAT!</string>
+    <string name="browse">Browse</string>
+    <string name="profile">Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -29,7 +29,7 @@ public class BrowseFragment extends Fragment {
             return rootView;
         }
 
-        rootView = inflater.inflate(R.layout.browse_fragment, container, false);
+        rootView = inflater.inflate(R.layout.fragment_browse, container, false);
 
         recyclerView = rootView.findViewById(R.id.browse_recipe_list);
         recyclerView.setHasFixedSize(true);
@@ -50,4 +50,6 @@ public class BrowseFragment extends Fragment {
 
         return rootView;
     }
+
+
 }
