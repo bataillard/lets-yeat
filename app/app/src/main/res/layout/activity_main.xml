@@ -26,5 +26,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+      <Button
+          android:id="@+id/sign_in_button"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/google_login_btn" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
