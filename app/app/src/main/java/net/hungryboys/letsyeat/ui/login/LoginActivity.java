@@ -23,11 +23,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
+import net.hungryboys.letsyeat.MainActivity;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.ui.login.LoginViewModel;
 import net.hungryboys.letsyeat.ui.login.LoginViewModelFactory;
@@ -101,6 +100,14 @@ public class LoginActivity extends AppCompatActivity {
 
                 //Complete and destroy login activity once successful
                 finish();
+
+                // Pass user details to new activity and start it
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra("user_details", loginResult.getSuccess());
+                startActivity(intent);
+
+
+
             }
         });
 

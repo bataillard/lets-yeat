@@ -14,4 +14,10 @@
         <item name="android:layout_margin">5dp</item>
     </style>
 
+    <style name="RecipeListItemValues" >
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/textColorRecipeListItem</item>
+        <item name="android:layout_marginTop">50dp</item>
+    </style>
+
 </resources>

@@ -2,6 +2,13 @@
 # Created by https://www.gitignore.io/api/node,linux,windows,android,androidstudio
 # Edit at https://www.gitignore.io/?templates=node,linux,windows,android,androidstudio
 
+### VSCode ###
+
+.vscode
+
+### ESLint ###
+parser/.eslintrc.json
+
 ### Android ###
 # Built application files
 *.apk
