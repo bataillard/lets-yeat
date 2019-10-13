@@ -1,11 +1,13 @@
 package net.hungryboys.letsyeat;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import net.hungryboys.letsyeat.browse.BrowseActivity;
+import net.hungryboys.letsyeat.browse.BrowseFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,8 +16,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(this, BrowseActivity.class);
-        startActivity(intent);
+        // Add Browse List
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        BrowseFragment browseFragment = new BrowseFragment();
+
+        fragmentTransaction.add(R.id.main_browse_fragment_container, browseFragment);
+        fragmentTransaction.commit();
     }
 
 

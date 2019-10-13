@@ -1,36 +1,40 @@
 package net.hungryboys.letsyeat.browse;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.Recipe;
 
 import java.util.List;
 
-public class BrowseActivity extends AppCompatActivity {
+public class BrowseFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private RecipeCardAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    private View rootView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_browse);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (rootView != null) {
+            return rootView;
+        }
 
+        rootView = inflater.inflate(R.layout.browse_fragment, container, false);
 
-
-        recyclerView = (RecyclerView) findViewById(R.id.browse_recipe_list);
+        recyclerView = rootView.findViewById(R.id.browse_recipe_list);
         recyclerView.setHasFixedSize(true);
 
-        layoutManager = new LinearLayoutManager(this);
+        layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
         mAdapter = new RecipeCardAdapter();
@@ -43,5 +47,7 @@ public class BrowseActivity extends AppCompatActivity {
                 mAdapter.setRecipes(recipes);
             }
         });
+
+        return rootView;
     }
 }
