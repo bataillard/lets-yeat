@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -24,10 +25,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+
 import net.hungryboys.letsyeat.MainActivity;
 import net.hungryboys.letsyeat.R;
+import net.hungryboys.letsyeat.data.model.LoggedInUser;
 import net.hungryboys.letsyeat.ui.login.LoginViewModel;
 import net.hungryboys.letsyeat.ui.login.LoginViewModelFactory;
 
@@ -35,6 +41,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     public static final int RC_SIGN_IN = 1;
+
+    public static final String LOGIN_TAG = "Login";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -160,5 +168,35 @@ public class LoginActivity extends AppCompatActivity {
 
     private void showLoginFailed(@StringRes Integer errorString) {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        LoggedInUserView result;
+        try {
+            String name = completedTask.getResult(ApiException.class).getGivenName();
+            result = new LoggedInUserView(name);
+        } catch (NullPointerException e) {
+            result = new LoggedInUserView("John Doe");
+        } catch (ApiException e) {
+            Log.w(LOGIN_TAG, "signInResult:failed code=" + e.getStatusCode());
+            showLoginFailed(null);
+            return;
+        }
+
+        updateUiWithUser(result);
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("user_details", result);
+        startActivity(intent);
     }
 }
