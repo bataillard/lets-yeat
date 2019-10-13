@@ -5,16 +5,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.Recipe;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.RecipeListItemViewHolder> {
-    private Recipe[] recipes;
+    private List<Recipe> recipes;
 
     // Provide a reference to the views for each data item
     public static class RecipeListItemViewHolder extends RecyclerView.ViewHolder {
@@ -32,13 +36,19 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
         }
     }
 
-    public RecipeCardAdapter(Recipe[] recipes) {
-        this.recipes = recipes;
+    public RecipeCardAdapter() {
+        recipes = new ArrayList<>();
+    }
+
+    public void setRecipes(List<Recipe> recipeList) {
+        recipes.clear();
+        recipes.addAll(recipeList);
+        notifyDataSetChanged();
     }
 
     // Create new views (invoked by the layout manager)
     @Override
-    public RecipeCardAdapter.RecipeListItemViewHolder onCreateViewHolder(ViewGroup parent,
+    public RecipeCardAdapter.RecipeListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
                                                                          int viewType) {
         // create a new view
         CardView v = (CardView) LayoutInflater.from(parent.getContext())
@@ -53,7 +63,7 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
     public void onBindViewHolder(RecipeListItemViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        Recipe recipe = recipes[position];
+        Recipe recipe = recipes.get(position);
 
         holder.name.setText(recipe.getName());
         holder.difficulty.setText(String.format(Locale.getDefault(),"%.1f", recipe.getDifficulty()));
@@ -66,7 +76,7 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return recipes.length;
+        return recipes.size();
     }
 }
 

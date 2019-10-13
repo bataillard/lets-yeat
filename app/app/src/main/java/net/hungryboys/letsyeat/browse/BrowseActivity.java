@@ -1,19 +1,23 @@
 package net.hungryboys.letsyeat.browse;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.Recipe;
 
+import java.util.List;
 
 public class BrowseActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private RecipeCardAdapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
     @Override
@@ -21,10 +25,7 @@ public class BrowseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse);
 
-        Recipe[] recipes = new Recipe[30];
-        for (int i = 0; i < 30; i++){
-            recipes[i] = Recipe.placeholder();
-        }
+
 
         recyclerView = (RecyclerView) findViewById(R.id.browse_recipe_list);
         recyclerView.setHasFixedSize(true);
@@ -32,7 +33,15 @@ public class BrowseActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new RecipeCardAdapter(recipes);
+        mAdapter = new RecipeCardAdapter();
         recyclerView.setAdapter(mAdapter);
+
+        BrowseViewModel  model = ViewModelProviders.of(this).get(BrowseViewModel.class);
+        model.getRecipes().observe(this, new Observer<List<Recipe>>() {
+            @Override
+            public void onChanged(List<Recipe> recipes) {
+                mAdapter.setRecipes(recipes);
+            }
+        });
     }
 }
