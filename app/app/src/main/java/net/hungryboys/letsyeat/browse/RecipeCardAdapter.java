@@ -12,22 +12,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.Recipe;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.RecipeListItemViewHolder> {
+public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.ViewHolder> {
     private List<Recipe> recipes;
 
     // Provide a reference to the views for each data item
-    public static class RecipeListItemViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
         public TextView name;
         public TextView time;
         public TextView difficulty;
 
-        public RecipeListItemViewHolder(CardView v) {
+        public ViewHolder(CardView v) {
             super(v);
             image = v.findViewById(R.id.recipe_card_image);
             name = v.findViewById(R.id.recipe_card_name);
@@ -48,19 +47,19 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Re
 
     // Create new views (invoked by the layout manager)
     @Override
-    public RecipeCardAdapter.RecipeListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
-                                                                         int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
+                                         int viewType) {
         // create a new view
         CardView v = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.recipe_card, parent, false);
 
-        RecipeListItemViewHolder vh = new RecipeListItemViewHolder(v);
+        ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(RecipeListItemViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         Recipe recipe = recipes.get(position);
