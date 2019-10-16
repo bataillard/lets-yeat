@@ -185,6 +185,7 @@ public class LoginActivity extends AppCompatActivity {
         LoggedInUserView result;
         try {
             String name = completedTask.getResult(ApiException.class).getGivenName();
+            String email= completedTask.getResult(ApiException.class).getEmail();
             result = new LoggedInUserView(name);
         } catch (NullPointerException e) {
             result = new LoggedInUserView("John Doe");
@@ -193,6 +194,8 @@ public class LoginActivity extends AppCompatActivity {
             showLoginFailed(null);
             return;
         }
+
+
 
         updateUiWithUser(result);
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
