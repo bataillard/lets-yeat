@@ -27,7 +27,7 @@ class LoggedInUserView implements Parcelable {
     }
 
     private LoggedInUserView(Parcel in) {
-
+        displayName = in.readString();
     }
 
     String getDisplayName() {

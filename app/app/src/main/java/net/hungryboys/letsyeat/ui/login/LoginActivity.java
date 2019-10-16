@@ -31,11 +31,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
-import net.hungryboys.letsyeat.MainActivity;
+import net.hungryboys.letsyeat.browse.BrowseActivity;
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.LoggedInUser;
-import net.hungryboys.letsyeat.ui.login.LoginViewModel;
-import net.hungryboys.letsyeat.ui.login.LoginViewModelFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -110,7 +107,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
 
                 // Pass user details to new activity and start it
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                Intent intent = new Intent(LoginActivity.this, BrowseActivity.class);
                 intent.putExtra("user_details", loginResult.getSuccess());
                 startActivity(intent);
 
@@ -195,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         updateUiWithUser(result);
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, BrowseActivity.class);
         intent.putExtra("user_details", result);
         startActivity(intent);
     }

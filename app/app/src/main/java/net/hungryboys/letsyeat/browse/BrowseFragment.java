@@ -1,17 +1,17 @@
 package net.hungryboys.letsyeat.browse;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -20,12 +20,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.Recipe;
+import net.hungryboys.letsyeat.data.model.RecipeID;
+import net.hungryboys.letsyeat.data.model.RecipeStub;
+import net.hungryboys.letsyeat.recipe.RecipeActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BrowseFragment extends Fragment {
+
+    private static final String ARG_CURR_ACTIVITY = "current_activity";
 
     // Recycle view attributes
     private RecyclerView recipeView;
@@ -39,6 +42,14 @@ public class BrowseFragment extends Fragment {
 
     private View rootView;
     private BrowseViewModel browseViewModel;
+
+    public BrowseFragment(){
+        // Required empty constructor
+    }
+
+    public static BrowseFragment newInstance() {
+        return new BrowseFragment();
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,12 +65,26 @@ public class BrowseFragment extends Fragment {
         return rootView;
     }
 
-    private void createSearchView() {
-        searchBar = rootView.findViewById(R.id.browse_search_bar);
-        tagsButton = rootView.findViewById(R.id.browse_tags_toggle);
-        searchBar.setText("");
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
-        createTagsGrid();
+        browseViewModel = ViewModelProviders.of(this).get(BrowseViewModel.class);
+        browseViewModel.getRecipeStubs().observe(this, new Observer<List<RecipeStub>>() {
+            @Override
+            public void onChanged(List<RecipeStub> recipeStubs) {
+                recipeCardAdapter.setRecipes(recipeStubs);
+            }
+        });
+
+        recipeCardAdapter.setOnSelectListener(new RecipeCardAdapter.RecipeOnSelectListener() {
+            @Override
+            public void onSelect(RecipeID recipeID) {
+                Intent intent = new Intent(getActivity(), RecipeActivity.class);
+                intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, recipeID);
+                startActivity(intent);
+            }
+        });
 
         searchBar.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -84,6 +109,24 @@ public class BrowseFragment extends Fragment {
                 }
             }
         });
+
+        ToggleButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ToggleButton button = (ToggleButton) buttonView;
+                browseViewModel.tagChanged(button.getText().toString(), button.isChecked());
+            }
+        };
+
+        tagGridAdapter.setListener(listener);
+    }
+
+    private void createSearchView() {
+        searchBar = rootView.findViewById(R.id.browse_search_bar);
+        tagsButton = rootView.findViewById(R.id.browse_tags_toggle);
+        searchBar.setText("");
+
+        createTagsGrid();
     }
 
     private void createTagsGrid() {
@@ -93,16 +136,8 @@ public class BrowseFragment extends Fragment {
         tagsGridView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
 
         String[] tags = getResources().getStringArray(R.array.tag_strings);
-        ToggleButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ToggleButton button = (ToggleButton) buttonView;
-                browseViewModel.tagChanged(button.getText().toString(), button.isChecked());
-            }
-        };
 
-
-        tagGridAdapter = new TagGridAdapter(tags, listener);
+        tagGridAdapter = new TagGridAdapter(tags);
         tagsGridView.setAdapter(tagGridAdapter);
         tagsGridView.setVisibility(View.GONE);
     }
@@ -116,13 +151,7 @@ public class BrowseFragment extends Fragment {
         recipeCardAdapter = new RecipeCardAdapter();
         recipeView.setAdapter(recipeCardAdapter);
 
-        browseViewModel = ViewModelProviders.of(this).get(BrowseViewModel.class);
-        browseViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
-            @Override
-            public void onChanged(List<Recipe> recipes) {
-                recipeCardAdapter.setRecipes(recipes);
-            }
-        });
+
     }
 
 

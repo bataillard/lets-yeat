@@ -12,14 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import net.hungryboys.letsyeat.R;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class TagGridAdapter extends ListAdapter<String, TagGridAdapter.ViewHolder> {
 
-    private final CompoundButton.OnCheckedChangeListener listener;
+    private CompoundButton.OnCheckedChangeListener listener;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public ToggleButton toggleButton;
@@ -30,22 +29,23 @@ public class TagGridAdapter extends ListAdapter<String, TagGridAdapter.ViewHolde
         }
     }
 
-    public TagGridAdapter(String[] tags, CompoundButton.OnCheckedChangeListener listener) {
+    public TagGridAdapter(String[] tags) {
         super(CALLBACK);
-
-        this.listener = listener;
 
         List<String> tagList = new ArrayList<>();
         Collections.addAll(tagList, tags);
         submitList(tagList);
     }
 
-    public TagGridAdapter(List<String> tags, CompoundButton.OnCheckedChangeListener listener) {
+
+
+    public TagGridAdapter(List<String> tags) {
         super(CALLBACK);
-
-        this.listener = listener;
-
         submitList(tags);
+    }
+
+    public void setListener(CompoundButton.OnCheckedChangeListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -53,7 +53,7 @@ public class TagGridAdapter extends ListAdapter<String, TagGridAdapter.ViewHolde
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // create a new view
         ToggleButton tb = (ToggleButton) LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.tag_grid_button, parent, false);
+                .inflate(R.layout.elem_tag_grid_button, parent, false);
 
         return new ViewHolder(tb);
     }
