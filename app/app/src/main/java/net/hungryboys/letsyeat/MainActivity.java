@@ -9,6 +9,13 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
+//import com.google.firebase.quickstart.fcm.R;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import net.hungryboys.letsyeat.browse.BrowseFragment;
@@ -35,6 +42,18 @@ public class MainActivity extends AppCompatActivity {
         NavigationFragment navigationFragment = NavigationFragment.newInstance(R.id.navigation_browse);
         navigationTransaction.add(R.id.main_nav_fragment_container, navigationFragment);
         navigationTransaction.commit();
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            return;
+                        }
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+                    }
+                });
     }
 
 
