@@ -4,7 +4,8 @@ const rp = require('request-promise');
 const $ = require('cheerio');
 const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
-const possible_tags = new Set(JSON.parse(require('fs').readFileSync('./tags.json')).tags);
+//TODO this line causing bug for me when calling from recipeServer
+const possible_tags = new Set()//JSON.parse(require('fs').readFileSync('./tags.json')).tags);
 
 const BUDGETBYTES_ARCHIVE = "https://www.budgetbytes.com/archive";
 const BB_OLDEST_YEAR = 2009;
