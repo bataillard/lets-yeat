@@ -1,5 +1,7 @@
 package net.hungryboys.letsyeat.REST;
 
+import net.hungryboys.letsyeat.data.model.RecipeID;
+
 import org.json.JSONObject;
 
 //
@@ -7,9 +9,16 @@ import org.json.JSONObject;
 //
 public class RESTHandler {
 
+    private String server_address;
 
     //gets a single recipe
-    public JSONObject getRecipe(){
+    public JSONObject getRecipe(RecipeID recipeID){
+
+        JSONObject result;
+        String resource = new String("");
+
+        HttpGetRequest request = new HttpGetRequest(server_address, )
+
         return null;
     }
 
