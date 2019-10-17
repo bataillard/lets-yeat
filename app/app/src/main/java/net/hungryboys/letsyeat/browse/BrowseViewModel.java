@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import net.hungryboys.letsyeat.data.model.Recipe;
+import net.hungryboys.letsyeat.data.model.RecipeStub;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,12 +17,12 @@ import java.util.Set;
 public class BrowseViewModel extends ViewModel {
     private final static String TAG = "BROWSE_VM";
 
-    private MutableLiveData<List<Recipe>> recipes;
+    private MutableLiveData<List<RecipeStub>> recipes;
 
     private Set<String> selectedTags = new HashSet<>();
     private String searchText = "";
 
-    public LiveData<List<Recipe>> getRecipes() {
+    public LiveData<List<RecipeStub>> getRecipeStubs() {
         if (recipes == null) {
             recipes = new MutableLiveData<>();
             loadRecipes();
@@ -71,9 +72,9 @@ public class BrowseViewModel extends ViewModel {
 
     // TODO replace hardcoded values with calls to server/recipe cache
     private void loadRecipes() {
-        List<Recipe> recipeList = new ArrayList<>();
+        List<RecipeStub> recipeList = new ArrayList<>();
         for (int i = 0; i < 30; i++){
-            recipeList.add(Recipe.placeholder());
+            recipeList.add(RecipeStub.placeholder());
         }
 
         recipes.setValue(recipeList);

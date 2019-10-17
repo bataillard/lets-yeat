@@ -11,11 +11,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
-import net.hungryboys.letsyeat.MainActivity;
+import net.hungryboys.letsyeat.browse.BrowseActivity;
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.RegistrationChoice;
-import net.hungryboys.letsyeat.data.model.LoggedInUser;
 import net.hungryboys.letsyeat.data.model.Recipe;
+import net.hungryboys.letsyeat.data.model.RegistrationChoice;
 import net.hungryboys.letsyeat.ui.login.LoggedInUserView;
 
 import java.util.Calendar;
@@ -83,8 +82,8 @@ public class RegistrationActivity extends AppCompatActivity implements
         RegistrationChoice choice = viewModel.finish();
         loggedInUserView.setChoice(choice);
 
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra(MainActivity.EXTRA_USER_DATA, loggedInUserView);
+        Intent intent = new Intent(this, BrowseActivity.class);
+        intent.putExtra(BrowseActivity.EXTRA_USER_DATA, loggedInUserView);
         startActivity(intent);
 
         finish();

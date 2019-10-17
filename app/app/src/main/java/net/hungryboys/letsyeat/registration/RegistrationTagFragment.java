@@ -82,7 +82,8 @@ public class RegistrationTagFragment extends Fragment {
             }
         };
 
-        tagGridAdapter = new TagGridAdapter(tags, listener);
+        tagGridAdapter = new TagGridAdapter(tags);
+        tagGridAdapter.setListener(listener);
         tagGrid = root.findViewById(R.id.registration_tags_grid);
         tagGrid.setHasFixedSize(true);
         tagGrid.setLayoutManager(new GridLayoutManager(getActivity(), 3));
