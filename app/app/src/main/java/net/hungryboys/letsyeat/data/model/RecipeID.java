@@ -1,8 +1,9 @@
 package net.hungryboys.letsyeat.data.model;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class RecipeID {
+public class RecipeID implements Serializable {
     private final UUID id;
 
     public static RecipeID placeholder() {

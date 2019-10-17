@@ -31,9 +31,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
-import net.hungryboys.letsyeat.MainActivity;
+import net.hungryboys.letsyeat.browse.BrowseActivity;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.LoggedInUser;
+import net.hungryboys.letsyeat.registration.RegistrationActivity;
 import net.hungryboys.letsyeat.ui.login.LoginViewModel;
 import net.hungryboys.letsyeat.ui.login.LoginViewModelFactory;
 
@@ -64,6 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         final Button loginButton = findViewById(R.id.email_login_btn);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
         final Button googleLoginButton = findViewById(R.id.sign_in_button);
+        final Button registerButton = findViewById(R.id.register_btn);
 
         //following google instructions:
         //set onClickListener
@@ -72,6 +74,15 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadingProgressBar.setVisibility(View.VISIBLE);
+                loginViewModel.register(usernameEditText.getText().toString(),
+                        passwordEditText.getText().toString());
             }
         });
 
@@ -108,14 +119,6 @@ public class LoginActivity extends AppCompatActivity {
 
                 //Complete and destroy login activity once successful
                 finish();
-
-                // Pass user details to new activity and start it
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                intent.putExtra("user_details", loginResult.getSuccess());
-                startActivity(intent);
-
-
-
             }
         });
 
@@ -161,9 +164,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
+        if (model.getChoice() == null) {
+            Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+            intent.putExtra(RegistrationActivity.EXTRA_USER_DATA, model);
+            startActivity(intent);
+        } else {
+            // Pass user details to new activity and start it
+            Intent intent = new Intent(LoginActivity.this, BrowseActivity.class);
+            intent.putExtra(BrowseActivity.EXTRA_USER_DATA, model);
+            startActivity(intent);
+        }
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {
@@ -185,21 +195,18 @@ public class LoginActivity extends AppCompatActivity {
         LoggedInUserView result;
         try {
             String name = completedTask.getResult(ApiException.class).getGivenName();
-            String email= completedTask.getResult(ApiException.class).getEmail();
-            result = new LoggedInUserView(name);
+            String id = completedTask.getResult(ApiException.class).getIdToken();
+            result = new LoggedInUserView(new LoggedInUser(id, name));
         } catch (NullPointerException e) {
-            result = new LoggedInUserView("John Doe");
+            Log.w(LOGIN_TAG, "signInResult:fail, null pointer exception");
+            showLoginFailed(null);
+            return;
         } catch (ApiException e) {
             Log.w(LOGIN_TAG, "signInResult:failed code=" + e.getStatusCode());
             showLoginFailed(null);
             return;
         }
 
-
-
         updateUiWithUser(result);
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-        intent.putExtra("user_details", result);
-        startActivity(intent);
     }
 }

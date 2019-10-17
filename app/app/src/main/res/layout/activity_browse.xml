@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".browse.BrowseActivity">
 
     <FrameLayout
-        android:id="@+id/main_browse_fragment_container"
+        android:id="@+id/main_browse_container"
         android:name="net.hungryboys.letsyeat.browse.BrowseFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+
+        android:paddingBottom="50dp"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,7 +20,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <FrameLayout
-        android:id="@+id/main_nav_fragment_container"
+        android:id="@+id/main_navigation_container"
         android:name="net.hungryboys.letsyeat.navigation.NavigationFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
