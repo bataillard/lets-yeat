@@ -8,6 +8,9 @@ import java.util.UUID;
  * Immutable class representing a recipe, as received by HTTP API
  */
 public class Recipe {
+    public static final double MAX_DIFF = 5f;
+    public static final double MIN_DIFF = 0f;
+
     private final RecipeID id;
     private final String url;
     private final String name;
