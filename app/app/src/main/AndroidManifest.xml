@@ -4,6 +4,7 @@
     package="net.hungryboys.letsyeat"
     tools:ignore="GoogleAppIndexingWarning">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -21,9 +22,19 @@
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
         </activity>
-        <activity android:name=".registration.RegistrationActivity"/>
-        <activity android:name=".browse.BrowseActivity" />
-        <activity android:name=".recipe.RecipeActivity" />
+        <activity
+            android:name=".registration.RegistrationActivity"
+            android:parentActivityName=".ui.login.LoginActivity"/>
+        <activity android:name=".browse.BrowseActivity"
+            android:parentActivityName=".ui.login.LoginActivity"/>
+        <activity android:name=".recipe.RecipeActivity"
+            android:parentActivityName=".browse.BrowseActivity"/>
+        <service
+            android:name=".CookNotification"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
-
 </manifest>

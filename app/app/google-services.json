@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "251941704264",
+    "firebase_url": "https://lets-yeat-1569975851824.firebaseio.com",
+    "project_id": "lets-yeat-1569975851824",
+    "storage_bucket": "lets-yeat-1569975851824.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:251941704264:android:498a3bb9ef235f28dffe7d",
+        "android_client_info": {
+          "package_name": "net.hungryboys.letsyeat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "251941704264-tc22c86krougv7ltnjuga7m9l8veb073.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.hungryboys.letsyeat",
+            "certificate_hash": "f96be5b08e5567a0b82a3ad1db6bddb992dd5029"
+          }
+        },
+        {
+          "client_id": "251941704264-b43j13akgh4v964kmpti0h0jlj49ut7k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCO8hn6ArPkeYqc9r7kwWhbUgdnamYPQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "251941704264-b43j13akgh4v964kmpti0h0jlj49ut7k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
