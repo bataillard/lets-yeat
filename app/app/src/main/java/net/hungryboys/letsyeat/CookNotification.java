@@ -1,25 +1,20 @@
 package net.hungryboys.letsyeat;
 
-import android.annotation.TargetApi;
-import android.app.Notification;
+
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.media.RingtoneManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-
-import com.google.firebase.messaging.FirebaseMessagingService;
 
 /**
  * Helper class for showing and canceling cook
@@ -59,6 +54,8 @@ public class CookNotification  extends FirebaseMessagingService{
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
             //perform some actions
+
+            sendNotification("some default text");
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -73,7 +70,7 @@ public class CookNotification  extends FirebaseMessagingService{
      */
     @Override
     public void onNewToken(String token) {
-//           Log.d(TAG, "Refreshed token: " + token);
+        Log.d(TAG, "Refreshed token: " + token);
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
@@ -92,6 +89,7 @@ public class CookNotification  extends FirebaseMessagingService{
      */
     private void sendRegistrationToServer(String token) {
         // TODO: Implement this method to send token to your app server.
+        Log.d(TAG, "Token sent to Server:" + token);
     }
 
     /**
