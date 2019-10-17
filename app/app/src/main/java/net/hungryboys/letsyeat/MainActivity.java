@@ -1,25 +1,31 @@
 package net.hungryboys.letsyeat;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.Toast;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.util.Log;
 
 import net.hungryboys.letsyeat.browse.BrowseFragment;
 import net.hungryboys.letsyeat.navigation.NavigationFragment;
+import net.hungryboys.letsyeat.ui.login.LoggedInUserView;
+import net.hungryboys.letsyeat.ui.login.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String EXTRA_USER_DATA = "user_data";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            LoggedInUserView loggedInUserView = extras.getParcelable(EXTRA_USER_DATA);
+            Log.d(EXTRA_USER_DATA, loggedInUserView.toString());
+        }
 
 
         FragmentManager fragmentManager = getSupportFragmentManager();
