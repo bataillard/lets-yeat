@@ -4,13 +4,17 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class RecipeID implements Serializable {
-    private final UUID id;
+    private final String id;
 
     public static RecipeID placeholder() {
-        return new RecipeID(UUID.randomUUID());
+        return new RecipeID(UUID.randomUUID().toString());
     }
 
-    public RecipeID(UUID id) {
+    public RecipeID(String id) {
         this.id = id;
+    }
+
+    public String getId() {
+        return id;
     }
 }

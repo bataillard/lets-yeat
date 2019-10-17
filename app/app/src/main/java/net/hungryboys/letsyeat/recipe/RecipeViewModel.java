@@ -8,10 +8,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import net.hungryboys.letsyeat.REST.RESTHandler;
 import net.hungryboys.letsyeat.data.model.Recipe;
 import net.hungryboys.letsyeat.data.model.RecipeID;
 
 public class RecipeViewModel extends ViewModel {
+    private static final String TAG = "RECIPE_VIEW_MODEL";
+
     private MutableLiveData<Recipe> recipe = new MutableLiveData<>();
     private RecipeID id;
 
@@ -39,6 +42,17 @@ public class RecipeViewModel extends ViewModel {
     }
 
     private void loadRecipe() {
-        recipe.setValue(Recipe.placeholder());
+        if (id != null) {
+            RESTHandler.getRecipe(id, new RESTHandler.RequestHandler<Recipe>() {
+                @Override
+                public void onRequestFinished(Recipe result) {
+                    if (result == null) {
+                        recipe.postValue(Recipe.placeholder());
+                    } else {
+                        recipe.postValue(result);
+                    }
+                }
+            });
+        }
     }
 }

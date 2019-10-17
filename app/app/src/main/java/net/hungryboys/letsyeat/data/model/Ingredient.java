@@ -8,14 +8,14 @@ import java.util.Objects;
 
 public class Ingredient {
     private final String name;
-    private final double quantity;
+    private final String quantity;
     private final String unit;
 
     public static Ingredient placeholder() {
-        return new Ingredient("Cheese", 3000.0, "ton");
+        return new Ingredient("Cheese", "3000.0", "ton");
     }
 
-    public Ingredient(String name, double quantity, String unit) {
+    public Ingredient(String name, String quantity, String unit) {
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
@@ -25,7 +25,7 @@ public class Ingredient {
         return name;
     }
 
-    public double getQuantity() {
+    public String getQuantity() {
         return quantity;
     }
 
@@ -39,7 +39,7 @@ public class Ingredient {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return Double.compare(that.quantity, quantity) == 0 &&
+        return  quantity.equals(that.quantity) &&
                 name.equals(that.name) &&
                 unit.equals(that.unit);
     }
