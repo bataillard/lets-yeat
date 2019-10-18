@@ -1,11 +1,13 @@
 'use strict';
-
+const path = require('path')
 const rp = require('request-promise');
 const $ = require('cheerio');
 const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
-//TODO this line causing bug for me when calling from recipeServer
-const possible_tags = new Set()//JSON.parse(require('fs').readFileSync('./tags.json')).tags);
+
+// TIL path is relative to where the Node process is started
+// we want relative path to this file, so use path.join()..
+const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__dirname,"./tags.json"))).tags);
 
 const BUDGETBYTES_ARCHIVE = "https://www.budgetbytes.com/archive";
 const BB_OLDEST_YEAR = 2009;
