@@ -194,6 +194,7 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         LoggedInUserView result;
         try {
+            String email = completedTask.getResult(ApiException.class).getEmail();
             String name = completedTask.getResult(ApiException.class).getGivenName();
             String id = completedTask.getResult(ApiException.class).getIdToken();
             result = new LoggedInUserView(new LoggedInUser(id, name));

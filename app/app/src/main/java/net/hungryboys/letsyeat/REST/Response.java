@@ -22,6 +22,13 @@ public class Response {
     public boolean isValid() {
         return responseCode == HttpURLConnection.HTTP_OK && contentType.equals(HttpGetRequest.JSON);
     }
+    public boolean isOK(){
+        return responseCode == HttpURLConnection.HTTP_OK;
+    }
+
+    public int getResponseCode(){
+        return responseCode;
+    }
 
     public String getContent() {
         return content;

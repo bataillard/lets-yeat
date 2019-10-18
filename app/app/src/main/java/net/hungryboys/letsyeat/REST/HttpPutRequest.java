@@ -91,6 +91,6 @@ public class HttpPutRequest extends AsyncTask<String, String, Response> {
 
     @Override
     protected void onPostExecute(Response result){
-        super.onPostExecute(result);
+        handler.onPutResponse(result);
     }
 }

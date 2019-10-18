@@ -7,6 +7,7 @@ import net.hungryboys.letsyeat.data.model.LoggedInUser;
 import net.hungryboys.letsyeat.data.model.Recipe;
 import net.hungryboys.letsyeat.data.model.RecipeID;
 import net.hungryboys.letsyeat.data.model.RecipeStub;
+import net.hungryboys.letsyeat.data.model.RegistrationChoice;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +29,11 @@ public class RESTHandler {
     private static final String RECIPE_ID = "/recipe/ID";
     private static final String RECIPE_SUGGEST = "/recipe/suggest";
     private static final String RECIPE_LIST = "/recipe/list";
+    private static final String USER_ID = "/user/id";
+    private static final String USER_NEW_INFO = "/user/new/info";
+    private static final String USER_UPDATE_INFO = "/user/modify/info";
+    private static final String NOTIFICATION = "/notification";
+    private static final String GOOGLE_LOGIN = "user/googlelogin/info";
 
     public interface RequestHandler<T> {
         void onRequestFinished(T result);
@@ -178,7 +184,7 @@ public class RESTHandler {
         request.execute(url.toString());
     }
 
-    public static List<RecipeStub> parseRecipeListFromJSON(String result){
+    private static List<RecipeStub> parseRecipeListFromJSON(String result){
         List<RecipeStub> recipeList = new ArrayList<>();
 
         try {
@@ -207,30 +213,156 @@ public class RESTHandler {
 
 
     //creates a new notification in the server
-    public void putNotification(){
+    public void putNotification(LoggedInUser user, String token,  final RequestHandler<Response> handler){
+        String url = SERVER_ADDRESS + NOTIFICATION + "?userId=" + user.getUserId() + "&token=" + token;
+
+        HttpPutRequest.OnPutResponseHandler putResponseHandler = new HttpPutRequest.OnPutResponseHandler() {
+            @Override
+            public void onPutResponse(Response result) {
+                if (result.isOK()) {
+                    handler.onRequestFinished(result);
+                } else {
+                    Log.e(TAG_REST, "Error on HTTP response");
+                }
+            }
+        };
+
+        HttpPutRequest request = new HttpPutRequest(putResponseHandler);
+        request.execute(url);
     }
 
     //gets user data from server
-    public JSONObject getUser(){
-        return null;
+    public static void getUser(String username, final RequestHandler<LoggedInUser> handler){
+        String url = SERVER_ADDRESS + USER_ID + "/" + username;
+
+        HttpGetRequest.OnGetResponseHandler getResponseHandler = new HttpGetRequest.OnGetResponseHandler() {
+            @Override
+            public void onGetResponse(Response result) {
+                if (result.isValid()) {
+                    LoggedInUser user = parseUserInfoFromJSON(result.getContent());
+
+                    if (user == null) {
+                        Log.e(TAG_REST, "Error while parsing json, could not parse: "
+                                + result.getContent());
+                    }
+
+                    handler.onRequestFinished(user);
+                } else {
+                    Log.e(TAG_REST, "Error on HTTP response");
+                }
+            }
+        };
+
+        HttpGetRequest request = new HttpGetRequest(getResponseHandler);
+        request.execute(url);
+    }
+
+    private static LoggedInUser parseUserInfoFromJSON(String result){
+        LoggedInUser user;
+
+        try {
+            JSONObject json = new JSONObject(result);
+
+            String userId = json.getString("username");
+            String displayName = json.getString("displayName");
+
+
+            user = new LoggedInUser(userId,displayName);
+        } catch (JSONException e) {
+            user = null;
+        }
+
+        return user;
     }
 
     //creates a new user on the server
-    public void putUser(){
+    public static void putUser(String username, String password, RegistrationChoice regs, final RequestHandler<Response> handler){
+        String url = SERVER_ADDRESS + USER_UPDATE_INFO;
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("username", username)
+                    .put("password", password)
+                    .put("difficulty", regs.getDifficulty())
+                    .put("preferences", regs.getTags())
+                    .put("cookTime", regs.getTime());
+        } catch (JSONException e) {
+            Log.e(TAG_REST, "Could Not Create JSON object");
+        }
+
+        HttpGetRequest.OnGetResponseHandler getResponseHandler = new HttpGetRequest.OnGetResponseHandler() {
+            @Override
+            public void onGetResponse(Response result) {
+                if (result.isOK()) {
+                    handler.onRequestFinished(result);
+                } else {
+                    Log.e(TAG_REST, "Error on HTTP response");
+                }
+            }
+        };
+
+        HttpGetRequest request = new HttpGetRequest(getResponseHandler);
+        request.execute(url);
     }
 
     //updates a user on the server
-    public void postUser(){
+    public static void postUser(String username, String password, RegistrationChoice regs, final RequestHandler<Response> handler){
+        String url = SERVER_ADDRESS + USER_NEW_INFO;
+        JSONObject data = new JSONObject();
+
+        try {
+            data.put("username", username)
+                    .put("password", password)
+                    .put("difficulty", regs.getDifficulty())
+                    .put("preferences", regs.getTags())
+                    .put("cookTime", regs.getTime());
+        } catch (JSONException e) {
+            Log.e(TAG_REST, "Could Not Create JSON object");
+        }
+
+        HttpGetRequest.OnGetResponseHandler getResponseHandler = new HttpGetRequest.OnGetResponseHandler() {
+            @Override
+            public void onGetResponse(Response result) {
+                if (result.isOK()) {
+                    handler.onRequestFinished(result);
+                } else {
+                    Log.e(TAG_REST, "Error on HTTP response");
+                }
+            }
+        };
+
+        HttpGetRequest request = new HttpGetRequest(getResponseHandler);
+        request.execute(url,data.toString());
     }
 
     //gets user login confirmation with server using google login
-    public JSONObject getUserLoginGoogle(){
-        return null;
+    public static void getUserLoginGoogle(String email, final RequestHandler<Response> handler){
+        String url = SERVER_ADDRESS + GOOGLE_LOGIN + "?email=" + email;
+
+        HttpGetRequest.OnGetResponseHandler getResponseHandler = new HttpGetRequest.OnGetResponseHandler() {
+            @Override
+            public void onGetResponse(Response result) {
+                if (result.isValid()) {
+                    Recipe recipe = parseRecipeFromJSON(result.getContent());
+
+                    if (recipe == null) {
+                        Log.e(TAG_REST, "Error while parsing json, could not parse: "
+                                + result.getContent());
+                    }
+
+                    handler.onRequestFinished(result);
+                } else {
+                    Log.e(TAG_REST, "Error on HTTP response");
+                }
+            }
+        };
+
+        HttpGetRequest request = new HttpGetRequest(getResponseHandler);
+        request.execute(url);
     }
 
     //gets user login confirmation with server using email/pass
-    public JSONObject getUserLogin(){
-        return null;
+    public static void getUserLogin(){
     }
 
     private String buildGetURL(String baseURL, Map<String, String> params) {
