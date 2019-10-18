@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import net.hungryboys.letsyeat.R;
+import net.hungryboys.letsyeat.data.LoginRepository;
 import net.hungryboys.letsyeat.navigation.NavigationFragment;
 import net.hungryboys.letsyeat.ui.login.LoggedInUserView;
 
@@ -19,13 +20,6 @@ public class BrowseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse);
-
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            LoggedInUserView loggedInUserView = extras.getParcelable(EXTRA_USER_DATA);
-            Log.d(EXTRA_USER_DATA, loggedInUserView.toString());
-        }
-
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 

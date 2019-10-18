@@ -6,6 +6,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import net.hungryboys.letsyeat.REST.RESTHandler;
+import net.hungryboys.letsyeat.data.Result;
 import net.hungryboys.letsyeat.data.model.Recipe;
 import net.hungryboys.letsyeat.data.model.RecipeStub;
 
@@ -21,6 +23,7 @@ public class BrowseViewModel extends ViewModel {
 
     private Set<String> selectedTags = new HashSet<>();
     private String searchText = "";
+    private final int NUM_RECIPES = 10;
 
     public LiveData<List<RecipeStub>> getRecipeStubs() {
         if (recipes == null) {
@@ -72,11 +75,16 @@ public class BrowseViewModel extends ViewModel {
 
     // TODO replace hardcoded values with calls to server/recipe cache
     private void loadRecipes() {
-        List<RecipeStub> recipeList = new ArrayList<>();
-        for (int i = 0; i < 30; i++){
-            recipeList.add(RecipeStub.placeholder());
-        }
-
-        recipes.setValue(recipeList);
+        final List<RecipeStub> recipeList = new ArrayList<>();
+        RESTHandler.getRecipeList(selectedTags, searchText, NUM_RECIPES, new RESTHandler.RequestHandler<List<RecipeStub>>() {
+            @Override
+            public void onRequestFinished(List<RecipeStub> result) {
+                if (result == null) {
+                    recipes.postValue(recipeList);
+                } else {
+                    recipes.postValue(result);
+                }
+            }
+        });
     }
 }
