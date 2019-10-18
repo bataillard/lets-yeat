@@ -13,39 +13,13 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Map;
 
-public class HttpGetRequest extends AsyncTask<String, Void, HttpGetRequest.Response> {
+public class HttpGetRequest extends AsyncTask<String, Void, Response> {
 
     private static final String REQUEST_METHOD = "GET";
     private static final int READ_TIMEOUT = 15000;
     private static final int CONNECTION_TIMEOUT = 15000;
 
-    private static final String JSON = "application/json";
-
-    public static final class Response {
-        private final String content;
-        private final String contentType;
-        private final int responseCode;
-
-        public static final int CONNECTION_ERROR = -1;
-
-        public Response(String content, String contentType, int responseCode) {
-            this.content = content;
-            this.contentType = contentType;
-            this.responseCode = responseCode;
-        }
-
-        public Response(int responseCode) {
-            this(null, null, responseCode);
-        }
-
-        public boolean isValid() {
-            return responseCode == HttpURLConnection.HTTP_OK && contentType.equals(JSON);
-        }
-
-        public String getContent() {
-            return content;
-        }
-    }
+    protected static final String JSON = "application/json";
 
     public interface OnGetResponseHandler {
         void onGetResponse(Response result);

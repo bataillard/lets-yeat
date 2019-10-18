@@ -12,16 +12,27 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 
-public class HttpPutRequest extends AsyncTask<String, String, String> {
+public class HttpPutRequest extends AsyncTask<String, String, Response> {
     private static final String REQUEST_METHOD  = "PUT";
     private static final int READ_TIMEOUT       = 15000;
     private static final int CONNECTION_TIMEOUT = 15000;
 
+    public interface OnPutResponseHandler {
+        void onPutResponse(Response result);
+    }
+
+    private HttpPutRequest.OnPutResponseHandler handler;
+
+    public HttpPutRequest(HttpPutRequest.OnPutResponseHandler handler) {
+        this.handler = handler;
+    }
+
     @Override
-    protected String doInBackground(String... params) {
+    protected Response doInBackground(String... params) {
         String stringURL = params[0];
         String data = params[1];
-        String resource = params[2];
+        Response response;
+
         StringBuilder result = new StringBuilder();
 
         HttpURLConnection connection;
@@ -40,15 +51,13 @@ public class HttpPutRequest extends AsyncTask<String, String, String> {
 
 
             //set parameters to send and write them
-            @SuppressWarnings("CharsetObjectCanBeUsedWithAPI_19") byte[] postData = data.getBytes("UTF-8");
-            connection.setRequestProperty("Content-Length", String.valueOf(postData.length));
-            connection.setRequestProperty("Content-Type", resource);
+            @SuppressWarnings("CharsetObjectCanBeUsedWithAPI_19") byte[] putData = data.getBytes("UTF-8");
+            connection.setRequestProperty("Content-Length", String.valueOf(putData.length));
+            connection.setRequestProperty("Content-Type", HttpGetRequest.JSON);
             //this starts connection to server
-            connection.getOutputStream().write(postData);
+            connection.getOutputStream().write(putData);
 
             int rc = connection.getResponseCode();
-            result.append(rc);
-            result.append("\n");
 
             //read response
             if(rc == HttpURLConnection.HTTP_OK) {
@@ -62,28 +71,26 @@ public class HttpPutRequest extends AsyncTask<String, String, String> {
                     result.append(line);
                 }
                 in.close();
+                response = new Response(result.toString(), connection.getContentType(),rc);
+            } else {
+                response = new Response(rc);
             }
         } catch (ProtocolException e) {
             e.printStackTrace();
-            result = null;
+            response = new Response(Response.CONNECTION_ERROR);
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            result = null;
+            response = new Response(Response.CONNECTION_ERROR);
         } catch (IOException e) {
             e.printStackTrace();
-            result = null;
+            response = new Response(Response.CONNECTION_ERROR);
         }
 
-        if (result != null) {
-            return result.toString();
-        }
-        else{
-            return "Exception";
-        }
+        return response;
     }
 
     @Override
-    protected void onPostExecute(String result){
+    protected void onPostExecute(Response result){
         super.onPostExecute(result);
     }
 }

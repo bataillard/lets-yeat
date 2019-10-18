@@ -39,7 +39,7 @@ public class RESTHandler {
 
         HttpGetRequest.OnGetResponseHandler getResponseHandler = new HttpGetRequest.OnGetResponseHandler() {
             @Override
-            public void onGetResponse(HttpGetRequest.Response result) {
+            public void onGetResponse(Response result) {
                 if (result.isValid()) {
                     Recipe recipe = parseRecipeFromJSON(result.getContent());
 
@@ -115,7 +115,7 @@ public class RESTHandler {
 
         HttpGetRequest.OnGetResponseHandler getResponseHandler = new HttpGetRequest.OnGetResponseHandler() {
             @Override
-            public void onGetResponse(HttpGetRequest.Response result) {
+            public void onGetResponse(Response result) {
                 if (result.isValid()) {
                     RecipeID recipeID = null;
 
@@ -158,7 +158,7 @@ public class RESTHandler {
 
         HttpGetRequest.OnGetResponseHandler getResponseHandler = new HttpGetRequest.OnGetResponseHandler() {
             @Override
-            public void onGetResponse(HttpGetRequest.Response result) {
+            public void onGetResponse(Response result) {
                 if (result.isValid()) {
                     List<RecipeStub> recipeList = parseRecipeListFromJSON(result.getContent());
 
@@ -211,7 +211,7 @@ public class RESTHandler {
     }
 
     //gets user data from server
-    public JSONObject getUSer(){
+    public JSONObject getUser(){
         return null;
     }
 
