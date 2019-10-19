@@ -35,12 +35,9 @@ server.get('/', (req,res)=>{
 
 /* Create new user profile */
 server.post('/user/new', (req,res) => {
-	const username = req.body.username
-	const password = req.body.password
-	const diff = req.body.difficulty
-	const pref = req.body.preferences
-	const cookTime = req.body.cookTime
-	if (!(username && password && diff && pref && cookTime)){
+	let { username, password, email, difficulty:diff, preferences: pref, cookTime} = req.body
+	
+	if (!(username && password && diff && pref && cookTime && email)){
 		res.status(400).send("Missing one or more piece of user info.")
 		return
 	}
@@ -50,7 +47,7 @@ server.post('/user/new', (req,res) => {
 		"difficulty":diff,
 		"preferences":pref,
 		"cookTime":cookTime,
-		"email":""
+		"email":email
 	},(err, result) => {
 		if (err) return console.log(err);
 		res.send(req.body);
@@ -63,8 +60,7 @@ server.post('/user/new', (req,res) => {
  * 1) hash of email is in user collection
  * 	 - return profile. ie. the preferences of the user
  * 2) first time user
- *   - create a profile (name, email) with preferences left blank
- *   - returns json object that notifies front-end, user needs to complete profile setup
+ *   - return message that informs front end user is not in database.
  */
 server.get('user/googlogin',(req,res)=>{
 	if (req.body == null){
@@ -75,18 +71,14 @@ server.get('user/googlogin',(req,res)=>{
 	// if user is already registered with our service
 	if (findUser){
 		res.send(findUser)
-	}else{ //otherwise, we create a basic profile without preferences
-		user.insertOne({
-			"username": req.body.username,
-			"email": req.body.email,
-			"name": req.body.name
-		},(err,result)=>{
-			if (err) return console.log(err)
-			res.send("New user")
-		})
+	}else{ //otherwise, we notify F.E. to get relevant info to create new user profile.
+		res.send("New User")
 	}
-
-
 })
+
+
+
+
+
 // parse receipes from 1st website
 const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";

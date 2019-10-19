@@ -8,6 +8,7 @@ const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
 var db
 var recipe
+
 mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
     if (err) return console.log(err)
     db = client.db('backenddb')
