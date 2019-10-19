@@ -117,9 +117,7 @@ server.patch('/users/:username',(req,res)=>{
 	for (var field in req.body){
 		update.$set[field] = req.body[field];
 	}
-
 	users.updateOne({"username":req.params.username},update)
-	
 	res.send("Update complete.")
 	
 })
