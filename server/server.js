@@ -135,6 +135,28 @@ server.get('/recipes/:recipeid',(req,res)=>{
 	})
 })
 
+function generateOneRecipe(userId){
+	// currently the recipe is hardcoded.
+	return new Promise((resolve, reject) => {
+		var recipex = recipes.find({"_id":new ObjectId("5da811e1eb49256ad3f97ec4")}).limit(1);
+		recipex.forEach(function(doc, err){
+			resolve(doc)
+		})
+	});
+}
+
+/**
+ * Get recipe from user ID
+ * return a trecipe json object to F.E. based on user ID.
+ * 
+ */
+server.get('/recipes/byuser/:username',(req,res)=>{
+	generateOneRecipe(req.params.username).then((recipe)=>{
+		res.send(recipe)
+	})
+})
+
+
 
 
 // parse receipes from 1st website
