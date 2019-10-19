@@ -33,8 +33,12 @@ server.get('/', (req,res)=>{
 	res.send(user.findOne())
 });
 
+server.get('/users/34',(req,res)=>{
+	res.send("i am 34")
+});
+
 /* Create new user profile */
-server.post('/user/new', (req,res) => {
+server.post('/users/new', (req,res) => {
 	let { username, password, email, difficulty:diff, preferences: pref, cookTime} = req.body
 	
 	if (!(username && password && diff && pref && cookTime && email)){
@@ -62,7 +66,7 @@ server.post('/user/new', (req,res) => {
  * 2) first time user
  *   - return message that informs front end user is not in database.
  */
-server.get('user/googlogin',(req,res)=>{
+server.get('users/googlogin',(req,res)=>{
 	if (req.body == null){
 		res.status(400).send("Invalid google login.")
 		return
@@ -76,6 +80,10 @@ server.get('user/googlogin',(req,res)=>{
 	}
 })
 
+/**
+ * 
+ * 
+ */
 
 
 
