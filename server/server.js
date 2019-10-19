@@ -19,8 +19,8 @@ var recipe
 mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
 	if (err) return console.log(err)
 	db = client.db('backenddb')
-	user = db.collection("user")
-	recipe = db.collection("recipe")
+	users = db.collection("user")
+	recipes = db.collection("recipe")
 	// listen to port
 	server.listen(3001,function(){
 		console.log("server is up!!!!")
@@ -29,23 +29,15 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 
 /* Routing RESTful */
 
-server.get('/', (req,res)=>{
-	res.send(user.findOne())
-});
-
-server.get('/users/34',(req,res)=>{
-	res.send("i am 34")
-});
-
 /* Create new user profile */
-server.post('/users/new', (req,res) => {
+server.post('/users/', (req,res) => {
 	let { username, password, email, difficulty:diff, preferences: pref, cookTime} = req.body
 	
 	if (!(username && password && diff && pref && cookTime && email)){
 		res.status(400).send("Missing one or more piece of user info.")
 		return
 	}
-	user.insertOne({
+	users.insertOne({
 		"username":username,
 		"password":password,
 		"difficulty":diff,
@@ -71,19 +63,26 @@ server.get('users/googlogin',(req,res)=>{
 		res.status(400).send("Invalid google login.")
 		return
 	}
-	var findUser = user.find({"email":req.body.email})
+	var findUser = users.find({"email":req.body.email})
 	// if user is already registered with our service
 	if (findUser){
 		res.send(findUser)
-	}else{ //otherwise, we notify F.E. to get relevant info to create new user profile.
+	}else{ //otherwise, we notify Frontend to get relevant info to create new user profile.
 		res.send("New User")
 	}
 })
 
 /**
- * 
- * 
+ * client provides username
+ * API returns: user json or message to indicate user not in database.s
  */
+server.get('/users/:username',(req,res)=>{
+	var findUser = users.find({"username":req.params.username}).limit(1);
+	findUser.forEach(function(doc, err){
+		console.log(doc)
+		res.send(doc)
+	})
+});
 
 
 
