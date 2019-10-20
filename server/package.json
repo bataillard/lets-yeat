@@ -1,0 +1,21 @@
+{
+  "name": "yeat-backend",
+  "version": "1.0.0",
+  "description": "server file to route requests for recipes",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "The Hungry Boys",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.3.2",
+    "mongoose": "^5.7.5",
+    "nodeman": "^1.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  }
+}
