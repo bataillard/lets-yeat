@@ -45,4 +45,15 @@ public class Result<T> {
             return this.error;
         }
     }
+
+    public final static class Failed<T> extends Result{
+        private T Reason;
+
+        public Failed(T Reason){
+            this.Reason = Reason;
+        }
+        public T getData(){
+            return this.Reason;
+        }
+    }
 }

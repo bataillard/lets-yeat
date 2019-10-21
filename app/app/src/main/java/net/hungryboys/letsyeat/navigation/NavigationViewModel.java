@@ -8,6 +8,7 @@ import net.hungryboys.letsyeat.REST.RESTHandler;
 import net.hungryboys.letsyeat.data.LoginRepository;
 import net.hungryboys.letsyeat.data.model.LoggedInUser;
 import net.hungryboys.letsyeat.data.model.RecipeID;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
 
 public class NavigationViewModel extends ViewModel {
 
@@ -26,14 +27,14 @@ public class NavigationViewModel extends ViewModel {
         LoginRepository loginRepository = LoginRepository.getInstance(null);
 
         if (loginRepository.isLoggedIn()) {
-            LoggedInUser user = loginRepository.getLoggedInUser();
+            user user = loginRepository.getLoggedInUser();
 
-            RESTHandler.getRecipeSuggestion(user, new RESTHandler.RequestHandler<RecipeID>() {
-                @Override
-                public void onRequestFinished(RecipeID result) {
-                    recipeId.postValue(result);
-                }
-            });
+//            RESTHandler.getRecipeSuggestion(user, new RESTHandler.RequestHandler<RecipeID>() {
+//                @Override
+//                public void onRequestFinished(RecipeID result) {
+//                    recipeId.postValue(result);
+//                }
+//            });
         }
     }
 }

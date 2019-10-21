@@ -26,8 +26,71 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 	})
 })
 
-/* Routing RESTful */
 
+server.get('/test', (req, res) => {
+    console.log("test is here");
+    res.send("recipe1");
+
+    return;
+    
+})
+
+server.get('/checkUser', (req, res) => {
+    console.log("we in here boise");
+    let { email, password } = req.query;
+    console.log(email + "," + password);
+    db.collection("user").find({ "email": email }).toArray((err, result) => {
+        console.log(result);
+        if (result.length != 1) {
+            res.status(401).json("No user associated with that email");
+        } else if ((result[0].password) !== password) {
+            res.status(402).json("Incorrect password");
+        } else {
+            res.status(200).json("success");
+        }
+        
+    })
+    console.log("here\n")
+})
+
+server.post('/addUser', (req, res) => {
+    
+    let { password, email, diff,  pref, cooktime } = req.query;
+    console.log(password + " " + email + " " + diff + " " + pref + " " + cooktime);// + " " + password);
+    var findUser;
+    db.collection("user").find({ "email": email }).toArray((err, result) => {
+        findUser = result;
+        console.log(result);
+        if (result.length != 0) {
+            res.status(401).send("This email is already signed up");
+        } else {
+            users.insertOne({
+                "email": email,
+                "password": password,
+                "difficulty": diff,
+                "preferences": pref,
+                "cookTime": cooktime
+            }, (err, result) => {
+                if (err) {
+                    res.status(400).json("failed");
+                    return console.log(err);
+                } else {
+                    res.status(200).json("success")
+                }
+            });
+        }
+    })
+    console.log("finiished");
+    //if (typeof findUser !== undefined) {
+     //   res.send("Email already used", 401);
+   // } else { 
+        
+  //  }
+})
+
+
+
+/* Routing RESTful */
 /**
  * Create new user profile
  * - restriction = no username repeats
@@ -75,7 +138,8 @@ server.post('/users/', (req,res) => {
  * 2) first time user
  *   - return message that informs front end user is not in database.
  */
-server.get('users/googlogin',(req,res)=>{
+server.get('users/googlogin', (req, res) => {
+    console.log("test");
 	if (req.body == null){
 		res.status(400).send("Invalid google login.")
 		return

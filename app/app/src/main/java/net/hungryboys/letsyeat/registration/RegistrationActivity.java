@@ -2,6 +2,7 @@ package net.hungryboys.letsyeat.registration;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -10,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
-
+import net.hungryboys.letsyeat.data.LoginRepository;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
+import net.hungryboys.letsyeat.MyApplication;
 import net.hungryboys.letsyeat.browse.BrowseActivity;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.Recipe;
@@ -25,7 +28,7 @@ public class RegistrationActivity extends AppCompatActivity implements
         RegistrationValuesFragment.OnTimeChangedListener {
 
     public static final String EXTRA_USER_DATA = "user_data";
-
+    private user curUser;
     private RegistrationViewModel viewModel;
     private Button nextButton;
 
@@ -35,10 +38,13 @@ public class RegistrationActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.w("checkup", "pls work \n");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-
-        loggedInUserView = getIntent().getParcelableExtra(EXTRA_USER_DATA);
+        curUser = new user(getIntent().getStringExtra("userEmail"), getIntent().getStringExtra("sec"));
+        LoginRepository loginRepository = LoginRepository.getInstance(null);
+        loginRepository.login(curUser.email, curUser.password);
+        //loggedInUserView = getIntent().getParcelableExtra(EXTRA_USER_DATA);
 
         if (savedInstanceState == null) {
             viewModel = ViewModelProviders.of(this).get(RegistrationViewModel.class);
@@ -79,8 +85,8 @@ public class RegistrationActivity extends AppCompatActivity implements
     }
 
     private void finished() {
-        RegistrationChoice choice = viewModel.finish();
-        loggedInUserView.setChoice(choice);
+        RegistrationChoice choice = viewModel.finish(curUser);
+        Log.w("finished", "89");
 
         Intent intent = new Intent(this, BrowseActivity.class);
         intent.putExtra(BrowseActivity.EXTRA_USER_DATA, loggedInUserView);

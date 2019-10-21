@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1067550969885",
+    "firebase_url": "https://cpen321-b82cf.firebaseio.com",
+    "project_id": "cpen321-b82cf",
+    "storage_bucket": "cpen321-b82cf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1067550969885:android:29156dda92bed91ff8f6f4",
+        "android_client_info": {
+          "package_name": "net.hungryboys.letsyeat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1067550969885-3t0on4hg0ak7h00h0mvk0eufm162g905.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBcjMU7sfLowGU5JDZxIWk7xk09M-KlPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1067550969885-3t0on4hg0ak7h00h0mvk0eufm162g905.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

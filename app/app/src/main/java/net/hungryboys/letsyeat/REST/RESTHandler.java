@@ -25,7 +25,7 @@ public class RESTHandler {
 
     private static final String TAG_REST = "REST HANDLER";
 
-    private static final String SERVER_ADDRESS = "0.0.0.0";
+    private static final String SERVER_ADDRESS = "http://169.254.148.171:3001/";
     private static final String RECIPE_ID = "/recipe/ID";
     private static final String RECIPE_SUGGEST = "/recipe/suggest";
     private static final String RECIPE_LIST = "/recipe/list";

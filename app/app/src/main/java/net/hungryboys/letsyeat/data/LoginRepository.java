@@ -1,6 +1,7 @@
 package net.hungryboys.letsyeat.data;
 
 import net.hungryboys.letsyeat.data.model.LoggedInUser;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
 
 /**
  * Class that requests authentication and user information from the remote data source and
@@ -14,7 +15,7 @@ public class LoginRepository {
 
     // If user credentials will be cached in local storage, it is recommended it be encrypted
     // @see https://developer.android.com/training/articles/keystore
-    private LoggedInUser user = null;
+    private user user = null;
 
     // private constructor : singleton access
     private LoginRepository(LoginDataSource dataSource) {
@@ -37,29 +38,29 @@ public class LoginRepository {
         dataSource.logout();
     }
 
-    private void setLoggedInUser(LoggedInUser user) {
+    private void setLoggedInUser(user user) {
         this.user = user;
         // If user credentials will be cached in local storage, it is recommended it be encrypted
         // @see https://developer.android.com/training/articles/keystore
     }
 
-    public LoggedInUser getLoggedInUser() {
+    public user getLoggedInUser() {
         return user;
     }
 
-    public Result<LoggedInUser> login(String username, String password) {
+    public Result<user> login(String email, String password) {
         // handle login
-        Result<LoggedInUser> result = dataSource.login(username, password);
+        Result<user> result = dataSource.login(email, password);
         if (result instanceof Result.Success) {
-            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+            setLoggedInUser(((Result.Success<user>) result).getData());
         }
         return result;
     }
 
-    public Result<LoggedInUser> register(String username, String password) {
-        Result<LoggedInUser> result = dataSource.register(username, password);
+    public Result<user> register(String username, String password) {
+        Result<user> result = dataSource.register(username, password);
         if (result instanceof Result.Success) {
-            setLoggedInUser(((Result.Success<LoggedInUser>) result).getData());
+            setLoggedInUser(((Result.Success<user>) result).getData());
         }
         return result;
     }

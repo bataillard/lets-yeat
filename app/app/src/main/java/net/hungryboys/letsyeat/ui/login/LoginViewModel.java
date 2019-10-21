@@ -10,6 +10,7 @@ import net.hungryboys.letsyeat.data.LoginRepository;
 import net.hungryboys.letsyeat.data.Result;
 import net.hungryboys.letsyeat.data.model.LoggedInUser;
 import net.hungryboys.letsyeat.R;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
 
 public class LoginViewModel extends ViewModel {
 
@@ -31,12 +32,12 @@ public class LoginViewModel extends ViewModel {
 
     public void login(String username, String password) {
         // can be launched in a separate asynchronous job
-        Result<LoggedInUser> result = loginRepository.login(username, password);
+        Result<user> result = loginRepository.login(username, password);
 
         if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
+            user data = ((Result.Success<user>) result).getData();
             loginResult.setValue(new LoginResult(new LoggedInUserView(
-                    new LoggedInUser(data.getUserId(), data.getDisplayName()))));
+                    new user(data.email, "john doe"))));
         } else {
             loginResult.setValue(new LoginResult(R.string.login_failed));
         }
@@ -44,12 +45,12 @@ public class LoginViewModel extends ViewModel {
 
     public void register(String username, String password) {
         // TODO register user
-        Result<LoggedInUser> result = loginRepository.register(username, password);
+        Result<user> result = loginRepository.register(username, password);
 
         if (result instanceof Result.Success) {
-            LoggedInUser data = ((Result.Success<LoggedInUser>) result).getData();
+            user data = ((Result.Success<user>) result).getData();
             loginResult.setValue(new LoginResult(new LoggedInUserView(
-                    new LoggedInUser(data.getUserId(), data.getDisplayName()))));
+                    new user(data.email, password))));
         } else {
             loginResult.setValue(new LoginResult(R.string.login_failed));
         }

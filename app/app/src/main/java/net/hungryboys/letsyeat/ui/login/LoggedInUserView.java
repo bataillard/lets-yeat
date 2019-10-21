@@ -2,17 +2,19 @@ package net.hungryboys.letsyeat.ui.login;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import net.hungryboys.letsyeat.data.model.RegistrationChoice;
 import net.hungryboys.letsyeat.data.model.LoggedInUser;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
 
 /**
  * Class exposing authenticated user details to the UI.
  */
 public class LoggedInUserView implements Parcelable {
-    private LoggedInUser user;
+    private user user;
     private RegistrationChoice choice;
 
     public static final Parcelable.Creator<LoggedInUserView> CREATOR = new Creator<LoggedInUserView>() {
@@ -27,21 +29,21 @@ public class LoggedInUserView implements Parcelable {
         }
     };
 
-    LoggedInUserView(LoggedInUser user) {
+    LoggedInUserView(user user) {
         this.user = user;
     }
 
     private LoggedInUserView(Parcel in) {
-        user = (LoggedInUser) in.readSerializable();
+        user = (user) in.readSerializable();
         choice = (RegistrationChoice) in.readSerializable();
     }
 
     public String getDisplayName() {
-        return user.getDisplayName();
+        return user.email;
     }
 
     public String getUserID() {
-        return user.getUserId();
+        return "john doe";
     }
 
     public RegistrationChoice getChoice() {
@@ -49,6 +51,8 @@ public class LoggedInUserView implements Parcelable {
     }
 
     public void setChoice(@NonNull RegistrationChoice choice) {
+        Log.w("debugging101", "free me please");
+
         this.choice = choice;
     }
 
@@ -59,8 +63,9 @@ public class LoggedInUserView implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeSerializable(user);
-        dest.writeSerializable(choice);
+        Log.w("debugging101", "free me please");
+        //dest.writeSerializable(user);
+        //dest.writeSerializable(choice);
     }
 
     @Override

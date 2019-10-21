@@ -30,20 +30,28 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import net.hungryboys.letsyeat.MyApplication;
 
 import net.hungryboys.letsyeat.browse.BrowseActivity;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.LoggedInUser;
 import net.hungryboys.letsyeat.registration.RegistrationActivity;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
+import java.io.Serializable;
 import net.hungryboys.letsyeat.ui.login.LoginViewModel;
 import net.hungryboys.letsyeat.ui.login.LoginViewModelFactory;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import com.squareup.picasso.Callback;
 
 public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel loginViewModel;
     public static final int RC_SIGN_IN = 1;
-
-    public static final String LOGIN_TAG = "Login";
+    private user curUser;
+    public static final String LOGIN_TAG = "LoginActivityLog";
+    public int loggedin = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,17 +80,26 @@ public class LoginActivity extends AppCompatActivity {
         googleLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Intent signInIntent = mGoogleSignInClient.getSignInIntent();
                 startActivityForResult(signInIntent, RC_SIGN_IN);
             }
         });
 
+
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                curUser = new user(usernameEditText.getText().toString(), passwordEditText.getText().toString());
+//                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+//                intent.putExtra("userEmail", curUser.name);
+//                intent.putExtra("userpassword", curUser.password);
+//                startActivity(intent);
+
                 loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.register(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                loginViewModel.register(curUser.email,
+                        curUser.password);
             }
         });
 
@@ -113,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                     showLoginFailed(loginResult.getError());
                 }
                 if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
+                        updateUiWithUser(loginResult.getSuccess());
                 }
                 setResult(Activity.RESULT_OK);
 
@@ -156,23 +173,60 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                curUser = new user(usernameEditText.getText().toString(), passwordEditText.getText().toString());
+                Call<String> call = net.hungryboys.letsyeat.APICalls.CreateRetrofit.getApiCall().checkUser(curUser.email, curUser.password);
+                call.enqueue(new retrofit2.Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        Log.w("Logging in", "Login successful" + response.code());
+                        if(response.code() == 200){
+                            Log.w("logged in", "we in the best part");
+                            loggedin = 1;
+                        }
+                        loadingProgressBar.setVisibility(View.VISIBLE);
+                        loginViewModel.login(curUser.email,
+                                curUser.password);
+                    }
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+                        Log.w("Logging in", "failed");
+                        loadingProgressBar.setVisibility(View.VISIBLE);
+                        loginViewModel.login(curUser.email,
+                                curUser.password);
+                    }
+
+                });
+
+
             }
         });
     }
 
     private void updateUiWithUser(LoggedInUserView model) {
-        if (model.getChoice() == null) {
+        Log.w("changing screens", "********************");
+        if (loggedin == 0) {
             Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
             intent.putExtra(RegistrationActivity.EXTRA_USER_DATA, model);
+            intent.putExtra("userEmail", curUser.email);
+            intent.putExtra("sec", curUser.password);
+            String pass = curUser.password;
+            Log.w("testing", pass);
+
             startActivity(intent);
+//            Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+//            intent.putExtra(RegistrationActivity.EXTRA_USER_DATA, model);
+//            intent.putExtra("userEmail", curUser.email);
+//            intent.putExtra("userpassword", curUser.password);
+//            startActivity(intent);
         } else {
-            // Pass user details to new activity and start it
+            Log.w("skipping setup", "skipped tags");
             Intent intent = new Intent(LoginActivity.this, BrowseActivity.class);
             intent.putExtra(BrowseActivity.EXTRA_USER_DATA, model);
             startActivity(intent);
+//            // Pass user details to new activity and start it
+//            Intent intent = new Intent(LoginActivity.this, BrowseActivity.class);
+//            intent.putExtra(BrowseActivity.EXTRA_USER_DATA, model);
+//            startActivity(intent);
         }
     }
 
@@ -197,7 +251,7 @@ public class LoginActivity extends AppCompatActivity {
             String email = completedTask.getResult(ApiException.class).getEmail();
             String name = completedTask.getResult(ApiException.class).getGivenName();
             String id = completedTask.getResult(ApiException.class).getIdToken();
-            result = new LoggedInUserView(new LoggedInUser(id, name));
+            result = new LoggedInUserView(new user(email, "john doe"));
         } catch (NullPointerException e) {
             Log.w(LOGIN_TAG, "signInResult:fail, null pointer exception");
             showLoginFailed(null);
