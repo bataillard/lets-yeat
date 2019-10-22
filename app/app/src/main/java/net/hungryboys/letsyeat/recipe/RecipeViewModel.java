@@ -65,13 +65,18 @@ public class RecipeViewModel extends ViewModel {
     }
 
     private void loadRecipe() {
+        Log.w("TESTINGBUGS", "In loadrecipe");
         if (id != null) {
-            Call<Recipe> call = CreateRetrofit.getApiCall().getRecipe(id);
+            String resID = id.getId();
+            Call<Recipe> call = CreateRetrofit.getApiCall().getRecipe(resID);
             call.enqueue(new Callback<Recipe>() {
                 @Override
                 public void onResponse(Call<Recipe> call, Response<Recipe> response) {
                     if (response.isSuccessful()) {
+                        Log.w("DEBUG_APP", "in response of loadRecipe" +response.body().getName());
+
                         recipe.postValue(response.body());
+                        Log.w("DEBUG_APP", "leaving response of loadRecipe");
                     } else {
                         Log.e(TAG_RECIPE, "Could not load recipe" + response.errorBody());
                     }

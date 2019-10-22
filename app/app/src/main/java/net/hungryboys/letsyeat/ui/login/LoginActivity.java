@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.w("DEBUG_APP", "we made it this far start");
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -248,20 +249,22 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         LoggedInUserView result;
         try {
-            String email = completedTask.getResult(ApiException.class).getEmail();
-            String name = completedTask.getResult(ApiException.class).getGivenName();
-            String id = completedTask.getResult(ApiException.class).getIdToken();
-            result = new LoggedInUserView(new user(email, "john doe"));
-        } catch (NullPointerException e) {
-            Log.w(LOGIN_TAG, "signInResult:fail, null pointer exception");
-            showLoginFailed(null);
-            return;
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            if (account != null) {
+                String email = account.getEmail();
+                String name = account.getGivenName();
+                String id = account.getIdToken();
+
+                curUser = new user(email, "john doe");
+                updateUiWithUser(new LoggedInUserView(curUser));
+            } else {
+                Log.w(LOGIN_TAG, "Account is null");
+                showLoginFailed(null);
+            }
         } catch (ApiException e) {
             Log.w(LOGIN_TAG, "signInResult:failed code=" + e.getStatusCode());
             showLoginFailed(null);
-            return;
         }
-
-        updateUiWithUser(result);
     }
 }

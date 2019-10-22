@@ -15,7 +15,7 @@ import retrofit2.http.Query;
 public interface APICalls {
 
     @GET("/recipe/id")
-    Call<Recipe> getRecipe(@Query("id") RecipeID recipeID);
+    Call<Recipe> getRecipe(@Query("id") String id);
 
     @GET("/recipe/suggest")
     Call<RecipeID> getRecipeSuggestion();

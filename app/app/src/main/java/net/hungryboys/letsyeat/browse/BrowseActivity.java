@@ -27,6 +27,7 @@ public class BrowseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.w("TESTINGBUGS", "BrowseOnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse);
 

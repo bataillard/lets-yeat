@@ -13,7 +13,7 @@ var firebasepath = "/home/ubc/firebasekey.json"
 
 // this is Martin's emulator device access token
 var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
-var devicetoken = "fs5DHP5RAFg:APA91bH0HXf9OEhj8ncoUtW0SdKomwvnReo1rorN2nJSF6Aw9v1BbkdNH51QRaKmK_5HY0gmN7ERGNVwq2exub-NQ1TV5cVUjlZRJ7HZ8D9Nn82iPt-1hM3ZHSSzcTyOXKS5NITtCINn" 
+var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5RPV0w04H_eIMUaHZKuJghtjFB-NeOx3w4bVnjZY2sC3DtTQnBfjQqszG6SKa5nWpWog_hYEraaeOeBFrpRvEBjP-kui" 
 // get for Luca's device, testing with Kyle's
 
 var parser = require('../parser')
@@ -49,10 +49,10 @@ class RecipeID{
 }
 
 class Ingredient {
-    constructor(name, quantity, units) {
+    constructor(name, quantity, unit) {
         this.name = name;
         this.quantity = quantity;
-        this.units = units;
+        this.unit = unit;
     }
 }
 
@@ -245,6 +245,8 @@ server.patch('/users/:username',(req,res)=>{
 	
 })
 
+
+
 /**
  * Get recipe from recipe ID
  * returns the entire recipe json object to F.E.
@@ -253,7 +255,7 @@ server.patch('/users/:username',(req,res)=>{
 server.get('/recipe/id', (req, res) => {
     let {id} = req.query;
     db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
-        console.log(result[0])
+        //console.log(result[0])
         recipID = new RecipeID(result[0]._id);
         var ing = [];
         ingredientes = result[0].ingredients;
@@ -261,9 +263,9 @@ server.get('/recipe/id', (req, res) => {
             var temp = new Ingredient(element.name, element.quantity, element.unit);
             ing.push(temp);
         });
-        console.log(ing);
+        console.log("List of ingredients : \n" + ing);
         var recip = new Recipe(recipID, result[0].name, result[0].url, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
-        console.log(recip);
+        console.log("recipe made : \n " + recip);
         if (err) {
             res.status(400).json("found some error help");
         } else {
@@ -302,10 +304,16 @@ server.get('/recipes/byuser/:username',(req,res)=>{
 	})
 })
 
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
 server.get('/recipe/suggest', (req, res) => {
     console.log("here");
     db.collection("recipe").find().toArray((err, result) => {
         console.log("here");
+        var temp = getRandomInt(result.length);
         recip = new RecipeID(result[0]._id);
         console.log(result[0]._id);
         console.log(recip);

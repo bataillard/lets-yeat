@@ -75,7 +75,15 @@ public class BrowseViewModel extends ViewModel {
 
     // TODO replace hardcoded values with calls to server/recipe cache
     private void loadRecipes() {
-        final List<RecipeStub> recipeList = new ArrayList<>();
+        List<RecipeStub> r = new ArrayList<>();
+
+        for (int i = 0; i < 25; i++) {
+            r.add(RecipeStub.placeholder());
+        }
+
+        recipes.postValue(r);
+
+        /*final List<RecipeStub> recipeList = new ArrayList<>();
         RESTHandler.getRecipeList(selectedTags, searchText, NUM_RECIPES, new RESTHandler.RequestHandler<List<RecipeStub>>() {
             @Override
             public void onRequestFinished(List<RecipeStub> result) {
@@ -85,6 +93,6 @@ public class BrowseViewModel extends ViewModel {
                     recipes.postValue(result);
                 }
             }
-        });
+        });*/
     }
 }
