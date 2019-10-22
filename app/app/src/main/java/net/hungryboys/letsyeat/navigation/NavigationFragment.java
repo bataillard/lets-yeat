@@ -18,6 +18,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.model.RecipeID;
 import net.hungryboys.letsyeat.recipe.RecipeActivity;
+import net.hungryboys.letsyeat.navigation.NavigationViewModel;
+
 
 /**
  * Bottom navigation bar
@@ -86,6 +88,7 @@ public class NavigationFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "Yeat!", Toast.LENGTH_LONG).show();
+                viewModel.yeetClicked();
             }
         });
 

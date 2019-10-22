@@ -13,9 +13,11 @@ var firebasepath = "/home/ubc/firebasekey.json"
 
 // this is Martin's emulator device access token
 var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
-var devicetoken = "???" // get for Luca's device, testing with Kyle's
+var devicetoken = "fs5DHP5RAFg:APA91bH0HXf9OEhj8ncoUtW0SdKomwvnReo1rorN2nJSF6Aw9v1BbkdNH51QRaKmK_5HY0gmN7ERGNVwq2exub-NQ1TV5cVUjlZRJ7HZ8D9Nn82iPt-1hM3ZHSSzcTyOXKS5NITtCINn" 
+// get for Luca's device, testing with Kyle's
 
 var parser = require('../parser')
+//var recipees = require('/classes')
 var admin = require('firebase-admin')
 const express = require('express')
 const mongoClient = require('mongodb').MongoClient
@@ -27,18 +29,32 @@ var db
 var user
 var recipe
 
-var message = {
-    notification: {
-        title: "Let's Yeat",
-        body: "It is time to cook!",
-    },
-    token: devicetoken
+class Recipe {
+    constructor(id, name, pictureURL, time, difficulty, ingredients, tags, instructions) {
+        this.id = id;
+        this.name = name;
+        this.pictureURL = pictureURL;
+        this.time = time;
+        this.difficulty = difficulty;
+        this.ingredients = ingredients;
+        this.tags = tags;
+        this.instructions = instructions;
+    }
+};
+
+class RecipeID{
+    constructor(id){
+        this.id = id;
+    }
 }
 
- // initialization for firebase
-// admin.initializeApp({
-// 	credential: admin.credential.applicationDefault()
-// })
+class Ingredient {
+    constructor(name, quantity, units) {
+        this.name = name;
+        this.quantity = quantity;
+        this.units = units;
+    }
+}
 
 mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
 	if (err) return console.log(err)
@@ -49,6 +65,10 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 	server.listen(3001,function(){
 		console.log("server is up!!!!")
 	})
+	// initialization for firebase
+	admin.initializeApp({
+	credential: admin.credential.applicationDefault()
+})
 })
 
 server.get('/test', (req, res) => {
@@ -105,6 +125,13 @@ server.post('/addUser', (req, res) => {
         }
     })
 	console.log("finished");
+	var message = {
+		notification: {
+			title: "Let's Yeat",
+			body: "Thanks for registering!",
+		},
+		token: devicetoken
+	}
 
 	// send message via firebase push notification to Kyle's phone
 	admin.messaging()
@@ -223,12 +250,35 @@ server.patch('/users/:username',(req,res)=>{
  * returns the entire recipe json object to F.E.
  * 
  */
-server.get('/recipe/id',(req,res)=>{
-	let {id} = req.query;
-	var findRecipe = recipes.find({"_id":new ObjectId(id)}).limit(1);
-	findRecipe.forEach(function(doc, err){
-		res.status(200).json(doc)
-	})
+server.get('/recipe/id', (req, res) => {
+    let {id} = req.query;
+    db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
+        console.log(result[0])
+        recipID = new RecipeID(result[0]._id);
+        var ing = [];
+        ingredientes = result[0].ingredients;
+        ingredientes.forEach(function (element) {
+            var temp = new Ingredient(element.name, element.quantity, element.unit);
+            ing.push(temp);
+        });
+        console.log(ing);
+        var recip = new Recipe(recipID, result[0].name, result[0].url, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
+        console.log(recip);
+        if (err) {
+            res.status(400).json("found some error help");
+        } else {
+            res.status(200).json(recip);
+        }
+    })
+
+
+
+
+	//let {id} = req.query;
+	//var findRecipe = recipes.find({"_id":new ObjectId(id)}).limit(1);
+	//findRecipe.forEach(function(doc, err){
+		//res.status(200).json(doc)
+	//})
 })
 
 function generateOneRecipe(userId){
@@ -252,10 +302,27 @@ server.get('/recipes/byuser/:username',(req,res)=>{
 	})
 })
 
-server.get('/recipe/suggest',(req,res)=>{
-	generateOneRecipe("xyz").then((recipe)=>{
-		res.status(200).json(recipe)
-	})
+server.get('/recipe/suggest', (req, res) => {
+    console.log("here");
+    db.collection("recipe").find().toArray((err, result) => {
+        console.log("here");
+        recip = new RecipeID(result[0]._id);
+        console.log(result[0]._id);
+        console.log(recip);
+
+        if (result.length == 0) {
+            res.status(401).json("No user associated with that email");
+        }else {
+            res.status(200).json(recip);
+        }
+
+    })
+
+
+
+	//generateOneRecipe("xyz").then((recipe)=>{
+		//res.status(200).json(recipe)
+	//})
 })
 
 /**

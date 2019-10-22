@@ -28,6 +28,10 @@ public class NavigationViewModel extends ViewModel {
         return recipeId;
     }
 
+    public void yeetClicked(){
+       loadSuggestion();
+    }
+
     private void loadSuggestion() {
         Call<RecipeID> call = CreateRetrofit.getApiCall().getRecipeSuggestion();
         call.enqueue(new Callback<RecipeID>() {
