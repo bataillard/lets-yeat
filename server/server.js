@@ -3,10 +3,20 @@
 	- manage interaction with user DB and receipe DB
 
 */
-
+// for Tim's computer
 //var firebasepath = "/home/firebasekey.json"
+// if running on Server
+var firebasepath = "/home/ubc/firebasekey.json"
+// if running on you rown computer, use the following:
+// var firebasepath = "PATH-TO-THIS-FILE/firebasekey.json"
+// this file is credentials for firebase admin, Martin has sent it to the group in slack
+
+// this is Martin's emulator device access token
+var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
+var devicetoken = "???" // get for Luca's device, testing with Kyle's
+
 var parser = require('../parser')
-//var admin = require('firebase-admin')
+var admin = require('firebase-admin')
 const express = require('express')
 const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
@@ -16,6 +26,14 @@ server.use(express.json())
 var db
 var user
 var recipe
+
+var message = {
+    notification: {
+        title: "Let's Yeat",
+        body: "It is time to cook!",
+    },
+    token: devicetoken
+}
 
  // initialization for firebase
 // admin.initializeApp({
@@ -38,7 +56,6 @@ server.get('/test', (req, res) => {
     res.send("recipe1");
 
     return;
-    
 })
 
 server.get('/checkUser', (req, res) => {
@@ -87,7 +104,15 @@ server.post('/addUser', (req, res) => {
             });
         }
     })
-    console.log("finished");
+	console.log("finished");
+
+	// send message via firebase push notification to Kyle's phone
+	admin.messaging()
+		.send(message).then((response)=>{
+			console.log('Successfully sent message: ', response);
+		}).catch((error)=>{
+			console.log("There is an error!! ", error)
+	})
     //if (typeof findUser !== undefined) {
      //   res.send("Email already used", 401);
    // } else { 
