@@ -3,9 +3,10 @@
 	- manage interaction with user DB and receipe DB
 
 */
-var firebasepath = "/home/firebasekey.json"
+
+//var firebasepath = "/home/firebasekey.json"
 var parser = require('../parser')
-var admin = require('firebase-admin')
+//var admin = require('firebase-admin')
 const express = require('express')
 const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
@@ -16,11 +17,10 @@ var db
 var user
 var recipe
 
-admin.initializeApp({
-	credential: admin.credential.applicationDefault()
-})
-
  // initialization for firebase
+// admin.initializeApp({
+// 	credential: admin.credential.applicationDefault()
+// })
 
 mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
 	if (err) return console.log(err)
