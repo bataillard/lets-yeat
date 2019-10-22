@@ -19,6 +19,11 @@ public interface APICalls {
     @GET("/recipe/suggest")
     Call<RecipeID> getRecipeSuggestion();
 
+    @POST("/notification/new")
+    Call<String> registerNotification(@Query("email") String email,
+                                      @Query("token") String token,
+                                      @Query("recipeId") RecipeID recipeID,);
+
     @GET("/test")
     Call<String> getTest();
 

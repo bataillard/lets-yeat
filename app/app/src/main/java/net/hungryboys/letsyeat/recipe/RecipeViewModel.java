@@ -9,7 +9,9 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import net.hungryboys.letsyeat.APICalls.CreateRetrofit;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
 import net.hungryboys.letsyeat.REST.RESTHandler;
+import net.hungryboys.letsyeat.data.LoginRepository;
 import net.hungryboys.letsyeat.data.model.Recipe;
 import net.hungryboys.letsyeat.data.model.RecipeID;
 
@@ -43,7 +45,12 @@ public class RecipeViewModel extends ViewModel {
     }
 
     public void cookConfirm() {
-        Log.d("RECIPE", "Cooking confirmed for " + recipe.getValue().getName());
+        if (id != null) {
+            user user = LoginRepository.getInstance(null).getLoggedInUser();
+
+
+
+        }
     }
 
     private void loadRecipe() {
