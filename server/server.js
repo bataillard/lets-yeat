@@ -3,8 +3,9 @@
 	- manage interaction with user DB and receipe DB
 
 */
-
+var firebasepath = "/home/firebasekey.json"
 var parser = require('../parser')
+var admin = require('firebase-admin')
 const express = require('express')
 const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
@@ -14,6 +15,12 @@ server.use(express.json())
 var db
 var user
 var recipe
+
+admin.initializeApp({
+	credential: admin.credential.applicationDefault()
+})
+
+ // initialization for firebase
 
 mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
 	if (err) return console.log(err)
@@ -25,7 +32,6 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 		console.log("server is up!!!!")
 	})
 })
-
 
 server.get('/test', (req, res) => {
     console.log("test is here");
@@ -69,7 +75,8 @@ server.post('/addUser', (req, res) => {
                 "password": password,
                 "difficulty": diff,
                 "preferences": pref,
-                "cookTime": cooktime
+				"cookTime": cooktime,
+				"token": undefined
             }, (err, result) => {
                 if (err) {
                     res.status(400).json("failed");
@@ -80,7 +87,7 @@ server.post('/addUser', (req, res) => {
             });
         }
     })
-    console.log("finiished");
+    console.log("finished");
     //if (typeof findUser !== undefined) {
      //   res.send("Email already used", 401);
    // } else { 
@@ -191,11 +198,11 @@ server.patch('/users/:username',(req,res)=>{
  * returns the entire recipe json object to F.E.
  * 
  */
-server.get('/recipes/:recipeid',(req,res)=>{
-	var findRecipe = recipes.find({"_id":new ObjectId(req.params.recipeid)}).limit(1);
+server.get('/recipe/id',(req,res)=>{
+	let {id} = req.query;
+	var findRecipe = recipes.find({"_id":new ObjectId(id)}).limit(1);
 	findRecipe.forEach(function(doc, err){
-		console.log(doc)
-		res.send(doc)
+		res.status(200).json(doc)
 	})
 })
 
@@ -220,8 +227,24 @@ server.get('/recipes/byuser/:username',(req,res)=>{
 	})
 })
 
+server.get('/recipe/suggest',(req,res)=>{
+	generateOneRecipe("xyz").then((recipe)=>{
+		res.status(200).json(recipe)
+	})
+})
 
+/**
+ * update token field in user object
+ */
+server.patch('/user/token',(req,res)=>{
+	let {email, token} = req.query
+	var update = { $set : {} };
+	
+	update.$set["token"] = token;
 
+	users.updateOne({"email":email},update)
+	res.status(200).json("Token update complete.")
+})
 
 // parse receipes from 1st website
 const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";
