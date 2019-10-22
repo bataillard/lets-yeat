@@ -1,24 +1,23 @@
 package net.hungryboys.letsyeat.APICalls;
 
-import net.hungryboys.letsyeat.APICalls.RESTcalls.Recipe;
-import net.hungryboys.letsyeat.APICalls.RESTcalls.test;
+import net.hungryboys.letsyeat.data.model.Recipe;
+import net.hungryboys.letsyeat.data.model.RecipeID;
+
 import java.util.List;
 
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 
 public interface APICalls {
 
-    @GET("/recipe")
-    Call<Recipe> getOneRecipe();
+    @GET("/recipe/id")
+    Call<Recipe> getRecipe(@Query("id") RecipeID recipeID);
+
+    @GET("/recipe/suggest")
+    Call<RecipeID> getRecipeSuggestion();
 
     @GET("/test")
     Call<String> getTest();

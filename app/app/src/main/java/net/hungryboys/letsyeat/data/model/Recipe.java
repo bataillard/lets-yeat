@@ -1,5 +1,8 @@
 package net.hungryboys.letsyeat.data.model;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -11,13 +14,36 @@ public class Recipe {
     public static final double MAX_DIFF = 5f;
     public static final double MIN_DIFF = 0f;
 
+    @SerializedName("id")
+    @Expose
     private final RecipeID id;
+
+    @SerializedName("name")
+    @Expose
     private final String name;
+
+    @SerializedName("pictureURL")
+    @Expose
     private final String pictureUrl;
+
+    @SerializedName("time")
+    @Expose
     private final int time;
+
+    @SerializedName("difficulty")
+    @Expose
     private final double difficulty;
+
+    @SerializedName("ingredients")
+    @Expose
     private final Ingredient[] ingredients;
+
+    @SerializedName("tags")
+    @Expose
     private final String[] tags;
+
+    @SerializedName("instructions")
+    @Expose
     private final String[] instructions;
 
     public static Recipe placeholder() {

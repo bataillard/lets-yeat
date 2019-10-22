@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class CreateRetrofit {
 
-    public static final String BASE_URL = "http://169.254.148.171:3001/";
+    public static final String BASE_URL = "http://23.96.30.147:3001/";
 
     public static APICalls getApiCall(){
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();

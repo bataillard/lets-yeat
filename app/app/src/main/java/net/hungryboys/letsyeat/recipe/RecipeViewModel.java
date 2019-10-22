@@ -8,12 +8,17 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import net.hungryboys.letsyeat.APICalls.CreateRetrofit;
 import net.hungryboys.letsyeat.REST.RESTHandler;
 import net.hungryboys.letsyeat.data.model.Recipe;
 import net.hungryboys.letsyeat.data.model.RecipeID;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class RecipeViewModel extends ViewModel {
-    private static final String TAG = "RECIPE_VIEW_MODEL";
+    private static final String TAG_RECIPE = "RecipeViewModel";
 
     private MutableLiveData<Recipe> recipe = new MutableLiveData<>();
     private RecipeID id;
@@ -43,14 +48,20 @@ public class RecipeViewModel extends ViewModel {
 
     private void loadRecipe() {
         if (id != null) {
-            RESTHandler.getRecipe(id, new RESTHandler.RequestHandler<Recipe>() {
+            Call<Recipe> call = CreateRetrofit.getApiCall().getRecipe(id);
+            call.enqueue(new Callback<Recipe>() {
                 @Override
-                public void onRequestFinished(Recipe result) {
-                    if (result == null) {
-                        recipe.postValue(Recipe.placeholder());
+                public void onResponse(Call<Recipe> call, Response<Recipe> response) {
+                    if (response.isSuccessful()) {
+                        recipe.postValue(response.body());
                     } else {
-                        recipe.postValue(result);
+                        Log.e(TAG_RECIPE, "Could not load recipe" + response.errorBody());
                     }
+                }
+
+                @Override
+                public void onFailure(Call<Recipe> call, Throwable t) {
+                    Log.e(TAG_RECIPE, "Could not load recipe", t);
                 }
             });
         }

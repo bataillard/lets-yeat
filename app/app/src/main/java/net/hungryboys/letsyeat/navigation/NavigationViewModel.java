@@ -1,16 +1,21 @@
 package net.hungryboys.letsyeat.navigation;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import net.hungryboys.letsyeat.REST.RESTHandler;
-import net.hungryboys.letsyeat.data.LoginRepository;
-import net.hungryboys.letsyeat.data.model.LoggedInUser;
+import net.hungryboys.letsyeat.APICalls.CreateRetrofit;
 import net.hungryboys.letsyeat.data.model.RecipeID;
-import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NavigationViewModel extends ViewModel {
+
+    public static final String TAG_NAV = "NavigationViewModel";
 
     private MutableLiveData<RecipeID> recipeId;
 
@@ -24,17 +29,21 @@ public class NavigationViewModel extends ViewModel {
     }
 
     private void loadSuggestion() {
-        LoginRepository loginRepository = LoginRepository.getInstance(null);
+        Call<RecipeID> call = CreateRetrofit.getApiCall().getRecipeSuggestion();
+        call.enqueue(new Callback<RecipeID>() {
+            @Override
+            public void onResponse(Call<RecipeID> call, Response<RecipeID> response) {
+                if (response.isSuccessful()) {
+                    recipeId.postValue(response.body());
+                } else {
+                    Log.e(TAG_NAV, "Could not get recipe suggestion" + response.errorBody());
+                }
+            }
 
-        if (loginRepository.isLoggedIn()) {
-            user user = loginRepository.getLoggedInUser();
-
-//            RESTHandler.getRecipeSuggestion(user, new RESTHandler.RequestHandler<RecipeID>() {
-//                @Override
-//                public void onRequestFinished(RecipeID result) {
-//                    recipeId.postValue(result);
-//                }
-//            });
-        }
+            @Override
+            public void onFailure(Call<RecipeID> call, Throwable t) {
+                Log.e(TAG_NAV, "Could not get recipe suggestion", t);
+            }
+        });
     }
 }
