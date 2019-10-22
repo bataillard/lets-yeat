@@ -8,6 +8,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 
@@ -21,14 +22,16 @@ public interface APICalls {
 
     @POST("/notification/new")
     Call<String> registerNotification(@Query("email") String email,
-                                      @Query("token") String token,
-                                      @Query("recipeId") RecipeID recipeID,);
+                                      @Query("recipeId") RecipeID recipeID);
 
     @GET("/test")
     Call<String> getTest();
 
     @POST("/addUser")
     Call<Integer> addUser(@Query("email") String email,@Query("password") String password, @Query("diff") int diff, @Query("pref") List<String> pref, @Query("cooktime") int cooktime);
+
+    @PUT("/user/token")
+    Call<String> updateToken(@Query("token") String token, @Query("email") String email);
 
     @GET("/checkUser")
     Call<String> checkUser (@Query("email") String email, @Query("password") String password);

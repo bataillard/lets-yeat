@@ -16,7 +16,15 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import net.hungryboys.letsyeat.APICalls.CreateRetrofit;
+import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
 import net.hungryboys.letsyeat.browse.BrowseActivity;
+import net.hungryboys.letsyeat.data.LoginRepository;
+import net.hungryboys.letsyeat.data.model.LoggedInUser;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Helper class for showing and canceling cook
@@ -90,8 +98,24 @@ public class CookNotification  extends FirebaseMessagingService{
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
-        Log.d(TAG, "Token sent to Server:" + token);
+        LoginRepository loginRepository = LoginRepository.getInstance(null);
+
+        if (loginRepository.isLoggedIn()) {
+            Call<String> call = CreateRetrofit.getApiCall().updateToken(token,
+                    loginRepository.getLoggedInUser().email);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    Log.d(TAG, "Token sent successfuly");
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Log.e(TAG, "Error when sending token", t);
+                }
+            });
+
+        }
     }
 
     /**

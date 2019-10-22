@@ -47,7 +47,18 @@ public class RecipeViewModel extends ViewModel {
     public void cookConfirm() {
         if (id != null) {
             user user = LoginRepository.getInstance(null).getLoggedInUser();
+            Call<String> call = CreateRetrofit.getApiCall().registerNotification(user.email, id);
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    Log.d(TAG_RECIPE, "Cook confirmed");
+                }
 
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Log.e(TAG_RECIPE, "Could not confirm cook", t);
+                }
+            });
 
 
         }
