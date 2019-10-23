@@ -10,14 +10,12 @@
         android:id="@+id/main_browse_container"
         android:name="net.hungryboys.letsyeat.browse.BrowseFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
 
-        android:paddingBottom="50dp"
-
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/main_nav_fragment_container"/>
 
     <FrameLayout
         android:id="@+id/main_navigation_container"

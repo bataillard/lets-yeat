@@ -6,68 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".browse.BrowseFragment">
 
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/browse_recipe_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:elevation="0dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-
-        android:elevation="10dp"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/browse_search_bar"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:inputType="text"
-                android:hint="@string/search_recipes"
-                android:importantForAutofill="no"
-
-                android:layout_marginRight="5dp"
-                android:layout_marginEnd="5dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
-                android:background="@drawable/browse_search_box" />
-
-            <net.hungryboys.letsyeat.browse.TagButton
-                android:id="@+id/browse_tags_toggle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/browse_tags_button_off_no_select"
-                android:text="@string/tags" />
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/browse_tags_grid"
-            android:numColumns="auto_fit"
-            android:gravity="center"
-            android:background="@drawable/browse_tag_grid_view"
-            android:clickable="true"
-            android:focusable="true"/>
-
-    </LinearLayout>
-
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

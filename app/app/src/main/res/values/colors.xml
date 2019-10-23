@@ -2,10 +2,7 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">@color/yeet_orange</color>
-    <color name="textColorRecipeListItem">@color/black</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="textColorRecipeListItem">#000000</color>
     <color name="white">#FFFFFF</color>
-    <color name="black">#000000</color>
-    <color name="yeet_orange">#f6630d</color>
-    <color name="grey">#AAAAAA</color>
 </resources>

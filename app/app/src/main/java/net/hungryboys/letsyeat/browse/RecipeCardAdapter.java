@@ -14,26 +14,22 @@ import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.RecipeID;
 import net.hungryboys.letsyeat.data.RecipeStub;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.ViewHolder> {
-
-    private static final float TOP_CARD_MARGIN = 65.0f;
-
-    private List<RecipeStub> recipes;
-    private RecipeOnSelectListener listener;
+public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.RecipeListItemViewHolder> {
+    private List<Recipe> recipes;
 
     // Provide a reference to the views for each data item
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        public CardView card;
+    public static class RecipeListItemViewHolder extends RecyclerView.ViewHolder {
         public ImageView image;
         public TextView name;
         public TextView time;
         public TextView difficulty;
 
-        public ViewHolder(CardView v) {
+        public RecipeListItemViewHolder(CardView v) {
             super(v);
             card = v;
             image = v.findViewById(R.id.recipe_card_image);
@@ -63,19 +59,19 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
 
     // Create new views (invoked by the layout manager)
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
-                                         int viewType) {
+    public RecipeCardAdapter.RecipeListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
+                                                                         int viewType) {
         // create a new view
         CardView v = (CardView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.elem_recipe_card, parent, false);
 
-        ViewHolder vh = new ViewHolder(v);
+        RecipeListItemViewHolder vh = new RecipeListItemViewHolder(v);
         return vh;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecipeListItemViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         final RecipeStub recipe = recipes.get(position);
