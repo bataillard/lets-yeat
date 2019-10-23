@@ -1,30 +1,28 @@
 package net.hungryboys.letsyeat.registration;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.browse.TagGridAdapter;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RegistrationTagFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RegistrationTagFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+///**
+// * A simple {@link Fragment} subclass.
+// * Activities that contain this fragment must implement the
+// * {@link RegistrationTagFragment.OnFragmentInteractionListener} interface
+// * to handle interaction events.
+// * Use the {@link RegistrationTagFragment#newInstance} factory method to
+// * create an instance of this fragment.
+// */
 public class RegistrationTagFragment extends Fragment {
 
     private static final String ARG_TAGS = "tags";

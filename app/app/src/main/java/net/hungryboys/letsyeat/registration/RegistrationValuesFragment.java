@@ -16,7 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.Recipe;
+import net.hungryboys.letsyeat.data.Recipe;
 
 import java.util.Calendar;
 import java.util.Locale;

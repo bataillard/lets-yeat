@@ -7,9 +7,21 @@
     android:layout_height="match_parent"
     tools:context=".recipe.RecipeFragment">
 
+    <ProgressBar
+        android:id="@+id/recipe_progress_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/recipe_scroll_view"
+        android:visibility="gone"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,8 +39,7 @@
                 android:adjustViewBounds="true"
 
                 android:contentDescription="@string/placeholder_recipe_name"
-                android:scaleType="centerCrop"
-                android:src="@drawable/placeholder_recipe_photo" />
+                android:scaleType="centerCrop" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -47,7 +58,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
 
-                        android:text="@string/placeholder_recipe_name"
                         android:textSize="24sp"
                         android:textColor="@color/black"
 
@@ -76,7 +86,6 @@
                             android:drawableLeft="@drawable/ic_timer_black_20dp"
                             android:drawablePadding="5dp"
 
-                            android:text="@string/placeholder_recipe_time"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -91,7 +100,6 @@
 
                             android:drawableRight="@drawable/ic_star_border_black_20dp"
                             android:drawablePadding="5dp"
-                            android:text="@string/placeholder_recipe_difficulty"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>

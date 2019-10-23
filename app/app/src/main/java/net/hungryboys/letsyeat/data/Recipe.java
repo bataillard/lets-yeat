@@ -1,7 +1,9 @@
-package net.hungryboys.letsyeat.data.model;
+package net.hungryboys.letsyeat.data;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 
 /**
@@ -11,14 +13,36 @@ public class Recipe {
     public static final double MAX_DIFF = 5f;
     public static final double MIN_DIFF = 0f;
 
+    @SerializedName("id")
+    @Expose
     private final RecipeID id;
-    private final String url;
+
+    @SerializedName("name")
+    @Expose
     private final String name;
+
+    @SerializedName("pictureURL")
+    @Expose
     private final String pictureUrl;
+
+    @SerializedName("time")
+    @Expose
     private final int time;
+
+    @SerializedName("difficulty")
+    @Expose
     private final double difficulty;
+
+    @SerializedName("ingredients")
+    @Expose
     private final Ingredient[] ingredients;
+
+    @SerializedName("tags")
+    @Expose
     private final String[] tags;
+
+    @SerializedName("instructions")
+    @Expose
     private final String[] instructions;
 
     public static Recipe placeholder() {
@@ -28,15 +52,13 @@ public class Recipe {
         String[] instructions = {"Buy ingredients", "Cook for a certain amount of time", "Eat food"};
 
         return new Recipe(RecipeID.placeholder(),
-                "https://www.budgetbytes.com/the-best-weeknight-pasta-sauce/",
                 "Pasta Bolognese", "", 170, 3.0,
                 ingredients, instructions,tags);
     }
 
-    public Recipe(RecipeID id, String url, String name, String pictureUrl, int time, double difficulty,
+    public Recipe(RecipeID id, String name, String pictureUrl, int time, double difficulty,
                   Ingredient[] ingredients, String[] instructions, String[] tags) {
         this.id = id;
-        this.url = url;
         this.name = name;
         this.pictureUrl = pictureUrl;
         this.time = time;
@@ -48,10 +70,6 @@ public class Recipe {
 
     public RecipeID getId() {
         return id;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public String getName() {

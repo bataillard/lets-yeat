@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.navigation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -9,11 +10,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import net.hungryboys.letsyeat.R;
+import net.hungryboys.letsyeat.data.RecipeID;
+import net.hungryboys.letsyeat.recipe.RecipeActivity;
+
 
 /**
  * Bottom navigation bar
@@ -28,6 +33,7 @@ public class NavigationFragment extends Fragment {
     private View root;
     private FloatingActionButton yeatButton;
     private BottomNavigationView bottomNavigationView;
+    private NavigationViewModel viewModel;
 
     public NavigationFragment() {
         // Required empty public constructor
@@ -63,6 +69,16 @@ public class NavigationFragment extends Fragment {
             return root;
         }
 
+        viewModel = new NavigationViewModel();
+        viewModel.getRecipeId().observe(this, new Observer<RecipeID>() {
+            @Override
+            public void onChanged(RecipeID recipeID) {
+                Intent intent = new Intent(getActivity(), RecipeActivity.class);
+                intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, recipeID);
+                startActivity(intent);
+            }
+        });
+
         root = inflater.inflate(R.layout.fragment_navigation, container, false);
         yeatButton = root.findViewById(R.id.yeat_button);
         bottomNavigationView = root.findViewById(R.id.bottom_navigation_bar);
@@ -71,6 +87,7 @@ public class NavigationFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "Yeat!", Toast.LENGTH_LONG).show();
+                viewModel.yeetClicked();
             }
         });
 

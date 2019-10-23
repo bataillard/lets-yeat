@@ -6,21 +6,28 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import net.hungryboys.letsyeat.data.model.Recipe;
-import net.hungryboys.letsyeat.data.model.RecipeStub;
+import net.hungryboys.letsyeat.api.APICaller;
+import net.hungryboys.letsyeat.data.RecipeStub;
+import net.hungryboys.letsyeat.login.LoginRepository;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BrowseViewModel extends ViewModel {
-    private final static String TAG = "BROWSE_VM";
+    private final static String TAG_BROWSE_VM = "BrowseViewModel";
 
     private MutableLiveData<List<RecipeStub>> recipes;
 
     private Set<String> selectedTags = new HashSet<>();
     private String searchText = "";
+
+    private final int NUM_RECIPES = 25;
 
     public LiveData<List<RecipeStub>> getRecipeStubs() {
         if (recipes == null) {
@@ -59,24 +66,56 @@ public class BrowseViewModel extends ViewModel {
     }
 
     private void search() {
-        StringBuilder sb = new StringBuilder();
-        for (String tag : selectedTags) {
-            sb.append(tag);
-            sb.append(" ");
+        LoginRepository login = LoginRepository.getInstance();
+        List<String> tags = new ArrayList<>(selectedTags);
+
+        if (login.isLoggedIn()) {
+            Call<List<RecipeStub>> call = APICaller.getApiCall().getRecipeList(
+                    login.getUserEmail(), NUM_RECIPES, searchText, tags);
+
+            call.enqueue(new Callback<List<RecipeStub>>() {
+                @Override
+                public void onResponse(Call<List<RecipeStub>> call, Response<List<RecipeStub>> response) {
+                    if (response.isSuccessful()) {
+                        recipes.postValue(response.body());
+                    } else {
+                        Log.e(TAG_BROWSE_VM, "Could not get recipe stubs " + response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<RecipeStub>> call, Throwable t) {
+                    Log.e(TAG_BROWSE_VM, "Could not get recipe stubs", t);
+                }
+            });
         }
 
-        Log.d(TAG, "Searching for: " + searchText + " with tags: " + sb.toString());
+
     }
 
-
-
-    // TODO replace hardcoded values with calls to server/recipe cache
     private void loadRecipes() {
-        List<RecipeStub> recipeList = new ArrayList<>();
-        for (int i = 0; i < 30; i++){
-            recipeList.add(RecipeStub.placeholder());
+        LoginRepository login = LoginRepository.getInstance();
+
+        if (login.isLoggedIn()) {
+            Call<List<RecipeStub>> call = APICaller.getApiCall().getRecipeList(
+                    login.getUserEmail(), NUM_RECIPES);
+            call.enqueue(new Callback<List<RecipeStub>>() {
+                @Override
+                public void onResponse(Call<List<RecipeStub>> call, Response<List<RecipeStub>> response) {
+                    if (response.isSuccessful()) {
+                        recipes.postValue(response.body());
+                    } else {
+                        Log.e(TAG_BROWSE_VM, "Could not get recipe stubs " + response.message());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<RecipeStub>> call, Throwable t) {
+                    Log.e(TAG_BROWSE_VM, "Could not get recipe stubs", t);
+                }
+            });
         }
 
-        recipes.setValue(recipeList);
+
     }
 }

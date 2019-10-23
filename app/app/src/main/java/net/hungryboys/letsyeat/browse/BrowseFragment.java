@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.RecipeID;
-import net.hungryboys.letsyeat.data.model.RecipeStub;
+import net.hungryboys.letsyeat.data.RecipeID;
+import net.hungryboys.letsyeat.data.RecipeStub;
 import net.hungryboys.letsyeat.recipe.RecipeActivity;
 
 import java.util.List;

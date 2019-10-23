@@ -1,4 +1,4 @@
-package net.hungryboys.letsyeat.data.model;
+package net.hungryboys.letsyeat.data;
 
 import android.os.Bundle;
 import android.os.Parcel;
@@ -9,7 +9,6 @@ import android.os.Parcelable;
  */
 public final class RecipeStub implements Parcelable {
     private final RecipeID id;
-    private final String url;
     private final String name;
     private final String pictureUrl;
     private final int time;
@@ -17,13 +16,11 @@ public final class RecipeStub implements Parcelable {
 
     public static RecipeStub placeholder() {
         return new RecipeStub(RecipeID.placeholder(),
-                "https://www.budgetbytes.com/the-best-weeknight-pasta-sauce/",
                 "Pasta Bolognese", "", 170, 3.0);
     }
 
-    public RecipeStub(RecipeID id, String url, String name, String pictureUrl, int time, double difficulty) {
+    public RecipeStub(RecipeID id, String name, String pictureUrl, int time, double difficulty) {
         this.id = id;
-        this.url = url;
         this.name = name;
         this.pictureUrl = pictureUrl;
         this.time = time;
@@ -34,7 +31,6 @@ public final class RecipeStub implements Parcelable {
         Bundle bundle = in.readBundle(getClass().getClassLoader());
 
         id = (RecipeID) bundle.getSerializable("id");
-        url = bundle.getString("url");
         name = bundle.getString("name");
         pictureUrl = bundle.getString("pictureUrl");
         time = bundle.getInt("time");
@@ -43,10 +39,6 @@ public final class RecipeStub implements Parcelable {
 
     public RecipeID getId() {
         return id;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public String getName() {
@@ -78,7 +70,6 @@ public final class RecipeStub implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         Bundle bundle = new Bundle(getClass().getClassLoader());
         bundle.putSerializable("id", id);
-        bundle.putString("url", url);
         bundle.putString("name", name);
         bundle.putString("pictureUrl", pictureUrl);
         bundle.putInt("time", time);

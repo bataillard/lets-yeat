@@ -1,12 +1,12 @@
-package net.hungryboys.letsyeat;
+package net.hungryboys.letsyeat.api;
 
 
-import android.app.NotificationManager;
 import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.media.RingtoneManager;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -16,7 +16,13 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.browse.BrowseActivity;
+import net.hungryboys.letsyeat.login.LoginRepository;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Helper class for showing and canceling cook
@@ -27,7 +33,7 @@ import net.hungryboys.letsyeat.browse.BrowseActivity;
  */
 public class CookNotification  extends FirebaseMessagingService{
 
-    private static final String TAG = "CookNotification";
+    private static final String TAG_FIREBASE = "CookNotification";
 
     /**
      * Called when message is received.
@@ -72,12 +78,13 @@ public class CookNotification  extends FirebaseMessagingService{
      */
     @Override
     public void onNewToken(String token) {
-        Log.d(TAG, "Refreshed token: " + token);
+        Log.d(TAG_FIREBASE, "Refreshed token: " + token);
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
         sendRegistrationToServer(token);
+
     }
     // [END on_new_token]
 
@@ -90,8 +97,28 @@ public class CookNotification  extends FirebaseMessagingService{
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        // TODO: Implement this method to send token to your app server.
-        Log.d(TAG, "Token sent to Server:" + token);
+        LoginRepository loginRepository = LoginRepository.getInstance();
+
+        if (loginRepository.isLoggedIn()) {
+            Call<String> call = APICaller.getApiCall().updateFirebaseToken(token, loginRepository.getUserEmail());
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (response.isSuccessful()) {
+                        Log.d(TAG_FIREBASE, "Token sent successfuly");
+                    } else {
+                        Log.e(TAG_FIREBASE, "Error when sending token: " + response.message());
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    Log.e(TAG_FIREBASE, "Error when sending token", t);
+                }
+            });
+
+        }
     }
 
     /**

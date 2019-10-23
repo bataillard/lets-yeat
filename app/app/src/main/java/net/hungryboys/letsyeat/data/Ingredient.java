@@ -1,21 +1,33 @@
-package net.hungryboys.letsyeat.data.model;
+package net.hungryboys.letsyeat.data;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Objects;
+
 
 public class Ingredient {
+
+    @SerializedName("name")
+    @Expose
     private final String name;
-    private final double quantity;
+
+    @SerializedName("quantity")
+    @Expose
+    private final String quantity;
+
+    @SerializedName("unit")
+    @Expose
     private final String unit;
 
     public static Ingredient placeholder() {
-        return new Ingredient("Cheese", 3000.0, "ton");
+        return new Ingredient("Cheese", "3000.0", "ton");
     }
 
-    public Ingredient(String name, double quantity, String unit) {
+    public Ingredient(String name, String quantity, String unit) {
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
@@ -25,12 +37,12 @@ public class Ingredient {
         return name;
     }
 
-    public double getQuantity() {
-        return quantity;
+    public String getQuantity() {
+        return quantity == null ? "some" : quantity;
     }
 
     public String getUnit() {
-        return unit;
+        return unit == null ?  "" : unit;
     }
 
 
@@ -39,7 +51,7 @@ public class Ingredient {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Ingredient that = (Ingredient) o;
-        return Double.compare(that.quantity, quantity) == 0 &&
+        return  quantity.equals(that.quantity) &&
                 name.equals(that.name) &&
                 unit.equals(that.unit);
     }
@@ -53,6 +65,6 @@ public class Ingredient {
     @Override
     @NonNull
     public String toString() {
-        return String.format(Locale.getDefault(), "%.1f %s - %s", quantity, unit, name);
+        return String.format(Locale.getDefault(), "%s %s - %s", getQuantity(), getUnit(), getName());
     }
 }

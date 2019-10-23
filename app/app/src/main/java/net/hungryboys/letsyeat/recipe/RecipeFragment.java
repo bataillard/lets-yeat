@@ -7,10 +7,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -18,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.Ingredient;
-import net.hungryboys.letsyeat.data.model.Recipe;
-import net.hungryboys.letsyeat.data.model.RecipeID;
+import net.hungryboys.letsyeat.data.Ingredient;
+import net.hungryboys.letsyeat.data.Recipe;
+import net.hungryboys.letsyeat.data.RecipeID;
 
 import java.util.Locale;
 
@@ -30,6 +32,7 @@ public class RecipeFragment extends Fragment {
     private View rootView;
 
     private RecipeViewModel mViewModel;
+    private NestedScrollView scrollView;
     private Button cookButton;
     private ImageView image;
     private TextView title;
@@ -38,6 +41,7 @@ public class RecipeFragment extends Fragment {
 
     private LinearLayout ingredientsContainer;
     private LinearLayout instructionContainer;
+    private ProgressBar progressBar;
 
     public static RecipeFragment newInstance(RecipeID id) {
         RecipeFragment rf = new RecipeFragment();
@@ -58,6 +62,8 @@ public class RecipeFragment extends Fragment {
         }
 
         rootView = inflater.inflate(R.layout.fragment_recipe, container, false);
+        scrollView = rootView.findViewById(R.id.recipe_scroll_view);
+        progressBar = rootView.findViewById(R.id.recipe_progress_bar);
         cookButton = rootView.findViewById(R.id.recipe_cook_button);
         image = rootView.findViewById(R.id.recipe_image);
         title = rootView.findViewById(R.id.recipe_title);
@@ -84,6 +90,10 @@ public class RecipeFragment extends Fragment {
         mViewModel.getRecipe().observe(this, new Observer<Recipe>() {
             @Override
             public void onChanged(Recipe recipe) {
+
+                progressBar.setVisibility(View.GONE);
+                scrollView.setVisibility(View.VISIBLE);
+
                 cookButton.setClickable(true);
                 title.setText(recipe.getName());
                 time.setText(recipe.getTimeString());

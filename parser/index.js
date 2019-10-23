@@ -32,6 +32,7 @@ function main() {
         if (url.hostname === "www.budgetbytes.com") {
             budget.parseUrl(url.href).then(recipe => console.log(recipe))
         } else {
+            console.log(url)
             console.error("Unsupported URL");
             return;
         }
