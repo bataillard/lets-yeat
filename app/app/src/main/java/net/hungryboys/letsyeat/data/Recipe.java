@@ -1,10 +1,9 @@
-package net.hungryboys.letsyeat.data.model;
+package net.hungryboys.letsyeat.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 
 /**

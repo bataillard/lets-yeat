@@ -1,4 +1,4 @@
-package net.hungryboys.letsyeat.data.model;
+package net.hungryboys.letsyeat.data;
 
 import android.os.Bundle;
 import android.os.Parcel;

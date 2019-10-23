@@ -16,9 +16,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.RecipeID;
+import net.hungryboys.letsyeat.data.RecipeID;
 import net.hungryboys.letsyeat.recipe.RecipeActivity;
-import net.hungryboys.letsyeat.navigation.NavigationViewModel;
 
 
 /**

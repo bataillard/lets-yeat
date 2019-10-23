@@ -6,9 +6,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import net.hungryboys.letsyeat.APICalls.CreateRetrofit;
-import net.hungryboys.letsyeat.data.model.RecipeID;
-import net.hungryboys.letsyeat.data.model.Recipe;
+import net.hungryboys.letsyeat.api.APICaller;
+import net.hungryboys.letsyeat.data.RecipeID;
+import net.hungryboys.letsyeat.login.LoginRepository;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -18,14 +18,9 @@ public class NavigationViewModel extends ViewModel {
 
     public static final String TAG_NAV = "NavigationViewModel";
 
-    private MutableLiveData<RecipeID> recipeId;
+    private MutableLiveData<RecipeID> recipeId = new MutableLiveData<>();;
 
     public LiveData<RecipeID> getRecipeId() {
-        if (recipeId == null) {
-            recipeId = new MutableLiveData<>();
-            //loadSuggestion();
-        }
-
         return recipeId;
     }
 
@@ -34,24 +29,27 @@ public class NavigationViewModel extends ViewModel {
     }
 
     private void loadSuggestion() {
-        Call<RecipeID> call = CreateRetrofit.getApiCall().getRecipeSuggestion();
-        call.enqueue(new Callback<RecipeID>() {
-            @Override
-            public void onResponse(Call<RecipeID> call, Response<RecipeID> response) {
-                if (response.isSuccessful()) {
-                    Log.w("DEBUG_APP", "entering loadSuggestion");
+        LoginRepository login = LoginRepository.getInstance();
 
-                    recipeId.postValue(response.body());
-                    Log.w("DEBUG_APP", "leaving loadSuggestion");
-                } else {
-                    Log.e(TAG_NAV, "Could not get recipe suggestion" + response.errorBody());
+        if (login.isLoggedIn()) {
+            Call<RecipeID> call = APICaller.getApiCall().getRecipeSuggestion(login.getUserEmail());
+            call.enqueue(new Callback<RecipeID>() {
+                @Override
+                public void onResponse(Call<RecipeID> call, Response<RecipeID> response) {
+                    if (response.isSuccessful()) {
+                        recipeId.postValue(response.body());
+                    } else {
+                        Log.e(TAG_NAV, "Could not get recipe suggestion" + response.errorBody());
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<RecipeID> call, Throwable t) {
-                Log.e(TAG_NAV, "Could not get recipe suggestion", t);
-            }
-        });
+                @Override
+                public void onFailure(Call<RecipeID> call, Throwable t) {
+                    Log.e(TAG_NAV, "Could not get recipe suggestion", t);
+                }
+            });
+        }
+
+
     }
 }

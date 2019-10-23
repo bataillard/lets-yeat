@@ -1,6 +1,9 @@
-package net.hungryboys.letsyeat.data.model;
+package net.hungryboys.letsyeat.data;
 
 import androidx.annotation.NonNull;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -8,8 +11,16 @@ import java.util.Calendar;
 
 public class RegistrationChoice implements Serializable {
 
+    @Expose
+    @SerializedName("tags")
     private final String[] tags;
+
+    @Expose
+    @SerializedName("time")
     private final Calendar time;
+
+    @Expose
+    @SerializedName("difficulty")
     private final double difficulty;
 
     public static final int DEFAULT_HOUR = 19;

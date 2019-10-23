@@ -1,25 +1,19 @@
 package net.hungryboys.letsyeat.registration;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CompoundButton;
-
-import net.hungryboys.letsyeat.MyApplication;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.browse.TagGridAdapter;
-import net.hungryboys.letsyeat.MyApplication;
-import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
 
 ///**
 // * A simple {@link Fragment} subclass.

@@ -1,19 +1,16 @@
 package net.hungryboys.letsyeat.recipe;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import net.hungryboys.letsyeat.APICalls.CreateRetrofit;
-import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
-import net.hungryboys.letsyeat.REST.RESTHandler;
-import net.hungryboys.letsyeat.data.LoginRepository;
-import net.hungryboys.letsyeat.data.model.Recipe;
-import net.hungryboys.letsyeat.data.model.RecipeID;
+import net.hungryboys.letsyeat.api.APICaller;
+import net.hungryboys.letsyeat.login.LoginRepository;
+import net.hungryboys.letsyeat.data.Recipe;
+import net.hungryboys.letsyeat.data.RecipeID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,9 +42,10 @@ public class RecipeViewModel extends ViewModel {
     }
 
     public void cookConfirm() {
-        if (id != null) {
-            user user = LoginRepository.getInstance(null).getLoggedInUser();
-            Call<String> call = CreateRetrofit.getApiCall().registerNotification(user.email, id);
+        if (id != null && LoginRepository.getInstance().isLoggedIn()) {
+            String email = LoginRepository.getInstance().getUserEmail();
+
+            Call<String> call = APICaller.getApiCall().registerNotification(email, id);
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
@@ -65,18 +63,13 @@ public class RecipeViewModel extends ViewModel {
     }
 
     private void loadRecipe() {
-        Log.w("TESTINGBUGS", "In loadrecipe");
         if (id != null) {
-            String resID = id.getId();
-            Call<Recipe> call = CreateRetrofit.getApiCall().getRecipe(resID);
+            Call<Recipe> call = APICaller.getApiCall().getRecipe(id);
             call.enqueue(new Callback<Recipe>() {
                 @Override
                 public void onResponse(Call<Recipe> call, Response<Recipe> response) {
                     if (response.isSuccessful()) {
-                        Log.w("DEBUG_APP", "in response of loadRecipe" +response.body().getName());
-
                         recipe.postValue(response.body());
-                        Log.w("DEBUG_APP", "leaving response of loadRecipe");
                     } else {
                         Log.e(TAG_RECIPE, "Could not load recipe" + response.errorBody());
                     }

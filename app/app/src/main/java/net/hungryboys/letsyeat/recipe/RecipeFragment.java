@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.Ingredient;
-import net.hungryboys.letsyeat.data.model.Recipe;
-import net.hungryboys.letsyeat.data.model.RecipeID;
+import net.hungryboys.letsyeat.data.Ingredient;
+import net.hungryboys.letsyeat.data.Recipe;
+import net.hungryboys.letsyeat.data.RecipeID;
 
 import java.util.Locale;
 

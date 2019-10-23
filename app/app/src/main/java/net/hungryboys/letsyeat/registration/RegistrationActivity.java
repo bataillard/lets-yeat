@@ -2,7 +2,6 @@ package net.hungryboys.letsyeat.registration;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -10,15 +9,15 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import net.hungryboys.letsyeat.data.LoginRepository;
-import net.hungryboys.letsyeat.APICalls.RESTcalls.user;
-import net.hungryboys.letsyeat.MyApplication;
-import net.hungryboys.letsyeat.browse.BrowseActivity;
+
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.data.model.Recipe;
-import net.hungryboys.letsyeat.data.model.RegistrationChoice;
-import net.hungryboys.letsyeat.ui.login.LoggedInUserView;
+import net.hungryboys.letsyeat.browse.BrowseActivity;
+import net.hungryboys.letsyeat.data.Recipe;
+import net.hungryboys.letsyeat.data.User;
+import net.hungryboys.letsyeat.login.LoginActivity;
+import net.hungryboys.letsyeat.login.LoginResult;
 
 import java.util.Calendar;
 
@@ -28,27 +27,33 @@ public class RegistrationActivity extends AppCompatActivity implements
         RegistrationValuesFragment.OnTimeChangedListener {
 
     public static final String EXTRA_USER_DATA = "user_data";
-    private user curUser;
     private RegistrationViewModel viewModel;
     private Button nextButton;
-
-    private LoggedInUserView loggedInUserView;
 
     private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.w("checkup", "pls work \n");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        curUser = new user(getIntent().getStringExtra("userEmail"), getIntent().getStringExtra("sec"));
-        LoginRepository loginRepository = LoginRepository.getInstance(null);
-        loginRepository.login(curUser.email, curUser.password);
-        //loggedInUserView = getIntent().getParcelableExtra(EXTRA_USER_DATA);
+
+        User user = (User) getIntent().getSerializableExtra(EXTRA_USER_DATA);
 
         if (savedInstanceState == null) {
             viewModel = ViewModelProviders.of(this).get(RegistrationViewModel.class);
+            viewModel.setUser(user);
             String[] tags = getResources().getStringArray(R.array.tag_strings);
+
+            viewModel.getRegistrationResult().observe(this, new Observer<LoginResult>() {
+                @Override
+                public void onChanged(LoginResult loginResult) {
+                    if (loginResult.isSuccess() && !loginResult.needsRegistration()) {
+                        registrationFinished();
+                    } else {
+                        returnToLogin();
+                    }
+                }
+            });
 
             fragmentManager = getSupportFragmentManager();
 
@@ -64,7 +69,6 @@ public class RegistrationActivity extends AppCompatActivity implements
                     nextClicked();
                 }
             });
-
         }
     }
 
@@ -79,19 +83,22 @@ public class RegistrationActivity extends AppCompatActivity implements
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finished();
+                viewModel.finish();
             }
         });
     }
 
-    private void finished() {
-        RegistrationChoice choice = viewModel.finish(curUser);
-        Log.w("finished", "89");
 
+
+    private void registrationFinished() {
         Intent intent = new Intent(this, BrowseActivity.class);
-        intent.putExtra(BrowseActivity.EXTRA_USER_DATA, loggedInUserView);
         startActivity(intent);
+        finish();
+    }
 
+    private void returnToLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
         finish();
     }
 

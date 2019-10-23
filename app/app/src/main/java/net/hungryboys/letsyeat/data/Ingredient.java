@@ -1,6 +1,4 @@
-package net.hungryboys.letsyeat.data.model;
-
-import android.util.Log;
+package net.hungryboys.letsyeat.data;
 
 import androidx.annotation.NonNull;
 
@@ -9,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.Objects;
+
 
 public class Ingredient {
 
