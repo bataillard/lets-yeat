@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -21,16 +23,20 @@ import net.hungryboys.letsyeat.recipe.RecipeActivity;
 
 
 /**
- * Bottom navigation bar
+ * Bottom navigation bar. When one of the four navigation buttons is pressed, switches to that
+ * corresponding activity. If the "Yeet" button is clicked, asks the server for a recipe suggestion
+ * then switches to single recipe view based on received recipe ID
+ *
  * Use the {@link NavigationFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class NavigationFragment extends Fragment {
-        // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_CURR_ACTIVITY = "current_activity";
 
-    private int currentActivity;
+    @IdRes private int currentActivity;
+
     private View root;
+
     private FloatingActionButton yeatButton;
     private BottomNavigationView bottomNavigationView;
     private NavigationViewModel viewModel;
@@ -43,10 +49,10 @@ public class NavigationFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param currentActivity Current Activity Menu ID, sets active navigation button to active
+     * @param currentActivity Current Activity resource ID, sets corresponding navigation button to active
      * @return A new instance of fragment NavigationFragment.
      */
-    public static NavigationFragment newInstance(int currentActivity) {
+    public static NavigationFragment newInstance(@IdRes int currentActivity) {
         NavigationFragment fragment = new NavigationFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_CURR_ACTIVITY, currentActivity);
@@ -91,10 +97,17 @@ public class NavigationFragment extends Fragment {
             }
         });
 
+        setupBottomNavigationButtons();
+
+        return root;
+    }
+
+    private void setupBottomNavigationButtons() {
         if (currentActivity != 0) {
             bottomNavigationView.setSelectedItemId(currentActivity);
             bottomNavigationView.setSelected(true);
         } else {
+            // By default, set browse to active
             bottomNavigationView.setSelectedItemId(R.id.navigation_browse);
             bottomNavigationView.setSelected(true);
         }
@@ -128,8 +141,6 @@ public class NavigationFragment extends Fragment {
                 return true;
             }
         });
-
-        return root;
     }
 
 }

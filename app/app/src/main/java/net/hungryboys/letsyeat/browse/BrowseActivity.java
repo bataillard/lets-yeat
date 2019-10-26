@@ -9,6 +9,10 @@ import androidx.fragment.app.FragmentTransaction;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.navigation.NavigationFragment;
 
+/**
+ * Container activity that manages the {@link BrowseFragment} list of recipes and
+ * also contains a {@link NavigationFragment} to change to other activities
+ */
 public class BrowseActivity extends AppCompatActivity {
 
     @Override
@@ -20,7 +24,7 @@ public class BrowseActivity extends AppCompatActivity {
 
         // Add Browse List
         FragmentTransaction browseTransaction = fragmentManager.beginTransaction();
-        BrowseFragment browseFragment = new BrowseFragment();
+        BrowseFragment browseFragment = BrowseFragment.newInstance();
         browseTransaction.replace(R.id.main_browse_container, browseFragment);
         browseTransaction.commit();
 

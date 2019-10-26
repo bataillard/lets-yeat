@@ -9,6 +9,10 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
 
+/**
+ * Immutable class that represents the choices made by user at registration: selected tags and
+ * difficulty
+ */
 public class RegistrationChoice implements Serializable {
 
     @Expose
@@ -23,10 +27,15 @@ public class RegistrationChoice implements Serializable {
     @SerializedName("difficulty")
     private final double difficulty;
 
+    /* Default values for choices */
     public static final int DEFAULT_HOUR = 19;
     public static final int DEFAULT_MINUTES = 30;
     public static final double DEFAULT_DIFFICULTY = 3.0;
 
+    /**
+     * Builder class for {@link RegistrationChoice}, if built before all values are selected, the Choice
+     * will take the default values
+     */
     public static class Builder implements Serializable {
         private String[] tags = new String[0];
         private Calendar time;
@@ -55,24 +64,42 @@ public class RegistrationChoice implements Serializable {
         }
     }
 
+    /**
+     * Creates a new {@link RegistrationChoice}
+     * @param tags tags selected by user
+     * @param time time at which usually cooks selected by user
+     * @param difficulty difficulty chosen by user
+     */
     public RegistrationChoice(@NonNull String[] tags, @NonNull Calendar time, double difficulty) {
         this.tags = Arrays.copyOf(tags, tags.length);
         this.time = (Calendar) time.clone();
         this.difficulty = difficulty;
     }
 
+    /**
+     * @return copy of selected tags
+     */
     public String[] getTags() {
         return Arrays.copyOf(tags, tags.length);
     }
 
+    /**
+     * @return copy of time at which user cooks
+     */
     public Calendar getTime() {
         return (Calendar) time.clone();
     }
 
+    /**
+     * @return difficulty chosen by user
+     */
     public double getDifficulty() {
         return difficulty;
     }
 
+    /**
+     * @return formatted version of {@link RegistrationChoice}
+     */
     @Override
     @NonNull
     public String toString() {

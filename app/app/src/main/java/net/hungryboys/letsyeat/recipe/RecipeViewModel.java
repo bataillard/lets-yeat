@@ -16,12 +16,19 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * ViewModel that handles data for {@link RecipeFragment}. Performs server requests in background and
+ * updates its LiveData observable recipe asynchronously
+ */
 public class RecipeViewModel extends ViewModel {
     private static final String TAG_RECIPE = "RecipeViewModel";
 
     private MutableLiveData<Recipe> recipe = new MutableLiveData<>();
     private RecipeID id;
 
+    /**
+     * @return an observable LiveData object containing the recipe that was requested to server
+     */
     public LiveData<Recipe> getRecipe() {
         if (recipe == null) {
             recipe = new MutableLiveData<>();
@@ -34,6 +41,9 @@ public class RecipeViewModel extends ViewModel {
         return recipe;
     }
 
+    /**
+     * @param id sets id of recipe that needs to requested from server, performs request in background
+     */
     public void setId(@NonNull RecipeID id) {
         if (!id.equals(this.id)) {
             this.id = id;
@@ -41,6 +51,10 @@ public class RecipeViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Signal that user has chosen to cook particular recipe, will alert server so it can send a
+     * notification at the correct time
+     */
     public void cookConfirm() {
         if (id != null && LoginRepository.getInstance().isLoggedIn()) {
             String email = LoginRepository.getInstance().getUserEmail();

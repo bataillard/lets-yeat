@@ -16,7 +16,9 @@ import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
-
+/**
+ * Defines all REST calls to server made by this app
+ */
 public interface APICalls {
 
     /* Recipe API Calls */

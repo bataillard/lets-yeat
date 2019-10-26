@@ -26,12 +26,20 @@ import net.hungryboys.letsyeat.data.RecipeID;
 
 import java.util.Locale;
 
+/**
+ * Fragment that actually displays and manages the RecipeID passed to its parent activity
+ *
+ * Use {@link RecipeFragment#newInstance(RecipeID)} to create this fragment with specified
+ * recipe id
+ */
 public class RecipeFragment extends Fragment {
     private static final String ARG_RECIPE_ID = "recipe_id";
 
-    private View rootView;
+    private static final String DIFFICULTY_FORMAT = "%.1f";
 
     private RecipeViewModel mViewModel;
+    private View rootView;
+
     private NestedScrollView scrollView;
     private Button cookButton;
     private ImageView image;
@@ -43,6 +51,11 @@ public class RecipeFragment extends Fragment {
     private LinearLayout instructionContainer;
     private ProgressBar progressBar;
 
+    /**
+     * Factory method that creates a new RecipeFragment with RecipeID as argument
+     * @param id id of recipe that needs to be displayed
+     * @return the new fragment
+     */
     public static RecipeFragment newInstance(RecipeID id) {
         RecipeFragment rf = new RecipeFragment();
 
@@ -53,6 +66,13 @@ public class RecipeFragment extends Fragment {
         return rf;
     }
 
+    /**
+     * Called when fragment needs to draw its user interface, only inflate layout in this method
+     * @param inflater Inflater user to draw this fragment's layout
+     * @param container ViewGroup that contains this fragment
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     * @return An inflated View for this fragment
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -81,6 +101,11 @@ public class RecipeFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Called after layout has been inflated, and activity has been created, this is when we need to
+     * initialise this fragment's state (the view model) and the listeners
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -90,14 +115,13 @@ public class RecipeFragment extends Fragment {
         mViewModel.getRecipe().observe(this, new Observer<Recipe>() {
             @Override
             public void onChanged(Recipe recipe) {
-
                 progressBar.setVisibility(View.GONE);
                 scrollView.setVisibility(View.VISIBLE);
 
                 cookButton.setClickable(true);
                 title.setText(recipe.getName());
                 time.setText(recipe.getTimeString());
-                difficulty.setText(String.format(Locale.getDefault(),"%.1f", recipe.getDifficulty()));
+                difficulty.setText(String.format(Locale.getDefault(), DIFFICULTY_FORMAT, recipe.getDifficulty()));
 
                 changeIngredients(recipe.getIngredients());
                 changeInstructions(recipe.getInstructions());
@@ -113,6 +137,8 @@ public class RecipeFragment extends Fragment {
     }
 
     private void changeIngredients(Ingredient[] ingredients) {
+        // Replaces ingredients in LinearLayout with new ones provided
+
         ingredientsContainer.removeAllViews();
 
         for (Ingredient ingredient : ingredients) {
@@ -127,6 +153,8 @@ public class RecipeFragment extends Fragment {
     }
 
     private void changeInstructions(String[] instructions) {
+        // Replaces instructions in LinearLayout with new ones provided
+
         instructionContainer.removeAllViews();
 
         for (String instruction : instructions) {

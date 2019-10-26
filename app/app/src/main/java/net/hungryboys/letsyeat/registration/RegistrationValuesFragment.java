@@ -22,7 +22,8 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Fragment that handles time and difficulty selection
+ *
  * Activities that contain this fragment must implement the
  * {@link RegistrationValuesFragment.OnTimeChangedListener} interface
  * and the {@link RegistrationValuesFragment.OnDifficultyChangedListener} interface
@@ -40,8 +41,6 @@ public class RegistrationValuesFragment extends Fragment {
     private Button timeChangeButton;
     private NumberPicker difficultyPicker;
 
-
-
     public RegistrationValuesFragment() {
         // Required empty public constructor
     }
@@ -52,11 +51,16 @@ public class RegistrationValuesFragment extends Fragment {
      *
      * @return A new instance of fragment RegistrationValuesFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static RegistrationValuesFragment newInstance() {
         return new RegistrationValuesFragment();
     }
 
+    /**
+     * Called when an activity attaches itself to its child fragment, this is when we save the
+     * activity as a listener with the callback method in {@link RegistrationValuesFragment.OnTimeChangedListener}
+     * and the callback method in {@link RegistrationValuesFragment.OnDifficultyChangedListener}
+     * @param context the parent activity
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -70,6 +74,13 @@ public class RegistrationValuesFragment extends Fragment {
         }
     }
 
+    /**
+     * Called when fragment needs to draw its user interface, only inflate layout in this method
+     * @param inflater Inflater user to draw this fragment's layout
+     * @param container ViewGroup that contains this fragment
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     * @return An inflated View for this fragment
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,6 +97,11 @@ public class RegistrationValuesFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Called after layout has been inflated, and activity has been created, this is when we need to
+     * initialise this fragment's state (the view model) and the listeners
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -94,14 +110,34 @@ public class RegistrationValuesFragment extends Fragment {
         createDifficultyPicker();
     }
 
+    /**
+     * When an activity detaches itself from the fragment, removes the listener
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+
+        diffListener = null;
+        timeListener = null;
+    }
+
+
     private void createDifficultyPicker() {
         difficultyPicker.setMaxValue((int) Recipe.MAX_DIFF);
         difficultyPicker.setMinValue((int) Recipe.MIN_DIFF);
         difficultyPicker.setValue((int) ((Recipe.MIN_DIFF + Recipe.MAX_DIFF) / 2));
         difficultyPicker.setWrapSelectorWheel(false);
+
+        difficultyPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                diffListener.onDifficultyChanged((double) newVal);
+            }
+        });
     }
 
     private void createTimePicker() {
+        // Create time picker with current time as starting value
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,14 +149,16 @@ public class RegistrationValuesFragment extends Fragment {
                 mTimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        // Set TextView of time to selected time
                         timeText.setText( String.format(Locale.getDefault(),
-                                "%d : %d", selectedHour, selectedMinute));
+                                "%2d : %2d", selectedHour, selectedMinute));
 
                         if (timeListener != null) {
                             Calendar now = Calendar.getInstance();
                             now.set(Calendar.HOUR_OF_DAY, selectedHour);
                             now.set(Calendar.MINUTE, selectedMinute);
 
+                            // Call activity's listener method
                             timeListener.onTimeChanged(now);
                         }
                     }
@@ -135,27 +173,18 @@ public class RegistrationValuesFragment extends Fragment {
         timeText.setOnClickListener(listener);
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        diffListener = null;
-        timeListener = null;
-    }
-
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * Interface defining which methods activities need to implement to communicate with fragment
+     * Will be called when difficulty change occurs
      */
     public interface OnDifficultyChangedListener {
         void onDifficultyChanged(double difficulty);
     }
 
+    /**
+     * Interface defining which methods activities need to implement to communicate with fragment
+     * Will be called when selected time changes
+     */
     public interface OnTimeChangedListener {
         void onTimeChanged(Calendar time);
     }

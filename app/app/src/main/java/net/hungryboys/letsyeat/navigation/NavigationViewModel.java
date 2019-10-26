@@ -14,16 +14,28 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * ViewModel holds data for {@link NavigationFragment}. Performs server requests in background and
+ * updates its LiveData observable objects asynchronously
+ */
 public class NavigationViewModel extends ViewModel {
 
     public static final String TAG_NAV = "NavigationViewModel";
 
-    private MutableLiveData<RecipeID> recipeId = new MutableLiveData<>();;
+    private MutableLiveData<RecipeID> recipeId = new MutableLiveData<>();
 
+    /**
+     * @return an observable LiveData which contains the result RecipeID sent by server after
+     * yeet button clicked
+     */
     public LiveData<RecipeID> getRecipeId() {
         return recipeId;
     }
 
+    /**
+     * Alert ViewModel that the yeet button has been clicked and a recipe suggestion request
+     * should be performed.
+     */
     public void yeetClicked(){
        loadSuggestion();
     }

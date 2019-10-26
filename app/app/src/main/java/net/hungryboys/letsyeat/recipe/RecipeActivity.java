@@ -11,6 +11,10 @@ import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.RecipeID;
 import net.hungryboys.letsyeat.navigation.NavigationFragment;
 
+/**
+ * Activity that takes a single RecipeID as an Extra from the intent, then requests full recipe
+ * to server and displays it to user
+ */
 public class RecipeActivity extends AppCompatActivity {
 
     public static final String EXTRA_RECIPE_ID = "recipe_id";

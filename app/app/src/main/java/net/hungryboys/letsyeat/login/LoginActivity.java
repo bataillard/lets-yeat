@@ -37,16 +37,19 @@ import net.hungryboys.letsyeat.registration.RegistrationActivity;
 public class LoginActivity extends AppCompatActivity {
 
     public static final String TAG_LOGIN = "LoginActivity";
+
+    // Return code for google sign in activity
     public static final int RC_SIGN_IN = 1;
 
     private LoginViewModel loginViewModel;
     private GoogleSignInClient googleSignInClient;
 
-
+    // Login buttons
     private Button loginButton;
     private Button registerButton;
     private Button googleLoginButton;
 
+    // Entry fields
     private EditText passwordEditText;
     private EditText usernameEditText;
 
@@ -70,18 +73,18 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupFirebase() {
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(
-            new OnCompleteListener<InstanceIdResult>() {
-                @Override
-                public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                    InstanceIdResult result = task.getResult();
-                    if (result != null) {
-                        loginViewModel.setFirebaseToken(result.getToken());
-                    } else {
-                        Log.e(TAG_LOGIN, "Could not retrieve firebase token");
-                    }
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                InstanceIdResult result = task.getResult();
+                if (result != null) {
+                    // Alert ViewModel with new firebase token
+                    loginViewModel.setFirebaseToken(result.getToken());
+                } else {
+                    Log.e(TAG_LOGIN, "Could not retrieve firebase token");
                 }
-            });
+            }
+        });
     }
 
     private void initializeGoogleSignIn() {
@@ -170,6 +173,8 @@ public class LoginActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
     }
 
+
+    // Called when google sign in returns
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

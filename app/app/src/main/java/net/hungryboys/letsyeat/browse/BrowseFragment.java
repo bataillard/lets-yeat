@@ -26,9 +26,12 @@ import net.hungryboys.letsyeat.recipe.RecipeActivity;
 
 import java.util.List;
 
+/**
+ * This fragment presents a list of {@link RecipeStub} as a scrollable card list. It also has a
+ * search bar and a grid of selectable tags. At the start, the tag grid is hidden and is shown
+ * when the {@code tagButton} is clicked
+ */
 public class BrowseFragment extends Fragment {
-
-    private static final String ARG_CURR_ACTIVITY = "current_activity";
 
     // Recycle view attributes
     private RecyclerView recipeView;
@@ -47,10 +50,21 @@ public class BrowseFragment extends Fragment {
         // Required empty constructor
     }
 
+    /**
+     * Factory method to create new BrowseFragment, as specified by android guidelines
+     * @return a new BrowseFragment
+     */
     public static BrowseFragment newInstance() {
         return new BrowseFragment();
     }
 
+    /**
+     * Called when fragment needs to draw its user interface, only inflate layout in this method
+     * @param inflater Inflater user to draw this fragment's layout
+     * @param container ViewGroup that contains this fragment
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     * @return An inflated View for this fragment
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (rootView != null) {
@@ -65,9 +79,17 @@ public class BrowseFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Called after layout has been inflated, and activity has been created, this is when we need to
+     * initialise this fragment's state (the view model) and the listeners
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     */
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        /* Fetch view model and observe recipes, when new recipes are loaded, we want to change the
+         * list to reflect that */
 
         browseViewModel = ViewModelProviders.of(this).get(BrowseViewModel.class);
         browseViewModel.getRecipeStubs().observe(this, new Observer<List<RecipeStub>>() {
@@ -77,6 +99,8 @@ public class BrowseFragment extends Fragment {
             }
         });
 
+        /* When a recipe is clicked, switch to that recipe's activity */
+
         recipeCardAdapter.setOnSelectListener(new RecipeCardAdapter.RecipeOnSelectListener() {
             @Override
             public void onSelect(RecipeID recipeID) {
@@ -85,6 +109,9 @@ public class BrowseFragment extends Fragment {
                 startActivity(intent);
             }
         });
+
+        /* When search terms / tags change, we alert the ViewModel,
+         * who will request a new recipe list */
 
         searchBar.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -96,6 +123,18 @@ public class BrowseFragment extends Fragment {
                 return true;
             }
         });
+
+        ToggleButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                ToggleButton button = (ToggleButton) buttonView;
+                browseViewModel.tagChanged(button.getText().toString(), button.isChecked());
+            }
+        };
+
+        tagGridAdapter.setListener(listener);
+
+        /* Make the tag button show the tag grid if toggled */
 
         tagsButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -109,16 +148,6 @@ public class BrowseFragment extends Fragment {
                 }
             }
         });
-
-        ToggleButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                ToggleButton button = (ToggleButton) buttonView;
-                browseViewModel.tagChanged(button.getText().toString(), button.isChecked());
-            }
-        };
-
-        tagGridAdapter.setListener(listener);
     }
 
     private void createSearchView() {
@@ -150,8 +179,6 @@ public class BrowseFragment extends Fragment {
 
         recipeCardAdapter = new RecipeCardAdapter();
         recipeView.setAdapter(recipeCardAdapter);
-
-
     }
 
 

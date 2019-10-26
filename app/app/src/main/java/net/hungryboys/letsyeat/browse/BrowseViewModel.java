@@ -19,6 +19,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * View model that handles data for the {@link BrowseFragment}
+ *
+ * It manages a list of {@link RecipeStub}, that are shown by the fragment. When the search terms change,
+ * it will request a new list of stubs based on those terms
+ */
 public class BrowseViewModel extends ViewModel {
     private final static String TAG_BROWSE_VM = "BrowseViewModel";
 
@@ -29,6 +35,11 @@ public class BrowseViewModel extends ViewModel {
 
     private final int NUM_RECIPES = 25;
 
+    /**
+     * Provides an immutable observable version of the list of RecipeStubs to the activity
+     * When called for the first time, it will request a new
+     * @return immutable LiveData object on a List<RecipeStub>
+     */
     public LiveData<List<RecipeStub>> getRecipeStubs() {
         if (recipes == null) {
             recipes = new MutableLiveData<>();
@@ -38,10 +49,20 @@ public class BrowseViewModel extends ViewModel {
         return recipes;
     }
 
+    /**
+     * Called by activity to check if there currently are tags that are selected, to determine
+     * colour of tag toggle button
+     * @return true if there are one or more tags selected
+     */
     public boolean hasTagsSelected() {
         return selectedTags.size() > 0;
     }
 
+    /**
+     * Signal to ViewModel that the text in the search bar has changed. Performs a request to the
+     * server in the background and updates the LiveData asynchronously.
+     * @param search the current text in search bar
+     */
     public void searchTextChanged(String search) {
         String old = searchText;
         searchText = search;
@@ -51,6 +72,12 @@ public class BrowseViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Signal to ViewModel that a given tag's status has changed (selected -> unselected or
+     * vice versa). The VM will then update the LiveData asynchronously
+     * @param tag specific tag that has changed
+     * @param selected new status of tag, true if selected, false if not
+     */
     public void tagChanged(String tag, boolean selected) {
         Set<String> previous = new HashSet<>(selectedTags);
 
@@ -89,8 +116,6 @@ public class BrowseViewModel extends ViewModel {
                 }
             });
         }
-
-
     }
 
     private void loadRecipes() {

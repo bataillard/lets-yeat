@@ -4,13 +4,16 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.Locale;
 
 
 /**
  * Immutable class representing a recipe, as received by HTTP API
  */
 public class Recipe {
+    /** Maximum value for difficulty */
     public static final double MAX_DIFF = 5f;
+    /** Minimum value for difficulty */
     public static final double MIN_DIFF = 0f;
 
     @SerializedName("id")
@@ -45,6 +48,9 @@ public class Recipe {
     @Expose
     private final String[] instructions;
 
+    /**
+     * @return a new Recipe with placeholder fields created
+     */
     public static Recipe placeholder() {
         Ingredient[] ingredients =
                 {Ingredient.placeholder(), Ingredient.placeholder(), Ingredient.placeholder()};
@@ -56,6 +62,17 @@ public class Recipe {
                 ingredients, instructions,tags);
     }
 
+    /**
+     * Create a new recipe
+     * @param id server id of recipe
+     * @param name title of recipe
+     * @param pictureUrl url to picture of recipe
+     * @param time time in minutes it takes to cook recipe
+     * @param difficulty difficulty of recipe
+     * @param ingredients list of ingredients
+     * @param instructions list of instruction
+     * @param tags tags relevant to recipe
+     */
     public Recipe(RecipeID id, String name, String pictureUrl, int time, double difficulty,
                   Ingredient[] ingredients, String[] instructions, String[] tags) {
         this.id = id;
@@ -68,38 +85,65 @@ public class Recipe {
         this.tags = tags;
     }
 
+    /**
+     * @return RecipeID of recipe
+     */
     public RecipeID getId() {
         return id;
     }
 
+    /**
+     * @return title of recipe
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return url to picture of recipe
+     */
     public String getPictureUrl() {
         return pictureUrl;
     }
 
+    /**
+     * @return cook time of recipe in minutes
+     */
     public int getTime() {
         return time;
     }
 
+    /**
+     * @return copy of instructions
+     */
     public String[] getInstructions() {
         return Arrays.copyOf(instructions, instructions.length);
     }
 
+    /**
+     * @return the time to cook recipe formatted as "HH:MM"
+     */
     public String getTimeString() {
-        return (time / 60) + ":" + (time % 60);
+        return String.format(Locale.getDefault(),"%2d:%2d", time / 60,  time % 60);
     }
 
+    /**
+     * @return difficulty of recipe
+     */
     public double getDifficulty() {
         return difficulty;
     }
 
+    /**
+     * @return copy of list of ingredients
+     */
     public Ingredient[] getIngredients() {
         return Arrays.copyOf(ingredients, ingredients.length);
     }
 
+    /**
+     * @return copy of list of tags
+     */
     public String[] getTags() {
         return Arrays.copyOf(tags, tags.length);
     }

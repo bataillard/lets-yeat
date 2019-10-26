@@ -8,7 +8,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.Locale;
 
-
+/**
+ * Immutable class that models an Ingredient for a Recipe
+ */
 public class Ingredient {
 
     @SerializedName("name")
@@ -23,29 +25,52 @@ public class Ingredient {
     @Expose
     private final String unit;
 
+    /**
+     * @return a new placeholder Ingredient with sample data, to be used in UI testing
+     */
     public static Ingredient placeholder() {
         return new Ingredient("Cheese", "3000.0", "ton");
     }
 
+    /**
+     * Creates a new Ingredient
+     * @param name name of the ingredient
+     * @param quantity quantity as a string, will have been computed server-side
+     * @param unit unit of quantity
+     */
     public Ingredient(String name, String quantity, String unit) {
         this.name = name;
         this.quantity = quantity;
         this.unit = unit;
     }
 
+    /**
+     * @return name of ingredient
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * @return quantity or "some" if quantity is null
+     */
     public String getQuantity() {
         return quantity == null ? "some" : quantity;
     }
 
+    /**
+     * @return the unit used or "" if null
+     */
     public String getUnit() {
         return unit == null ?  "" : unit;
     }
 
-
+    /**
+     * Compares this and another object, if both are the same ingredients (same name, qty, unit)
+     * then returns true
+     * @param o other object
+     * @return true if both are equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -56,12 +81,18 @@ public class Ingredient {
                 unit.equals(that.unit);
     }
 
+    /**
+     * @return a hashcode for this ingredient
+     */
     @Override
     public int hashCode() {
         Object[] fields = {name, quantity, unit};
         return Arrays.hashCode(fields);
     }
 
+    /**
+     * @return a formatted version of the ingredient
+     */
     @Override
     @NonNull
     public String toString() {

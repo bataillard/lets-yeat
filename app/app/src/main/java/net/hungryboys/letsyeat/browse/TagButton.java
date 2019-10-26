@@ -7,6 +7,10 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import net.hungryboys.letsyeat.R;
 
+/**
+ * Wrapper class around Button to emulate ToggleButton, except with 3 states, one for an open tag
+ * grid, one for closed tag grid & no tags selected (white), one for closed tag grid & tags selected
+ */
 public class TagButton extends AppCompatButton {
 
     private boolean checked = false;
@@ -15,6 +19,10 @@ public class TagButton extends AppCompatButton {
         super(context, attrs);
     }
 
+    /**
+     * Toggles button from one state to another. Changes appearance of button
+     * @param tagsSelected true if any tags are selected
+     */
     public void toggle(boolean tagsSelected) {
         checked = !checked;
 
@@ -27,6 +35,9 @@ public class TagButton extends AppCompatButton {
         }
     }
 
+    /**
+     * @return true if button is toggled
+     */
     public boolean isChecked() {
         return checked;
     }

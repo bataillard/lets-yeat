@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Custom RecyclerView Adapter that holds the list of RecipeStubs, displays them as CardViews and
+ * handles eventual clicks on each Card
+ */
 public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.ViewHolder> {
 
     private static final float TOP_CARD_MARGIN = 65.0f;
@@ -25,7 +29,11 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
     private List<RecipeStub> recipes;
     private RecipeOnSelectListener listener;
 
-    // Provide a reference to the views for each data item
+    /**
+     * Inner ViewHolder class for a single RecipeStub, containing the layout for a single CardView
+     * This class will be accessed to change the view's contents to suit the correct recipe when a
+     * user scrolls to that position
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public CardView card;
         public ImageView image;
@@ -43,25 +51,47 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
         }
     }
 
+    /**
+     * Interface that specifies the listener that will be called when a card is
+     * clicked. Such an object is passed in from the activity
+     */
     public interface RecipeOnSelectListener {
         void onSelect(RecipeID recipeID);
     }
 
+    /**
+     * Creates a new RecipeCardAdapter with empty contents
+     */
     public RecipeCardAdapter() {
         recipes = new ArrayList<>();
     }
 
+    /**
+     * Sets the list of recipes in the adapter to passed in list
+     * @param recipeList new list of recipe stubs
+     */
     public void setRecipes(List<RecipeStub> recipeList) {
         recipes.clear();
         recipes.addAll(recipeList);
         notifyDataSetChanged();
     }
 
+    /**
+     * Sets the listener that will be called when a card is clicked, if listener is null, nothing
+     * will occur on click
+     * @param listener the new listener to be called
+     */
     public void setOnSelectListener(RecipeOnSelectListener listener) {
         this.listener = listener;
     }
 
-    // Create new views (invoked by the layout manager)
+    /**
+     * Create new ViewHolder for the RecylcerView, invoked by RV LayoutManager, only inflates the
+     * layout without populating the data, which is {@link this.onBindViewHolder}'s job
+     * @param parent parent ViewGroup of new ViewHolder
+     * @param viewType view type of new view (ignored in this case)
+     * @return a new ViewHolder containing the inflated CardView
+     */
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent,
                                          int viewType) {
@@ -73,11 +103,14 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
         return vh;
     }
 
-    // Replace the contents of a view (invoked by the layout manager)
+    /**
+     * Gets element of list of recipe stubs at given position and sets view contained in ViewHolder
+     * to reflect that given recipe stub
+     * @param holder ViewHolder to be modified
+     * @param position position of element in data set
+     */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
         final RecipeStub recipe = recipes.get(position);
 
         holder.name.setText(recipe.getName());
@@ -85,9 +118,9 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
         holder.time.setText(recipe.getTimeString());
 
         if (position == 0) {
-            setCardMargin(holder, TOP_CARD_MARGIN);
+            setCardTopMargin(holder, TOP_CARD_MARGIN);
         } else {
-            setCardMargin(holder, 0f);
+            setCardTopMargin(holder, 0f);
         }
 
         holder.card.setOnClickListener(new View.OnClickListener() {
@@ -102,18 +135,23 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
         holder.image.setImageResource(R.drawable.placeholder_recipe_photo); // TODO get photo from recipe
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
+    /**
+     * @return size of data set (i.e. number of recipe stubs)
+     */
     @Override
     public int getItemCount() {
         return recipes.size();
     }
 
-    private static void setCardMargin(ViewHolder holder, float dp) {
+    private static void setCardTopMargin(ViewHolder holder, float topMarginDp) {
+        final float EXTRA_CONVERSION_MARGIN = 0.5f;
+
+        // Convert dp into px
         float scale = holder.card.getResources().getDisplayMetrics().density;
-        int margin_px = (int) (dp * scale + 0.5f);
+        int topMarginPx = (int) (topMarginDp * scale + EXTRA_CONVERSION_MARGIN);
 
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) holder.card.getLayoutParams();
-        params.setMargins(params.leftMargin, margin_px, params.rightMargin, params.bottomMargin);
+        params.setMargins(params.leftMargin, topMarginPx, params.rightMargin, params.bottomMargin);
         holder.card.setLayoutParams(params);
     }
 }

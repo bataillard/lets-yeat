@@ -20,6 +20,11 @@ import java.util.Set;
 import retrofit2.Call;
 import retrofit2.Response;
 
+/**
+ * ViewModel that handles data and asynchronous registration server requests. Builds a
+ * RegistrationChoice as the activity advances then sends it to server along with User to be
+ * registered
+ */
 public class RegistrationViewModel extends ViewModel {
 
     public static final String TAG_REGISTRATION_VM = "RegistrationViewModel";
@@ -30,14 +35,27 @@ public class RegistrationViewModel extends ViewModel {
     private Set<String> selectedTags = new HashSet<>();
     private User user;
 
+    /**
+     * @return an observable LoginResult which is the result of the login request made to server
+     * once registration is finished
+     */
     public LiveData<LoginResult> getRegistrationResult() {
         return registrationResult;
     }
 
+    /**
+     * Saves the User object passed to LoginActivity, will be used to make registration request
+     * @param user User object containing tokens, emails and secrets to be sent to server
+     */
     public void setUser(User user) {
         this.user = user;
     }
 
+    /**
+     * Alert view model that selected tag status has changed
+     * @param tag tag that that changed status
+     * @param selected new status of tag
+     */
     public void tagChanged(String tag, boolean selected) {
         Set<String> previous = new HashSet<>(selectedTags);
 
@@ -53,14 +71,27 @@ public class RegistrationViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Alert the ViewModel that the difficulty selected by user has changed
+     * @param difficulty the new difficulty
+     */
     public void difficultyChanged(double difficulty) {
         choice.setDifficulty(difficulty);
     }
 
+    /**
+     * Alert the ViewModel that the time selected by user has changed
+     * @param time the new time
+     */
     public void timeChanged(Calendar time) {
         choice.setTime(time);
     }
 
+    /**
+     * Signals to the ViewModel that user has finished choosing his preferences and that a registration
+     * request should be made to server. This is done asynchronously and the login result LiveData
+     * will be updated when finished
+     */
     public void finish() {
         final User user = this.user;
 

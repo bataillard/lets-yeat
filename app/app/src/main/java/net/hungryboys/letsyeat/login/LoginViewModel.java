@@ -18,6 +18,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * View model for {@link LoginActivity}. Handles data such a firebaseToken. Makes request to auth
+ * server asynchronously on behalf of the Activity, then updates the LiveData observable with the
+ * login result
+ */
 public class LoginViewModel extends ViewModel {
 
     public static final String TAG_LOGIN_VM = "LoginViewModel";
@@ -25,7 +30,12 @@ public class LoginViewModel extends ViewModel {
     private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
     private String firebaseToken;
 
+    /**
+     * @return an observable LoginResult containing the results of the login attempt
+     */
     LiveData<LoginResult> getLoginResult() {
+        // If user already in logged in repository, supply a login success directly instead of
+        // querying server
         LoginRepository login = LoginRepository.getInstance();
 
         if (login.isLoggedIn()) {
@@ -35,6 +45,12 @@ public class LoginViewModel extends ViewModel {
         return loginResult;
     }
 
+    /**
+     * Attempt login with provided email and password, performs request asynchronously then updates
+     * the LiveData observable. Only performs login request if firebase token has been set
+     * @param email email of user
+     * @param password password of user
+     */
     public void login(String email, String password) {
         if (firebaseToken != null) {
             User user = new User(email, password, firebaseToken);
@@ -44,6 +60,11 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
+    /**
+     * Perform login to server using the data provided by GoogleSignIn. performs request asynchronously
+     * then updates the LiveData observable. Only performs login request if firebase token has been set
+     * @param completedLogin the google login task returned by GSI activity
+     */
     public void loginFromGoogle(Task<GoogleSignInAccount> completedLogin) {
         if (firebaseToken == null) {
             Log.e(TAG_LOGIN_VM, "Firebase token is null");
@@ -67,6 +88,9 @@ public class LoginViewModel extends ViewModel {
     }
 
     private void loginToServer(final User user) {
+        // Actually perform API call to server, add user to LoginResult when it returns.
+        // If success, save user to LoginRepository
+
         Call<LoginResult> call = APICaller.getApiCall().login(user);
         call.enqueue(new Callback<LoginResult>() {
             @Override
@@ -91,10 +115,19 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
+    /**
+     * Performs registration request to server, i.e. tries to login {@see LoginViewModel.login}
+     * @param email email of user
+     * @param password password of user
+     */
     public void register(String email, String password) {
         login(email, password);
     }
 
+    /**
+     * Informs ViewModel of firebase token, so that it can be sent with the login request later
+     * @param token firebase token as string
+     */
     public void setFirebaseToken(String token) {
         this.firebaseToken = firebaseToken;
     }

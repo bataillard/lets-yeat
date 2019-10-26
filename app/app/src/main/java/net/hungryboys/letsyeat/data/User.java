@@ -10,7 +10,8 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 /**
- * Data class that captures user information for logged in users retrieved from LoginRepository
+ * Immutable class that represents a User login attempt. This object will be sent to server who will
+ * determine if user can login and reply with a {@link net.hungryboys.letsyeat.login.LoginResult}
  */
 public class User implements Serializable {
 
@@ -31,7 +32,12 @@ public class User implements Serializable {
     private String firebaseToken;
 
 
-
+    /**
+     * Creates a new User that logs in with email and password
+     * @param email email of user
+     * @param password user password
+     * @param firebaseToken firebase token used to send notifications to device
+     */
     public User(String email, String password, String firebaseToken) {
         fromGoogle = false;
 
@@ -41,6 +47,12 @@ public class User implements Serializable {
 
     }
 
+    /**
+     * Creates a new User that logs in via GoogleSignIn, where the secret (i.e. password) is the
+     * server auth code supplied by google
+     * @param account google account return by google sign-in procedure
+     * @param firebaseToken firebase token used to send notifications to device
+     */
     public User(GoogleSignInAccount account, String firebaseToken) {
         fromGoogle = true;
 
@@ -49,12 +61,16 @@ public class User implements Serializable {
         this.firebaseToken = firebaseToken;
     }
 
-
-
+    /**
+     * @return true if this user is logged in via google
+     */
     public boolean fromGoogle() {
         return fromGoogle;
     }
 
+    /**
+     * @return email of user
+     */
     public String getEmail() {
         return email;
     }

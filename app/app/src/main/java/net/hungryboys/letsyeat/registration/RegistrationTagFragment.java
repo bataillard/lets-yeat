@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,19 +16,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.browse.TagGridAdapter;
 
-///**
-// * A simple {@link Fragment} subclass.
-// * Activities that contain this fragment must implement the
-// * {@link RegistrationTagFragment.OnFragmentInteractionListener} interface
-// * to handle interaction events.
-// * Use the {@link RegistrationTagFragment#newInstance} factory method to
-// * create an instance of this fragment.
-// */
+/**
+ * Fragment that handles tag selection for the RegistrationActivity. Activities that use this
+ * fragment must implement the {@link RegistrationTagFragment.OnTagSelectedListener} interface
+ */
 public class RegistrationTagFragment extends Fragment {
 
     private static final String ARG_TAGS = "tags";
 
-    private OnTagSelectedListener mListener;
+    private OnTagSelectedListener mListener;    // The parent activity represented as this interface
     private String[] tags;
 
     private View root;
@@ -43,6 +40,7 @@ public class RegistrationTagFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
+     * @param tags the tags that need to be displayed by this fragment
      * @return A new instance of fragment RegistrationTagFragment.
      */
     public static RegistrationTagFragment newInstance(String[] tags) {
@@ -53,6 +51,26 @@ public class RegistrationTagFragment extends Fragment {
         return f;
     }
 
+    /**
+     * Called when an activity attaches itself to its child fragment, this is when we save the
+     * activity as a listener with the callback method in {@link RegistrationTagFragment.OnTagSelectedListener}
+     * @param context the parent activity
+     */
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof OnTagSelectedListener) {
+            mListener = (OnTagSelectedListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    /**
+     * Called when activity creates fragment, retrieves arguments passed to it from the
+     * factory method {@link RegistrationTagFragment#newInstance(String[])}
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +79,13 @@ public class RegistrationTagFragment extends Fragment {
         }
     }
 
+    /**
+     * Called when fragment needs to draw its user interface, only inflate layout in this method
+     * @param inflater Inflater user to draw this fragment's layout
+     * @param container ViewGroup that contains this fragment
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     * @return An inflated View for this fragment
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,6 +94,19 @@ public class RegistrationTagFragment extends Fragment {
         }
 
         root = inflater.inflate(R.layout.fragment_registration_tag, container, false);
+        tagGrid = root.findViewById(R.id.registration_tags_grid);
+
+        return root;
+    }
+
+    /**
+     * Called after layout has been inflated, and activity has been created, this is when we need to
+     * initialise this fragment's state (the view model) and the listeners
+     * @param savedInstanceState If non null, previous state of fragment being reconstructed
+     */
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -82,31 +120,24 @@ public class RegistrationTagFragment extends Fragment {
 
         tagGridAdapter = new TagGridAdapter(tags);
         tagGridAdapter.setListener(listener);
-        tagGrid = root.findViewById(R.id.registration_tags_grid);
         tagGrid.setHasFixedSize(true);
         tagGrid.setLayoutManager(new GridLayoutManager(getActivity(), 3));
         tagGrid.setAdapter(tagGridAdapter);
-
-        return root;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof OnTagSelectedListener) {
-            mListener = (OnTagSelectedListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
+    /**
+     * When an activity detaches itself from the fragment, removes the listener
+     */
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
 
+    /**
+     * Interface defining which methods activities need to implement to communicate with fragment
+     * Will be called when event occurs
+     */
     public interface OnTagSelectedListener {
         void onTagSelected(String tag, boolean isChecked);
     }
