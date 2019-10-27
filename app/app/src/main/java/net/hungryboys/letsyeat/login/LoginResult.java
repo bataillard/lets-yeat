@@ -19,10 +19,6 @@ public class LoginResult {
     private boolean success;
 
     @Expose
-    @SerializedName("loggedIn")
-    private boolean loggedIn;
-
-    @Expose
     @SerializedName("needsRegistration")
     private boolean needsRegistration;
 

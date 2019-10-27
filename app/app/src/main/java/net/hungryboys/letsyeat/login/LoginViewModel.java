@@ -126,9 +126,9 @@ public class LoginViewModel extends ViewModel {
 
     /**
      * Informs ViewModel of firebase token, so that it can be sent with the login request later
-     * @param token firebase token as string
+     * @param firebaseToken firebase token as string
      */
-    public void setFirebaseToken(String token) {
+    public void setFirebaseToken(String firebaseToken) {
         this.firebaseToken = firebaseToken;
     }
 }

@@ -34,6 +34,9 @@ import net.hungryboys.letsyeat.browse.BrowseActivity;
 import net.hungryboys.letsyeat.data.User;
 import net.hungryboys.letsyeat.registration.RegistrationActivity;
 
+/**
+ * Activity that handles login and initial signup for app
+ */
 public class LoginActivity extends AppCompatActivity {
 
     public static final String TAG_LOGIN = "LoginActivity";

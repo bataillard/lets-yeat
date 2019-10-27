@@ -12,6 +12,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
@@ -51,7 +52,7 @@ public interface APICalls {
                                       @Query("recipeId") RecipeID recipeID,
                                       @Query("datetime") Calendar datetime);
 
-    @PUT("/user/token")
+    @PATCH("/user/token")
     Call<String> updateFirebaseToken(@Query("email") String email, @Query("token") String token);
 
 
