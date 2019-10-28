@@ -89,6 +89,7 @@ server.get('/recipe/id', (req, res) => {
 /* Get a new recipe suggestion
  * Returns just the id for the new recipe*/
 server.get('/recipe/suggest', (req, res) => {
+    console.log("getting a suggestion");
     db.collection("recipe").find().toArray((err, result) => {
         recip = new RecipeID(result[0]._id);
         if (result.length == 0) {
