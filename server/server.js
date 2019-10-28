@@ -86,6 +86,10 @@ server.get('/recipe/id', (req, res) => {
     })
 })
 
+server.get('/us', (req, res) => {
+    console.log("here");
+    res.json("Success");
+})
 
 /* Get a new recipe suggestion
  * Returns just the id for the new recipe*/
