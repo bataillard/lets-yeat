@@ -44,8 +44,9 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 	})
 	// initialization for firebase
 	admin.initializeApp({
-	credential: admin.credential.applicationDefault()
-})
+        credential: admin.credential.applicationDefault()
+    })
+    console.log("server is up!!!!")
 })
 
 
