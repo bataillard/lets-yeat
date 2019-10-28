@@ -203,6 +203,7 @@ server.post("/user/register", (req, res) => {
                 }
             });
         }
+    })
 })
 
 
