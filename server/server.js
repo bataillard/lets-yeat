@@ -126,7 +126,8 @@ server.get('/recipe/list', (req, res) => {
             var i = 0;
             var stubs = []
             for (i = 0; i < Math.min(max, result.length); i++) {
-                var stub = new RecipeStub(result[i].id, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                var idd = new RecipeID(result[i].id);
+                var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
                 stubs.push(stub);
             }
             res.status(200).json(stubs);
