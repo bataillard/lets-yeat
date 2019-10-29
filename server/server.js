@@ -56,7 +56,14 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 /**********************************API CALLS***********************************/
 /******************************************************************************/
 /******************************************************************************/
-
+server.get('/test', (req, res) => {
+     db.collection("recipe").find().toArray((err, result) => {
+        if(err){
+            console.log(err);
+        } else {
+            console.log(result[0]);
+        }
+})
 
 /* Get recipe from recipe ID
  * returns the entire recipe json object on success
@@ -190,8 +197,7 @@ server.post("/user/login", (req, res) => {
 /* Register a new user */
 server.post("/user/register", (req, res) => {
 
-    let { email, secret, fromGoogle, firebaseToken } = req.body;
-    let { tags, time, difficulty } = req.query;
+    let { email, secret, fromGoogle, firebaseToken, tags, time, difficulty } = req.body;
     db.collection("user").find({ "email": email }).toArray((err, result) => {
         if (result.length != 0) {
             login = new LoginResult(false, false, "asdnfjk");
