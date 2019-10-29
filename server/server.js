@@ -71,7 +71,7 @@ server.get('/test', (req, res) => {
  * returns 401 on bad input ID, and 400 on database failure*/
 server.get('/recipe/id', (req, res) => {
     let { id } = req.query;
-    db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
+    db.collection("recipe").find({ "_id": new ObjectId(id.id) }).toArray((err, result) => {
         if (result.length == 0) {
             res.status(401).json("No recipe with this ID");
         } else {
