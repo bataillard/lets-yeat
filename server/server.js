@@ -168,9 +168,9 @@ server.put("/user/token", (req, res) => {
 /* Attempt logging in a user 
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
-    let { user } = req.body;
+    let { email, secret, firebaseToken, fromGoogle } = req.body;
     console.log(user.email);
-    db.collection("user").find({ "email": user.email }).toArray((err, result) => {
+    db.collection("user").find({ "email": email }).toArray((err, result) => {
         console.log(result);
         if(err){
             login = new LoginResult(false, false, "asdnfjk");
@@ -178,7 +178,7 @@ server.post("/user/login", (req, res) => {
         } else if (result.length != 1) {
             login = new LoginResult(true, true, "asdnfjk");
             res.status(200).json(login);
-        } else if ((result[0].password) !== user.secret) {
+        } else if ((result[0].password) !== secret) {
             login = new LoginResult(false, false, "asdnfjk");
             res.status(200).json(login);
         } else {
@@ -193,19 +193,19 @@ server.post("/user/login", (req, res) => {
 /* Register a new user */
 server.post("/user/register", (req, res) => {
 
-    let { user, choice } = req.body;
-    db.collection("user").find({ "email": user.email }).toArray((err, result) => {
+    let { email, secret, fromGoogle, firebaseToken, tags, time, difficulty } = req.body;
+    db.collection("user").find({ "email": email }).toArray((err, result) => {
         if (result.length != 0) {
             login = new LoginResult(false, false, "asdnfjk");
             res.status(200).json(login);
         } else {
             users.insertOne({
-                "email": user.email,
-                "password": user.secret,
-                "difficulty": choice.difficulty,
-                "preferences": choice.tags,
-                "cookTime": choice.time,
-                "token": user.firebaseToken
+                "email": email,
+                "password": secret,
+                "difficulty": difficulty,
+                "preferences": tags,
+                "cookTime": time,
+                "token": firebaseToken
             }, (err, result) => {
                 if (err) {
                     login = new LoginResult(false, false, "asdnfjk");
