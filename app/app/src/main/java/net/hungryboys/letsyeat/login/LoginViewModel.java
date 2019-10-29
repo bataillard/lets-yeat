@@ -100,7 +100,10 @@ public class LoginViewModel extends ViewModel {
                     result.setUser(user);
 
                     loginResult.postValue(response.body());
-                    LoginRepository.getInstance().saveUserCredentials(user, result);
+
+                    if (result.isSuccess() && !result.needsRegistration()) {
+                        LoginRepository.getInstance().saveUserCredentials(user, result);
+                    }
                 } else {
                     Log.e(TAG_LOGIN_VM, "Incorrect response from server " + response.message());
                     loginResult.postValue(LoginResult.failure(R.string.login_failed));

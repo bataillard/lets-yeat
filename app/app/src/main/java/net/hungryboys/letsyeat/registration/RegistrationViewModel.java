@@ -102,8 +102,13 @@ public class RegistrationViewModel extends ViewModel {
             @Override
             public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
                 if (response.isSuccessful()) {
+                    LoginResult login = response.body();
+
+                    if (login.isSuccess() && !login.needsRegistration()) {
+                        LoginRepository.getInstance().saveUserCredentials(user, response.body());
+                    }
+
                     registrationResult.postValue(response.body());
-                    LoginRepository.getInstance().saveUserCredentials(user, response.body());
                 } else {
                     Log.e(TAG_REGISTRATION_VM, "Registration failed" + response.message());
                     registrationResult.postValue(LoginResult.failure(R.string.registration_failed));
