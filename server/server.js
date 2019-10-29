@@ -169,7 +169,7 @@ server.put("/user/token", (req, res) => {
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
     let { email, secret, firebaseToken, fromGoogle } = req.body;
-    console.log(user.email);
+    console.log(email);
     db.collection("user").find({ "email": email }).toArray((err, result) => {
         console.log(result);
         if(err){
