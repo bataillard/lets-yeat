@@ -70,7 +70,7 @@ server.get('/test', (req, res) => {
  * returns the entire recipe json object on success
  * returns 401 on bad input ID, and 400 on database failure*/
 server.get('/recipe/id', (req, res) => {
-    let { id } = req.body;
+    let { id } = req.query;
     console.log(JSON.stringify(id))
     db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
         if (result.length == 0) {
