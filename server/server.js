@@ -71,7 +71,7 @@ server.get('/test', (req, res) => {
  * returns 401 on bad input ID, and 400 on database failure*/
 server.get('/recipe/id', (req, res) => {
     let { id } = req.query;
-    console.log(JSON.stringify(id))
+    console.log(id)
     db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
         if (result.length == 0) {
             res.status(401).json("No recipe with this ID");
@@ -127,7 +127,7 @@ server.get('/recipe/list', (req, res) => {
             var i = 0;
             var stubs = []
             for (i = 0; i < Math.min(max, result.length); i++) {
-                var idd = new RecipeID(result[i].id);
+                var idd = new RecipeID(result[i]._id);
                 var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
                 stubs.push(stub);
             }
