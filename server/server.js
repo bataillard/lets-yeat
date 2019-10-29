@@ -169,6 +169,7 @@ server.put("/user/token", (req, res) => {
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
     let { user } = req.query;
+    console.log(user);
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         console.log(result);
         if(err){
@@ -193,7 +194,6 @@ server.post("/user/login", (req, res) => {
 server.post("/user/register", (req, res) => {
 
     let { user, choice } = req.query;
-
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         if (result.length != 0) {
             login = new LoginResult(false, false, "asdnfjk");
