@@ -78,7 +78,7 @@ public class RecipeViewModel extends ViewModel {
 
     private void loadRecipe() {
         if (id != null) {
-            Call<Recipe> call = APICaller.getApiCall().getRecipe(id);
+            Call<Recipe> call = APICaller.getApiCall().getRecipe(id.getId());
             call.enqueue(new Callback<Recipe>() {
                 @Override
                 public void onResponse(Call<Recipe> call, Response<Recipe> response) {

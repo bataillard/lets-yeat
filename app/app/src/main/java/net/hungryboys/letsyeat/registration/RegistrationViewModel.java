@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.api.APICaller;
+import net.hungryboys.letsyeat.api.bodies.RegistrationBody;
 import net.hungryboys.letsyeat.data.RegistrationChoice;
 import net.hungryboys.letsyeat.data.User;
 import net.hungryboys.letsyeat.login.LoginRepository;
@@ -97,7 +98,8 @@ public class RegistrationViewModel extends ViewModel {
 
         RegistrationChoice finalChoice = choice.build();
 
-        Call<LoginResult> call = APICaller.getApiCall().register(user, finalChoice);
+        Call<LoginResult> call = APICaller.getApiCall().register(new RegistrationBody(user, finalChoice));
+
         call.enqueue(new retrofit2.Callback<LoginResult>() {
             @Override
             public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
