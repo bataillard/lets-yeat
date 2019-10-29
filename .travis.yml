@@ -9,6 +9,8 @@ before install:
 matrix:
     include:
         - language: node_js
+          node_js:
+            - 12
           services: 
             - mongodb
 
@@ -33,4 +35,4 @@ matrix:
           
           script:
             # android build
-            - ./app/gradlew build 
+            - chmod +x ./app/gradlew build 
