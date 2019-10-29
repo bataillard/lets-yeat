@@ -171,12 +171,18 @@ server.post("/user/login", (req, res) => {
     let { user } = req.query;
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         console.log(result);
-        if (result.length != 1) {
-            res.status(401).json("No user associated with that email");
+        if(err){
+            login = new LoginResult(false, false, "asdnfjk");
+            res.status(400).json(login)
+        } else if (result.length != 1) {
+            login = new LoginResult(true, true, "asdnfjk");
+            res.status(200).json(login);
         } else if ((result[0].password) !== user.secret) {
-            res.status(402).json("Incorrect password");
+            login = new LoginResult(false, false, "asdnfjk");
+            res.status(200).json(login);
         } else {
-            res.status(200).json("success");
+            login = new LoginResult(true, false, "asdnfjk");
+            res.status(200).json(login);
         }
 
     })
@@ -190,9 +196,9 @@ server.post("/user/register", (req, res) => {
 
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         if (result.length != 0) {
-            res.status(401).send("This email is already signed up");
+            login = new LoginResult(false, false, "asdnfjk");
+            res.status(200).json(login);
         } else {
-
             users.insertOne({
                 "email": user.email,
                 "password": user.secret,
@@ -202,10 +208,12 @@ server.post("/user/register", (req, res) => {
                 "token": user.firebaseToken
             }, (err, result) => {
                 if (err) {
-                    res.status(400).json("failed");
+                    login = new LoginResult(false, false, "asdnfjk");
+                    res.status(400).json(login);
                     return console.log(err);
                 } else {
-                    res.status(200).json("success")
+                    login = new LoginResult(true, false, "asdnfjk");
+                    res.status(200).json(login)
                 }
             });
         }
@@ -253,5 +261,13 @@ class RecipeStub {
         this.pictureURL = pictureUrl;
         this.time = time;
         this.difficulty = difficulty;
+    }
+}
+
+class LoginResult{
+    constructor(success, needsRegistration, serverAuthToken){
+        this.success = success;
+        this.needsRegistration = needsRegistration;
+        this.serverAuthToken = serverAuthToken;
     }
 }
