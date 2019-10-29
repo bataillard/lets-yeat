@@ -168,8 +168,8 @@ server.put("/user/token", (req, res) => {
 /* Attempt logging in a user 
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
-    let { user } = req.query;
-    console.log(user);
+    let { user } = req.body;
+    console.log(user.email);
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         console.log(result);
         if(err){
@@ -193,7 +193,7 @@ server.post("/user/login", (req, res) => {
 /* Register a new user */
 server.post("/user/register", (req, res) => {
 
-    let { user, choice } = req.query;
+    let { user, choice } = req.body;
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         if (result.length != 0) {
             login = new LoginResult(false, false, "asdnfjk");
