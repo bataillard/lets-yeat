@@ -1,0 +1,36 @@
+
+# This file is for integration with Travis CI
+before install:
+    # update
+    - sudo apt-get update
+    # set gradlew file permissions
+    - chmod +x app/gradlew
+
+matrix:
+    include:
+        - language: node_js
+          services: 
+            - mongodb
+
+          install:
+            - npm install server
+            - npm install parser
+          
+          script:
+            # node_js build
+            - npm test
+            
+        - language: android
+          dist: trusty
+          android:
+                components:
+                    - build-tools-29.0.2
+                    - android-29
+                
+                    - extra-google-google_play_services
+                    - extra-google-m2repository
+                    - extra-android-m2repository
+          
+          script:
+            # android build
+            - ./app/gradlew build 
