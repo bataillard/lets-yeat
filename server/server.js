@@ -114,6 +114,7 @@ server.get('/recipe/list', (req, res) => {
         if (err) {
             res.status(400).json("database failure with code: " + err);
         } else {
+            console.log(result[0]);
             var i = 0;
             var stubs = []
             for (i = 0; i < Math.min(max, result.length); i++) {
