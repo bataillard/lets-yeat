@@ -111,20 +111,16 @@ server.get('/recipe/suggest', (req, res) => {
 server.get('/recipe/list', (req, res) => {
     let {max} = req.query;
     db.collection("recipe").find().toArray((err, result) => {
-        if (result.length < max) {
-            res.status(401).json("Not enough recipes, try being less picky")
+        if (err) {
+            res.status(400).json("database failure with code: " + err);
         } else {
-            if (err) {
-                res.status(400).json("database failure with code: " + err);
-            } else {
-                var i = 0;
-                var stubs = {}
-                for (i = 0; i < max; i++) {
-                    var stub = new RecipeStub(result[i].id, result[i].name, result[i].url, result[i].time, result[i].difficulty);
-                    stubs.push(stub);
-                }
-                res.status(200).json(stubs);
+            var i = 0;
+            var stubs = {}
+            for (i = 0; i < Math.min(max, result.length); i++) {
+                var stub = new RecipeStub(result[i].id, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                stubs.push(stub);
             }
+            res.status(200).json(stubs);
         }
     })
 })
