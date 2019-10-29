@@ -189,7 +189,8 @@ server.post("/user/login", (req, res) => {
 /* Register a new user */
 server.post("/user/register", (req, res) => {
 
-    let { email, secret, fromGoogle, firebaseToken, tags, time, difficulty } = req.body;
+    let { email, secret, fromGoogle, firebaseToken} = req.body;
+    Let { tags, time, difficulty } = req.query
     db.collection("user").find({ "email": email }).toArray((err, result) => {
         if (result.length != 0) {
             login = new LoginResult(false, false, "asdnfjk");
