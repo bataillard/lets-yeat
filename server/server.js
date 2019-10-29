@@ -198,19 +198,19 @@ server.post("/user/login", (req, res) => {
 /* Register a new user */
 server.post("/user/register", (req, res) => {
 
-    let { email, secret, fromGoogle, firebaseToken, tags, time, difficulty } = req.body;
-    db.collection("user").find({ "email": email }).toArray((err, result) => {
+    let { user, choice } = req.body;
+    db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         if (result.length != 0) {
             login = new LoginResult(false, false, "asdnfjk");
             res.status(200).json(login);
         } else {
             users.insertOne({
-                "email": email,
-                "password": secret,
-                "difficulty": difficulty,
-                "preferences": tags,
-                "cookTime": time,
-                "token": firebaseToken
+                "email": user.email,
+                "password": user.secret,
+                "difficulty": choice.difficulty,
+                "preferences": choice.tags,
+                "cookTime": choice.time,
+                "token": user.firebaseToken
             }, (err, result) => {
                 if (err) {
                     login = new LoginResult(false, false, "asdnfjk");
