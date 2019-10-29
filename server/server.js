@@ -63,6 +63,7 @@ server.get('/test', (req, res) => {
         } else {
             console.log(result[0]);
         }
+    })
 })
 
 /* Get recipe from recipe ID
