@@ -20,7 +20,8 @@ matrix:
           
           script:
             # node_js build
-            - npm test
+            # this is a placeholder for test or build script
+            - echo "test here"
             
         - language: android
           dist: trusty
