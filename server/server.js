@@ -56,15 +56,7 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 /**********************************API CALLS***********************************/
 /******************************************************************************/
 /******************************************************************************/
-server.get('/test', (req, res) => {
-     db.collection("recipe").find().toArray((err, result) => {
-        if(err){
-            console.log(err);
-        } else {
-            console.log(result[0]);
-        }
-    })
-})
+
 
 /* Get recipe from recipe ID
  * returns the entire recipe json object on success
@@ -95,10 +87,6 @@ server.get('/recipe/id', (req, res) => {
     })
 })
 
-server.get('/us', (req, res) => {
-    console.log("here");
-    res.json("Success");
-})
 
 /* Get a new recipe suggestion
  * Returns just the id for the new recipe*/
