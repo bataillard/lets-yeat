@@ -25,7 +25,7 @@ exports.Recipe = class Recipe {
         this.instruction = [...instructions];
         this.tags = [...tags];
     }
-}
+};
 
 /**
  * Represents each ingredient under the following schema

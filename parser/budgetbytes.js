@@ -26,7 +26,7 @@ function inFuture(year, month, toYear, toMonth) {
     }
 
     return 12*year + month > 12*now.getFullYear() + now.getMonth();
-};
+}
 
 function findRecipesInArchive(year, month) {
     return rp(BUDGETBYTES_ARCHIVE + "/" + year + "/" + month).then(monthHtml => {
@@ -38,7 +38,7 @@ function findRecipesInArchive(year, month) {
 
         return Promise.resolve(recipeList);
     }).catch(() => Promise.resolve([]));        // In case of error while parsing list, return empty list
-};
+}
 
 function parseImgSrc(html) {
     try {
@@ -51,7 +51,7 @@ function parseImgSrc(html) {
         return null;
     }
 
-};
+}
 
 function parseTags(html) {
     function extractBreadcrumbs(html) {
@@ -66,7 +66,7 @@ function parseTags(html) {
     const tags = [...new Set(words)].filter(w => possibleTags.has(w));
     
     return tags;
-};
+}
 
 function parseTime(recipe) {
     const hoursStr = $(".wprm-recipe-total_time-hours", recipe).text();
@@ -75,7 +75,7 @@ function parseTime(recipe) {
     const convert = (value) => value === "" ? 0 : parseInt(value, 10);
 
     return 60*convert(hoursStr) + convert(minutesStr);
-};
+}
 
 function parseIngredients(recipe) {
     const ingredients = [];
@@ -91,7 +91,7 @@ function parseIngredients(recipe) {
     });
 
     return ingredients;
-};
+}
 
 function parseInstructions(recipe) {
     const instructions = [];
@@ -101,7 +101,7 @@ function parseInstructions(recipe) {
     });
 
     return instructions;
-};
+}
 
 // ================ Parsing Functions ================
 
