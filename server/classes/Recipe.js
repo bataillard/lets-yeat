@@ -9,4 +9,4 @@ class Recipe {
 		this.tags = tags;
 		this.instructions = instructions;
 	}
-};
+}

@@ -52,7 +52,7 @@ exports.Ingredient = class Ingredient {
                 return parseFloat(match[1]) / parseFloat(match[2]);
             }
 
-            if (quantity.length == 0) {
+            if (quantity.length === false) {
                 return null;
             }
 
@@ -71,4 +71,4 @@ exports.Ingredient = class Ingredient {
         this.quantity = this.constructor.convertQuantity(quantity);
         this.unit = unit;
     }
-}
+};
