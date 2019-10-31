@@ -1,3 +1,9 @@
+/**
+ * This file parses budgetbytes.com into Recipe objects
+ * - one of 5 parsers that make up the non-trivial component of
+ *   CPEN 321 Let's Yeat, software engineering project.
+ */
+
 'use strict';
 const path = require('path')
 const rp = require('request-promise');
