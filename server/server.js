@@ -56,13 +56,22 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 /**********************************API CALLS***********************************/
 /******************************************************************************/
 /******************************************************************************/
-
+server.get('/test', (req, res) => {
+     db.collection("recipe").find().toArray((err, result) => {
+        if(err){
+            console.log(err);
+        } else {
+            console.log(result[0]);
+        }
+    })
+})
 
 /* Get recipe from recipe ID
  * returns the entire recipe json object on success
  * returns 401 on bad input ID, and 400 on database failure*/
 server.get('/recipe/id', (req, res) => {
     let { id } = req.query;
+    console.log(id)
     db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
         if (result.length == 0) {
             res.status(401).json("No recipe with this ID");
@@ -111,20 +120,18 @@ server.get('/recipe/suggest', (req, res) => {
 server.get('/recipe/list', (req, res) => {
     let {max} = req.query;
     db.collection("recipe").find().toArray((err, result) => {
-        if (result.length < max) {
-            res.status(401).json("Not enough recipes, try being less picky")
+        if (err) {
+            res.status(400).json("database failure with code: " + err);
         } else {
-            if (err) {
-                res.status(400).json("database failure with code: " + err);
-            } else {
-                var i = 0;
-                var stubs = {}
-                for (i = 0; i < max; i++) {
-                    var stub = new RecipeStub(result[i].id, result[i].name, result[i].url, result[i].time, result[i].difficulty);
-                    stubs.push(stub);
-                }
-                res.status(200).json(stubs);
+            console.log("first stub: " + result[0]);
+            var i = 0;
+            var stubs = []
+            for (i = 0; i < Math.min(max, result.length); i++) {
+                var idd = new RecipeID(result[i]._id);
+                var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                stubs.push(stub);
             }
+            res.status(200).json(stubs);
         }
     })
 })
@@ -168,15 +175,22 @@ server.put("/user/token", (req, res) => {
 /* Attempt logging in a user 
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
-    let { user } = req.query;
-    db.collection("user").find({ "email": user.email }).toArray((err, result) => {
+    let { email, secret, firebaseToken, fromGoogle } = req.body;
+    console.log(email);
+    db.collection("user").find({ "email": email }).toArray((err, result) => {
         console.log(result);
-        if (result.length != 1) {
-            res.status(401).json("No user associated with that email");
-        } else if ((result[0].password) !== user.secret) {
-            res.status(402).json("Incorrect password");
+        if(err){
+            login = new LoginResult(false, false, "asdnfjk");
+            res.status(400).json(login)
+        } else if (result.length != 1) {
+            login = new LoginResult(true, true, "asdnfjk");
+            res.status(200).json(login);
+        } else if ((result[0].password) !== secret) {
+            login = new LoginResult(false, false, "asdnfjk");
+            res.status(200).json(login);
         } else {
-            res.status(200).json("success");
+            login = new LoginResult(true, false, "asdnfjk");
+            res.status(200).json(login);
         }
 
     })
@@ -186,13 +200,12 @@ server.post("/user/login", (req, res) => {
 /* Register a new user */
 server.post("/user/register", (req, res) => {
 
-    let { user, choice } = req.query;
-
+    let { user, choice } = req.body;
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         if (result.length != 0) {
-            res.status(401).send("This email is already signed up");
+            login = new LoginResult(false, false, "asdnfjk");
+            res.status(200).json(login);
         } else {
-
             users.insertOne({
                 "email": user.email,
                 "password": user.secret,
@@ -202,10 +215,12 @@ server.post("/user/register", (req, res) => {
                 "token": user.firebaseToken
             }, (err, result) => {
                 if (err) {
-                    res.status(400).json("failed");
+                    login = new LoginResult(false, false, "asdnfjk");
+                    res.status(400).json(login);
                     return console.log(err);
                 } else {
-                    res.status(200).json("success")
+                    login = new LoginResult(true, false, "asdnfjk");
+                    res.status(200).json(login)
                 }
             });
         }
@@ -253,5 +268,13 @@ class RecipeStub {
         this.pictureURL = pictureUrl;
         this.time = time;
         this.difficulty = difficulty;
+    }
+}
+
+class LoginResult{
+    constructor(success, needsRegistration, serverAuthToken){
+        this.success = success;
+        this.needsRegistration = needsRegistration;
+        this.serverAuthToken = serverAuthToken;
     }
 }
