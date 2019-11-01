@@ -11,7 +11,7 @@ const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
 
 module.export = {getRecipes};
-getRecipes(1)
+
  // ================================ Navigating Site ================================= //
 const FOODNETWORK_BASE = "https://www.foodnetwork.ca";
 const CATEGORY = "/everyday-cooking/recipes";
@@ -26,24 +26,30 @@ function getRecipes(number_of_recipes){
     // initialize recipes owed
     var recipe_count = number_of_recipes;
     var page_count = 1; 
-    while (recipe_count > 0){
-        var page_url;
-        // url on page one doesn't have /?fspn=X where X is page number
-        // on page 1 it is just https://www.foodnetwork.ca/everyday-cooking/recipes
-        if (page_count == 1){
-            page_url = FOODNETWORK_BASE + CATEGORY;
-        }else{
-            page_url = FOODNETWORK_BASE + CATEGORY + PAGE + page.toString();
-        }
-        page_count++;
-        var recipe_urls = getRecipeUrls(page_url);
-        recipe_count -= recipe_urls.length;
-    }
+    // while (recipe_count > 0){
+    //     var page_url;
+    //     // url on page one doesn't have /?fspn=X where X is page number
+    //     // on page 1 it is just https://www.foodnetwork.ca/everyday-cooking/recipes
+    //     if (page_count == 1){
+    //         page_url = FOODNETWORK_BASE + CATEGORY;
+    //     }else{
+    //         page_url = FOODNETWORK_BASE + CATEGORY + PAGE + page_count.toString();
+    //     }
+    //     page_count++;
+    //     var recipe_urls = getRecipeUrls(page_url);
+    //     recipe_promises.push(recipe_urls);
+    //     recipe_count -= recipe_urls.length;
+    // }
+    recipe_promises.push(getRecipeUrls(FOODNETWORK_BASE+CATEGORY));
+
+    // We now have Array[Promise[Array[URL]]], which we transform into Promise[Array[Array[URL]]] then flatten array
+    // Then parse each URL => Promise[Array[Promise[Recipe]]], which we flatten again and return Promise[Array[Recipe]]
 
     // only return when all promises of Recipes are resolved
-    return Promise.all(recipe_promises).then(url => {
+    return Promise.all(recipe_promises).then(urls => {
         // Keep only requested number recipes
         const flatURLs = [].concat(...urls).slice(0, number_of_recipes);
+        //console.log(urls)
         const promises = flatURLs.map(parseRecipeFromUrl);
 
         return Promise.all(promises);
@@ -51,20 +57,21 @@ function getRecipes(number_of_recipes){
 }
 
 function getRecipeUrls(recipes_url){
+    console.log(recipes_url)
+    var js_code;
     return rp(recipes_url).then(html => {
         var $ = cheerio.load(html);
-        var recipe_list = [];
+        var recipe_url_list= [];
 
         // contains the JSON object we need for all links
         // to individual recipes
-        const js_code = $(".wrapper script")[0].text();
+        js_code = $("#wrapper section > script").html()//[0].text();
         const match_data = js_code.match(/var viewModel = (.*);/);
-        console.log(match_data[1]);
-        JSON.parse(match_data[1]).Records.each(recipe_item =>{
-            recipe_list.push(FOODNETWORK_BASE+recipe_item.LinkURL)
-        })
-        // wait until all promises are resolved
-        return Promise.resolve(recipe_list);
+        var recipe_list = JSON.parse(match_data[1]).Records;
+        for (recipe in recipe_list){
+            recipe_url_list.push(FOODNETWORK_BASE+recipe_list[recipe].LinkURL)
+        }
+        return Promise.resolve(recipe_url_list);
     }).catch(() => Promise.resolve([])); // In case of error while parsing list, return empty list
 }
 
@@ -93,20 +100,25 @@ function parseRecipeFromUrl(fn_url){
     return rp(fn_url).then(html =>{
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
-        var $ = cheerio.load(html)
+        var $ = cheerio.load(html);
         const picture_url = parseRecipeImage($);
-        const tags = parseTags($);
+        // const tags = parseTags($);
         const time = parseCookingTime($);
-        const ingredients = parseIngredients($);
-        const instructions = parseCookingInstructions($);
+        console.log(time)
+        // const ingredients = parseIngredients($);
+        // const instructions = parseCookingInstructions($);
         const difficulty = 3;
 
         // html class name of recipe title is "recipeTitle"
         const recipe_title = $(".recipeTitle").text()
-        
-        return new Recipe(fn_url, recipe_title, picture_url, time, 
-           difficulty, ingredients, instructions, tags);
+
+        return null;
+        // return new Recipe(fn_url, recipe_title, picture_url, time, 
+        //    difficulty, ingredients, instructions, tags);
     })
+    // .catch(()=>{
+    //     console.log("Encountered error.")
+    // })
 }
 
 /**
@@ -131,11 +143,15 @@ function parseCookingInstructions($){
 /**
  * input: function with loaded HTML of recipe
  * return: cooking time in minutes
+ * 
+ * NOTE: food network is inconsistent in cooking time
+ * - on the rare occasion that no prep time is provided,
+ *   should discard the recipe.
  */
 function parseCookingTime($){
     // total prep time in food network is always provided in minutes
-    const minutes = $(".recipeDetails-infoValueWrapper span").text()
-
+    const minutes = $("*[itemprop = 'totalTime']").text()
+    // https://stackoverflow.com/questions/39320900/cheerio-itemprop-attribute-content-selection
     return minutes;
 }
 
@@ -165,11 +181,14 @@ function parseIngredients($){
  */
 function parseRecipeImage($){
     try{
-        const image_src = $(".recipe-photo").attr("src")
+        const image_src = $(".recipe-photo")[0].attribs["src"]
+        // example image src is //media.foodnetwork.ca/recipetracker/cd465aa4-dfaa-40e3-b446-ee4a8405b070_french-omelette_webready.jpg
+        // first two chars is // so strip that away. Those are at index 0 and 1
+        return image_src.substring(2);
     } catch (err){
+        console.log("Parse image error: ", err)
         return null;
     }
-    return image_src;
 }
 /**
  * input: function with loaded HTML of recipe
@@ -178,10 +197,14 @@ function parseRecipeImage($){
 function parseTags($){
     potential_tags = []
     // tags in Food network is under see-more class
-    $(".see-more p").text().each(potential_tag => {
+    $(".see-more p").each(potential_tag => { // string type issue/bug
         potential_tags.push(potential_tag.toLowerCase());
     })
     const tags = [...new Set(words)].filter(w => possible_tags.has(w));
 
     return tags;
 }
+
+getRecipes(5).then(x => {
+    console.log(x)
+})
