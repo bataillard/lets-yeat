@@ -9,7 +9,7 @@ const path = require('path')
 const rp = require('request-promise');
 const $ = require('cheerio');
 const Recipe = require('./recipe.js').Recipe;
-const Ingredient = require('./recipe.js').Ingredient
+const Ingredient = require('./recipe.js').Ingredient;
 
 // TIL path is relative to where the Node process is started
 // we want relative path to this file, so use path.join()..
@@ -31,7 +31,7 @@ exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
 
     if (inFuture(fromYear, fromMonth)) {
         return Promise.reject(new Error("Cannot start date range in future: " + fromYear + "-" + fromMonth));
-    } 
+    }
 
     if (inFuture(BB_OLDEST_YEAR, BB_OLDEST_MONTH, fromYear, fromMonth)) {  // If before oldest recipe in BB
         return Promise.reject(new Error("Date range starts too early: " + fromYear + "-" + fromMonth));
@@ -46,7 +46,7 @@ exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
     let recipesPromises = [];
     while (year > fromYear || year == fromYear && month >= fromMonth) {
         let localMonth = month;     // Declare local variables in block scope to avoid problems with closure in promise
-        let localYear = year;       
+        let localYear = year;
         recipesPromises.push(findRecipesInArchive(localYear, localMonth))
 
         month--;
@@ -83,8 +83,7 @@ function findRecipesInArchive(year, month) {
         $(".archive-post > a", monthHtml).each((i, e) => {
             recipeList.push($(e).attr("href"));
         });
-
-        return Promise.resolve(recipeList)
+        return Promise.resolve(recipeList);
     }).catch(() => Promise.resolve([]));        // In case of error while parsing list, return empty list
 }
 
