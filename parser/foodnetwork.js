@@ -78,13 +78,6 @@ function getRecipeUrls(recipes_url){
 
 // ================================ Single Recipe Parsing ================================= //
 
-// temp test website
-const pasta = "https://www.foodnetwork.ca/everyday-cooking/recipe/italian-sausage-pasta-skillet/22840/"
-
-// rp(pasta).then(html => {
-//     var $ = cheerio.load(html)
-//     console.log($(".recipeTitle").text())
-// })
 /**
  * Parsing promise of a single recipe from url
  * - fn stands for food network
@@ -92,21 +85,23 @@ const pasta = "https://www.foodnetwork.ca/everyday-cooking/recipe/italian-sausag
  * return: a function that returns promise of one Recipe object
  */
 
-//  parseRecipeFromUrl(pasta).then(name => {
-//     console.log("Recipe name is ", name)
-// })
-
 function parseRecipeFromUrl(fn_url){
+    console.log(fn_url)
     return rp(fn_url).then(html =>{
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
         const picture_url = parseRecipeImage($);
         // const tags = parseTags($);
-        const time = parseCookingTime($);
-        console.log(time)
-        // const ingredients = parseIngredients($);
-        // const instructions = parseCookingInstructions($);
+        const time_in_minutues = parseCookingTime($);
+
+        // function returns nothing if food network doesn't provide 
+        // prep time. This recipe will be discarded.
+        if (!time_in_minutues)
+            return;
+        const ingredients = parseIngredients($);
+        const instructions = parseCookingInstructions($);
+        console.log(fn_url+" ----- Instructions are "+instructions)
         const difficulty = 3;
 
         // html class name of recipe title is "recipeTitle"
@@ -127,16 +122,24 @@ function parseRecipeFromUrl(fn_url){
  */
 function parseCookingInstructions($){
     var instructions = [];
-
-    $(".recipeInstructions p").each(text =>{
-        // text is steps, led by 1. 2. 3. numbers. Assuming no more than 99 steps.
-        // always trim off first 3 char and check 4th char if is space, trim it as well.
-        var step = text.substring(3)
-        if (step.charAt(0) = " "){
-            step = step.substring(1)
+    
+    $(".recipeInstructions").find('p').each(function(_,element){
+        var step = $(this).html()
+        
+        // sometimes credits are given in the same classes, so remove those.
+        if (step != null && (step.search("href") == -1)){
+            /**
+             * TODO:
+             * - fix copyright sign
+             */
+            // text is steps, led by 1. 2. 3. numbers. Assuming no more than 99 steps.
+            // always trim off first 3 char and check 4th char if is space, trim it as well.
+            step = step.substring(3).trim()
+            console.log(step)
+            //first char is always space, trim it
+            instructions.push(step.trim());
         }
-        instructions.push(step);
-    })   
+    })
     return instructions;
 }
 
@@ -164,14 +167,20 @@ function parseIngredients($){
     
     // regular expression to parse fractions in ingredient units
     // usually in the form &frac13 which means 1/3 
-    //var regex = //
-    $(".recipe-ingredients p").each(text =>{
+    // var regex = //
+    var list = $(".recipe-ingredients p").each(function(_,element){
+        var item = $(this).next().html()
 
-        // place holder
-        // TODO: fix fraction issue
-        ingredients.push(text);
+        if (item != null){
+            /**
+             * TODO: 2x
+             * 1 - fix fraction, in html &frac12 -> unicode &#xBD 
+             * 2 - fix copyright sign
+             */
+            // first char is always space, trim it
+            ingredients.push(item.trim());
+        }
     })
-
     return ingredients;
 }
 
@@ -183,7 +192,7 @@ function parseRecipeImage($){
     try{
         const image_src = $(".recipe-photo")[0].attribs["src"]
         // example image src is //media.foodnetwork.ca/recipetracker/cd465aa4-dfaa-40e3-b446-ee4a8405b070_french-omelette_webready.jpg
-        // first two chars is // so strip that away. Those are at index 0 and 1
+        // first two chars is '//' so strip that away. Those are at index 0 and 1
         return image_src.substring(2);
     } catch (err){
         console.log("Parse image error: ", err)
