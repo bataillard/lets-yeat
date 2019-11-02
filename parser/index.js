@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-const budget = require('./budgetbytes.js');
-const url_parser = require('url');
+const budget = require("./budgetbytes.js");
+const urlParser = require("url");
 
 /**
  * Usage: 
@@ -22,7 +22,7 @@ function main() {
         let url; 
 
         try {
-            url = url_parser.parse(urlString);
+            url = urlParser.parse(urlString);
         } catch (err) {
             console.error(err);
             console.error("Could not parse URL: " + urlString);
@@ -30,18 +30,18 @@ function main() {
         }
     
         if (url.hostname === "www.budgetbytes.com") {
-            budget.parseUrl(url.href).then(recipe => console.log(recipe))
+            budget.parseUrl(url.href).then(recipe => console.log(recipe));
         } else {
-            console.log(url)
+            console.log(url);
             console.error("Unsupported URL");
             return;
         }
     } else if (command === "date") {
-        const max = parseInt(process.argv[4]);
-        const fy = parseInt(process.argv[5]);
-        const fm = parseInt(process.argv[6]);
-        const ty = parseInt(process.argv[7]);
-        const tm = parseInt(process.argv[8]);
+        const max = parseInt(process.argv[4], 10);
+        const fy = parseInt(process.argv[5], 10);
+        const fm = parseInt(process.argv[6], 10);
+        const ty = parseInt(process.argv[7], 10);
+        const tm = parseInt(process.argv[8], 10);
 
         budget.parseByDate(max, fy, fm, ty, tm).then(console.log);
     } else {
