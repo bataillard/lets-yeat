@@ -10,6 +10,8 @@ const cheerio = require('cheerio');
 const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
 
+const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__dirname,"./tags.json"))).tags);
+
 module.export = {getRecipes};
 
  // ================================ Navigating Site ================================= //
@@ -49,7 +51,6 @@ function getRecipes(number_of_recipes){
     return Promise.all(recipe_promises).then(urls => {
         // Keep only requested number recipes
         const flatURLs = [].concat(...urls).slice(0, number_of_recipes);
-        //console.log(urls)
         const promises = flatURLs.map(parseRecipeFromUrl);
 
         return Promise.all(promises);
@@ -57,7 +58,6 @@ function getRecipes(number_of_recipes){
 }
 
 function getRecipeUrls(recipes_url){
-    console.log(recipes_url)
     var js_code;
     return rp(recipes_url).then(html => {
         var $ = cheerio.load(html);
@@ -86,34 +86,31 @@ function getRecipeUrls(recipes_url){
  */
 
 function parseRecipeFromUrl(fn_url){
-    console.log(fn_url)
     return rp(fn_url).then(html =>{
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
-        const picture_url = parseRecipeImage($);
-        // const tags = parseTags($);
         const time_in_minutues = parseCookingTime($);
-
         // function returns nothing if food network doesn't provide 
         // prep time. This recipe will be discarded.
         if (!time_in_minutues)
             return;
+        
+        const picture_url = parseRecipeImage($);
+        const tags = parseTags($);
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
-        console.log(fn_url+" ----- Instructions are "+instructions)
         const difficulty = 3;
 
         // html class name of recipe title is "recipeTitle"
         const recipe_title = $(".recipeTitle").text()
 
-        return null;
-        // return new Recipe(fn_url, recipe_title, picture_url, time, 
-        //    difficulty, ingredients, instructions, tags);
+        return new Recipe(fn_url, recipe_title, picture_url, time_in_minutues, 
+           difficulty, ingredients, instructions, tags);
     })
-    // .catch(()=>{
-    //     console.log("Encountered error.")
-    // })
+    .catch(function(error){
+        console.log("Encountered error.",error)
+    })
 }
 
 /**
@@ -135,7 +132,6 @@ function parseCookingInstructions($){
             // text is steps, led by 1. 2. 3. numbers. Assuming no more than 99 steps.
             // always trim off first 3 char and check 4th char if is space, trim it as well.
             step = step.substring(3).trim()
-            console.log(step)
             //first char is always space, trim it
             instructions.push(step.trim());
         }
@@ -204,13 +200,14 @@ function parseRecipeImage($){
  * return: array of tags
  */
 function parseTags($){
-    potential_tags = []
+    potential_tags = [];
     // tags in Food network is under see-more class
-    $(".see-more p").each(potential_tag => { // string type issue/bug
-        potential_tags.push(potential_tag.toLowerCase());
+    $(".see-more .category a").each(function(i, elem){
+        potential_tags.push($(this).html().toLowerCase());
     })
-    const tags = [...new Set(words)].filter(w => possible_tags.has(w));
-
+    // Intersection of words and potential tags
+    const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
+    
     return tags;
 }
 
