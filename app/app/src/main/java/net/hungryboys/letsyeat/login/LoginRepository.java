@@ -50,7 +50,7 @@ public class LoginRepository {
     // @see https://developer.android.com/training/articles/keystore
     private Credentials credentials;
     private File credFile;
-    private boolean loggedIn = false;
+    private boolean loggedIn;
     private AlgorithmParameters cryptoParams;
 
     // private constructor : singleton access
@@ -69,10 +69,12 @@ public class LoginRepository {
     /**
      * @return the current instance of the login repository
      */
-    public static LoginRepository getInstance() {
+    public static LoginRepository getInstance(Context context) {
         synchronized (LoginRepository.class) {
             if (instance == null) {
                 instance = new LoginRepository();
+
+                instance.credFile = new File(context.getFilesDir(), FILE_PASS);
             }
 
             return instance;
@@ -197,7 +199,11 @@ public class LoginRepository {
      * @return true if user has credentials saved
      */
     public boolean isLoggedIn() {
-        return loggedIn;
+        if (credFile != null && credFile.exists()) {
+            return true;
+        } else {
+            return loggedIn;
+        }
     }
 
     /**
