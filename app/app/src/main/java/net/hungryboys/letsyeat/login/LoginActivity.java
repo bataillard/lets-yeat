@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     loginViewModel.login(usernameEditText.getText().toString(),
-                            passwordEditText.getText().toString());
+                            passwordEditText.getText().toString(), getApplicationContext());
                 }
                 return false;
             }
@@ -124,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                        passwordEditText.getText().toString(), getApplicationContext());
             }
         });
 
@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loginViewModel.register(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+                        passwordEditText.getText().toString(), getApplicationContext());
             }
         });
 
@@ -184,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            loginViewModel.loginFromGoogle(task);
+            loginViewModel.loginFromGoogle(task, getApplicationContext());
         }
 
     }

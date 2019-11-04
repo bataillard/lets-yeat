@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.registration;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -93,7 +94,7 @@ public class RegistrationViewModel extends ViewModel {
      * request should be made to server. This is done asynchronously and the login result LiveData
      * will be updated when finished
      */
-    public void finish() {
+    public void finish(final Context context) {
         final User user = this.user;
 
         RegistrationChoice finalChoice = choice.build();
@@ -107,7 +108,7 @@ public class RegistrationViewModel extends ViewModel {
                     LoginResult login = response.body();
 
                     if (login.isSuccess() && !login.needsRegistration()) {
-                        LoginRepository.getInstance().saveUserCredentials(user, response.body());
+                        LoginRepository.getInstance().saveUserCredentials(user, response.body(), context);
                     }
 
                     registrationResult.postValue(response.body());

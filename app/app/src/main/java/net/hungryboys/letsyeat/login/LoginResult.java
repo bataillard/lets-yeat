@@ -9,10 +9,12 @@ import com.google.gson.annotations.SerializedName;
 
 import net.hungryboys.letsyeat.data.User;
 
+import java.io.Serializable;
+
 /**
  * Authentication result : success or error message.
  */
-public class LoginResult {
+public class LoginResult implements Serializable {
 
     @Expose
     @SerializedName("success")

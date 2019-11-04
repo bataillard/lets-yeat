@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.login;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -51,10 +52,10 @@ public class LoginViewModel extends ViewModel {
      * @param email email of user
      * @param password password of user
      */
-    public void login(String email, String password) {
+    public void login(String email, String password, Context context) {
         if (firebaseToken != null) {
             User user = new User(email, password, firebaseToken);
-            loginToServer(user);
+            loginToServer(user, context);
         } else {
             Log.e(TAG_LOGIN_VM, "Firebase Token is null");
         }
@@ -65,7 +66,7 @@ public class LoginViewModel extends ViewModel {
      * then updates the LiveData observable. Only performs login request if firebase token has been set
      * @param completedLogin the google login task returned by GSI activity
      */
-    public void loginFromGoogle(Task<GoogleSignInAccount> completedLogin) {
+    public void loginFromGoogle(Task<GoogleSignInAccount> completedLogin, Context context) {
         if (firebaseToken == null) {
             Log.e(TAG_LOGIN_VM, "Firebase token is null");
             return;
@@ -76,7 +77,7 @@ public class LoginViewModel extends ViewModel {
 
             if (account != null) {
                 User user = new User(account, firebaseToken);
-                loginToServer(user);
+                loginToServer(user, context);
             } else {
                 Log.e(TAG_LOGIN_VM, "Account null while Google Sign In");
                 loginResult.postValue(LoginResult.failure(R.string.google_login_failed));
@@ -87,7 +88,7 @@ public class LoginViewModel extends ViewModel {
         }
     }
 
-    private void loginToServer(final User user) {
+    private void loginToServer(final User user, final Context context) {
         // Actually perform API call to server, add user to LoginResult when it returns.
         // If success, save user to LoginRepository
 
@@ -102,7 +103,7 @@ public class LoginViewModel extends ViewModel {
                     loginResult.postValue(response.body());
 
                     if (result.isSuccess() && !result.needsRegistration()) {
-                        LoginRepository.getInstance().saveUserCredentials(user, result);
+                        LoginRepository.getInstance().saveUserCredentials(user, result, context);
                     }
                 } else {
                     Log.e(TAG_LOGIN_VM, "Incorrect response from server " + response.message());
@@ -123,8 +124,8 @@ public class LoginViewModel extends ViewModel {
      * @param email email of user
      * @param password password of user
      */
-    public void register(String email, String password) {
-        login(email, password);
+    public void register(String email, String password, Context context) {
+        login(email, password, context);
     }
 
     /**
