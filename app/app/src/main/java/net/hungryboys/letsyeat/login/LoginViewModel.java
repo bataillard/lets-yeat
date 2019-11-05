@@ -34,10 +34,10 @@ public class LoginViewModel extends ViewModel {
     /**
      * @return an observable LoginResult containing the results of the login attempt
      */
-    LiveData<LoginResult> getLoginResult() {
+    LiveData<LoginResult> getLoginResult(Context context) {
         // If user already in logged in repository, supply a login success directly instead of
         // querying server
-        LoginRepository login = LoginRepository.getInstance();
+        LoginRepository login = LoginRepository.getInstance(context);
 
         if (login.isLoggedIn()) {
             loginResult.setValue(LoginResult.success(false, login.getServerAuthToken()));
@@ -103,7 +103,7 @@ public class LoginViewModel extends ViewModel {
                     loginResult.postValue(response.body());
 
                     if (result.isSuccess() && !result.needsRegistration()) {
-                        LoginRepository.getInstance().saveUserCredentials(user, result, context);
+                        LoginRepository.getInstance(context).saveUserCredentials(user, result, context);
                     }
                 } else {
                     Log.e(TAG_LOGIN_VM, "Incorrect response from server " + response.message());

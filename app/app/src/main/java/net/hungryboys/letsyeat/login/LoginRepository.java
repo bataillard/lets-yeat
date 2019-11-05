@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi;
 
 import net.hungryboys.letsyeat.data.User;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,16 +21,19 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.Calendar;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.KeyGenerator;
+import javax.crypto.spec.IvParameterSpec;
 
 /**
  * Singleton class that requests authentication and user information from the remote data source and
@@ -42,7 +46,9 @@ public class LoginRepository {
     private static final String ALIAS_PASS = "YeatLoginRepository";
     private static final String KEYSTORE = "AndroidKeyStore";
     private static final String TRANSFORM_PASS = "AES/CBC/PKCS7Padding";
+    private static final String ALGORITHM_PASS = KeyProperties.KEY_ALGORITHM_AES;
     private static final String FILE_PASS = "creds.txt";
+    private static final String IV_PASS = "iv.txt";
 
     private static volatile LoginRepository instance;
 
@@ -50,11 +56,34 @@ public class LoginRepository {
     // @see https://developer.android.com/training/articles/keystore
     private Credentials credentials;
     private File credFile;
-    private boolean loggedIn;
+    private File ivFile;
     private AlgorithmParameters cryptoParams;
+    private boolean loggedIn;
 
     // private constructor : singleton access
-    private LoginRepository() {    }
+    private LoginRepository(Context context) {
+        this.credFile = new File(context.getFilesDir(), FILE_PASS);
+        this.ivFile = new File(context.getFilesDir(), IV_PASS);
+    }
+
+    private IvParameterSpec loadIV() throws IOException {
+        FileInputStream input = new FileInputStream(ivFile);
+        int ivLength = input.read();
+
+        byte[] iv = new byte[ivLength];
+        if (input.read(iv) != ivLength) {
+            throw new IOException("Length of IV is not equal to read bytes");
+        }
+
+        return new IvParameterSpec(iv);
+    }
+
+    private void saveIV(byte[] iv) throws IOException {
+        FileOutputStream output = new FileOutputStream(ivFile);
+        output.write(iv.length);
+        output.write(iv);
+        output.close();
+    }
 
     private static class Credentials implements Serializable {
         User user;
@@ -72,9 +101,7 @@ public class LoginRepository {
     public static LoginRepository getInstance(Context context) {
         synchronized (LoginRepository.class) {
             if (instance == null) {
-                instance = new LoginRepository();
-
-                instance.credFile = new File(context.getFilesDir(), FILE_PASS);
+                instance = new LoginRepository(context);
             }
 
             return instance;
@@ -146,8 +173,7 @@ public class LoginRepository {
         Cipher cipher = Cipher.getInstance(TRANSFORM_PASS);
         cipher.init(Cipher.ENCRYPT_MODE, key);
 
-        // Save encryption parameters
-        this.cryptoParams = cipher.getParameters();
+        saveIV(cipher.getIV());
 
         // Encrypt credentials and write encrypted contents to output stream
         CipherOutputStream cipherOutputStream = new CipherOutputStream(output, cipher);
@@ -163,7 +189,7 @@ public class LoginRepository {
 
         Key key = ((KeyStore.SecretKeyEntry)keyStore.getEntry(ALIAS_PASS, null)).getSecretKey();
         Cipher cipher = Cipher.getInstance(TRANSFORM_PASS);
-        cipher.init(Cipher.DECRYPT_MODE, key, cryptoParams);
+        cipher.init(Cipher.DECRYPT_MODE, key, loadIV());
 
         CipherInputStream cipherInputStream = new CipherInputStream(input, cipher);
         ObjectInputStream objectInputStream = new ObjectInputStream(cipherInputStream);
@@ -192,6 +218,10 @@ public class LoginRepository {
     private void removeUserCredentialsFromKeyStore() {
         if (credFile.exists()) {
             credFile.delete();
+        }
+
+        if (ivFile.exists()) {
+            ivFile.delete();
         }
     }
 

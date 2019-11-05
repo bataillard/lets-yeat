@@ -108,7 +108,7 @@ public class RegistrationViewModel extends ViewModel {
                     LoginResult login = response.body();
 
                     if (login.isSuccess() && !login.needsRegistration()) {
-                        LoginRepository.getInstance().saveUserCredentials(user, response.body(), context);
+                        LoginRepository.getInstance(context).saveUserCredentials(user, response.body(), context);
                     }
 
                     registrationResult.postValue(response.body());
