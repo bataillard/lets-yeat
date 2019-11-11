@@ -3,7 +3,8 @@
  * 
  */
 
-const parse = require('../parser/budgetbytes')
+const parse1 = require('../parser/budgetbytes')
+const parse2 = require('../parser/foodnetwork')
 const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
 var db
@@ -16,7 +17,21 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 })
 
 // (max, fromYear, fromMonth, toYear, toMonth)
-var batch2018 = parse.parseByDate(100,2018,1,2018,2).then(batch =>{
-    recipe.insertMany(batch);
-    console.log("Insertion success.")
+var batch2018 = parse1.parseByDate(100,2018,1,2018,2).then(batch =>{
+    for (each_recipe of batch){
+        if(each_recipe != null){
+            recipe.insert(each_recipe)
+        }
+    }
+    console.log("Insertion 1 success.");
 });
+
+var batch_foodnetworth = parse2.getRecipes(50).then(batch =>{
+    for (each_recipe of batch){
+        if(each_recipe != null){
+            recipe.insert(each_recipe)
+        }
+    }
+    console.log("Insertion 2 success.");
+})
+

@@ -18,7 +18,8 @@ module.export = {getRecipes};
 const FOODNETWORK_BASE = "https://www.foodnetwork.ca";
 const CATEGORY = "/everyday-cooking/recipes";
 const PAGE = "/?fspn=";
-/*""
+
+/*
  * input: number of reqested recipes
  * return: array containing 
  */
@@ -68,8 +69,8 @@ function getRecipeUrls(recipes_url){
         js_code = $("#wrapper section > script").html()//[0].text();
         const match_data = js_code.match(/var viewModel = (.*);/);
         var recipe_list = JSON.parse(match_data[1]).Records;
-        for (recipe in recipe_list){
-            recipe_url_list.push(FOODNETWORK_BASE+recipe_list[recipe].LinkURL)
+        for (recipe of recipe_list){
+            recipe_url_list.push(FOODNETWORK_BASE+recipe.LinkURL)
         }
         return Promise.resolve(recipe_url_list);
     }).catch(() => Promise.resolve([])); // In case of error while parsing list, return empty list
@@ -94,7 +95,7 @@ function parseRecipeFromUrl(fn_url){
         // function returns nothing if food network doesn't provide 
         // prep time. This recipe will be discarded.
         if (!time_in_minutues)
-            return;
+            return null;
         
         const picture_url = parseRecipeImage($);
         const tags = parseTags($);
@@ -105,8 +106,9 @@ function parseRecipeFromUrl(fn_url){
         // html class name of recipe title is "recipeTitle"
         const recipe_title = $(".recipeTitle").text()
 
-        return new Recipe(fn_url, recipe_title, picture_url, time_in_minutues, 
-           difficulty, ingredients, instructions, tags);
+        return new Recipe(fn_url, recipe_title, picture_url, 
+            time_in_minutues, difficulty, ingredients, 
+            instructions, tags);
     })
     .catch(function(error){
         console.log("Encountered error.",error)
