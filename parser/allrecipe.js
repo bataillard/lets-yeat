@@ -162,20 +162,9 @@ function parseCookingTime($){
  */
 function parseIngredients($){
     var ingredients = [];
-    
-    // regular expression to parse fractions in ingredient units
-    // usually in the form &frac13 which means 1/3 
-    // var regex = //
-    var list = $(".recipe-ingredients p").each(function(_,element){
-        var item = $(this).next().html()
-
+    var list = $("*[itemprop = 'recipeIngredient']").each(function(_,element){
+        var item = $(this).html()
         if (item != null){
-            /**
-             * TODO: 2x
-             * 1 - fix fraction, in html &frac12 -> unicode &#xBD 
-             * 2 - fix copyright sign
-             */
-            // first char is always space, trim it
             ingredients.push(item.trim());
         }
     })

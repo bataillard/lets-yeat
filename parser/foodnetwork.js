@@ -168,7 +168,7 @@ function parseIngredients($){
     // var regex = //
     var list = $(".recipe-ingredients p").each(function(_,element){
         var item = $(this).next().html()
-
+        console.log(item)
         if (item != null){
             /**
              * TODO: 2x
@@ -213,6 +213,6 @@ function parseTags($){
     return tags;
 }
 
-getRecipes(5).then(x => {
+getRecipes(1).then(x => {
     console.log(x)
 })
