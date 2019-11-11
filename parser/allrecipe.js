@@ -149,11 +149,6 @@ function parseCookingInstructions($){
  *   should discard the recipe.
  */
 function parseCookingTime($){
-
-    //TODO: bug = when time is in both hours and minutes e.g. 1 hr 35 min
-    // will result in cooking time of 1 min since detects min as unit and captures 1 so [1 min]
-
-
     // total prep time in food network is always provided in minutes
     const time = $(".ready-in-time").text()
     var num = time.match(/\d+/g);
@@ -211,11 +206,7 @@ function parseTags($){
     return tags;
 }
 
-// getRecipes(10).then(x => {
-//     console.log(x)
-// })
-
-var link = "https://www.allrecipes.com/recipe/8665/braised-balsamic-chicken/?internalSource=recipe%20hub&referringContentType=Recipe%20Hub&clickId=cardslot%2062"
-parseRecipeFromUrl(link).then(x => {
+getRecipes(10).then(x => {
     console.log(x)
 })
+
