@@ -11,7 +11,7 @@ const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
 
 const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__dirname,"./tags.json"))).tags);
-
+const minutes_in_hour = 60;
 module.export = {getRecipes};
 
  // ================================ Navigating Site ================================= //
@@ -153,11 +153,19 @@ function parseCookingTime($){
     //TODO: bug = when time is in both hours and minutes e.g. 1 hr 35 min
     // will result in cooking time of 1 min since detects min as unit and captures 1 so [1 min]
 
+
     // total prep time in food network is always provided in minutes
     const time = $(".ready-in-time").text()
-    var num = Number(time.match(/\d+/)); // 
-    var unit = time.match(/[a-zA-Z]+$/); // either m(inute) or h(our)
-    return unit == "m"? num : num*60;
+    var num = time.match(/\d+/g);
+    var unit = time.match(/(m|h)/g) // either m(inute) or h(our)
+
+    // in corner case that time is 1 hr 35 min
+    // parse individual numbers and return results in minutes
+    if(unit.legnth > 1){
+        return Number(num[0]) * minutes_in_hour + Number(num[1]);
+    }else{
+        return unit == "m"? Number(num) : Number(num) * minutes_in_hour;
+    }
 }
 
 /**
@@ -203,6 +211,11 @@ function parseTags($){
     return tags;
 }
 
-getRecipes(10).then(x => {
+// getRecipes(10).then(x => {
+//     console.log(x)
+// })
+
+var link = "https://www.allrecipes.com/recipe/8665/braised-balsamic-chicken/?internalSource=recipe%20hub&referringContentType=Recipe%20Hub&clickId=cardslot%2062"
+parseRecipeFromUrl(link).then(x => {
     console.log(x)
 })
