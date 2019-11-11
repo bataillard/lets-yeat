@@ -92,7 +92,7 @@ public class BrowseFragment extends Fragment {
          * list to reflect that */
 
         browseViewModel = ViewModelProviders.of(this).get(BrowseViewModel.class);
-        browseViewModel.getRecipeStubs().observe(this, new Observer<List<RecipeStub>>() {
+        browseViewModel.getRecipeStubs(getContext()).observe(this, new Observer<List<RecipeStub>>() {
             @Override
             public void onChanged(List<RecipeStub> recipeStubs) {
                 recipeCardAdapter.setRecipes(recipeStubs);
@@ -117,7 +117,7 @@ public class BrowseFragment extends Fragment {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    browseViewModel.searchTextChanged(searchBar.getText().toString());
+                    browseViewModel.searchTextChanged(searchBar.getText().toString(), getContext());
                 }
 
                 return true;
@@ -128,7 +128,7 @@ public class BrowseFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 ToggleButton button = (ToggleButton) buttonView;
-                browseViewModel.tagChanged(button.getText().toString(), button.isChecked());
+                browseViewModel.tagChanged(button.getText().toString(), button.isChecked(), getContext());
             }
         };
 

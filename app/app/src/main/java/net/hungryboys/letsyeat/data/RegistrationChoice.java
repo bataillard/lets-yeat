@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Immutable class that represents the choices made by user at registration: selected tags and
@@ -15,16 +16,8 @@ import java.util.Calendar;
  */
 public class RegistrationChoice implements Serializable {
 
-    @Expose
-    @SerializedName("tags")
     private final String[] tags;
-
-    @Expose
-    @SerializedName("time")
     private final Calendar time;
-
-    @Expose
-    @SerializedName("difficulty")
     private final double difficulty;
 
     /* Default values for choices */
@@ -86,8 +79,8 @@ public class RegistrationChoice implements Serializable {
     /**
      * @return copy of time at which user cooks
      */
-    public Calendar getTime() {
-        return (Calendar) time.clone();
+    public Date getTime() {
+        return time.getTime();
     }
 
     /**

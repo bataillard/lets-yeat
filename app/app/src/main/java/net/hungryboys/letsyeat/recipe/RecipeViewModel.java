@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.recipe;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -55,9 +56,9 @@ public class RecipeViewModel extends ViewModel {
      * Signal that user has chosen to cook particular recipe, will alert server so it can send a
      * notification at the correct time
      */
-    public void cookConfirm() {
-        if (id != null && LoginRepository.getInstance().isLoggedIn()) {
-            String email = LoginRepository.getInstance().getUserEmail();
+    public void cookConfirm(Context context) {
+        if (id != null && LoginRepository.getInstance(context).isLoggedIn()) {
+            String email = LoginRepository.getInstance(context).getUserEmail();
 
             Call<String> call = APICaller.getApiCall().registerNotification(email, id);
             call.enqueue(new Callback<String>() {
@@ -78,7 +79,7 @@ public class RecipeViewModel extends ViewModel {
 
     private void loadRecipe() {
         if (id != null) {
-            Call<Recipe> call = APICaller.getApiCall().getRecipe(id);
+            Call<Recipe> call = APICaller.getApiCall().getRecipe(id.getId());
             call.enqueue(new Callback<Recipe>() {
                 @Override
                 public void onResponse(Call<Recipe> call, Response<Recipe> response) {

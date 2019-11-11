@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.api;
 
+import net.hungryboys.letsyeat.api.bodies.RegistrationBody;
 import net.hungryboys.letsyeat.data.Recipe;
 import net.hungryboys.letsyeat.data.RecipeID;
 import net.hungryboys.letsyeat.data.RecipeStub;
@@ -8,13 +9,17 @@ import net.hungryboys.letsyeat.data.User;
 import net.hungryboys.letsyeat.login.LoginResult;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Query;
 
 /**
@@ -25,7 +30,7 @@ public interface APICalls {
     /* Recipe API Calls */
 
     @GET("/recipe/id")
-    Call<Recipe> getRecipe(@Query("id") RecipeID id);
+    Call<Recipe> getRecipe(@Query("id") String id);
 
     @GET("/recipe/suggest")
     Call<RecipeID> getRecipeSuggestion(@Query("email") String email);
@@ -49,8 +54,9 @@ public interface APICalls {
 
     @POST("/notification/new")
     Call<String> registerNotification(@Query("email") String email,
-                                      @Query("recipeId") RecipeID recipeID,
-                                      @Query("datetime") Calendar datetime);
+                                      @Query("id") RecipeID recipeID,
+                                      @Query("time") Date datetime);
+
 
     @PATCH("/user/token")
     Call<String> updateFirebaseToken(@Query("email") String email, @Query("token") String token);
@@ -59,9 +65,9 @@ public interface APICalls {
     /* Authentication API Calls */
 
     @POST("/user/login")
-    Call<LoginResult> login(@Query("user") User user);
+    Call<LoginResult> login(@Body User user);
 
     @POST("/user/register")
-    Call<LoginResult> register(@Query("user") User user, @Query("choice") RegistrationChoice choice);
+    Call<LoginResult> register(@Body RegistrationBody body);
 }
 

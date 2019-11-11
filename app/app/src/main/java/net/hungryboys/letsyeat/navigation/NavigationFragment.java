@@ -93,7 +93,7 @@ public class NavigationFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Toast.makeText(getActivity(), "Yeat!", Toast.LENGTH_LONG).show();
-                viewModel.yeetClicked();
+                viewModel.yeetClicked(getContext());
             }
         });
 

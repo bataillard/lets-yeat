@@ -98,7 +98,7 @@ public class RegistrationActivity extends AppCompatActivity implements
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.finish();
+                viewModel.finish(getApplicationContext());
             }
         });
     }

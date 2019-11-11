@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.navigation;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -36,12 +37,12 @@ public class NavigationViewModel extends ViewModel {
      * Alert ViewModel that the yeet button has been clicked and a recipe suggestion request
      * should be performed.
      */
-    public void yeetClicked(){
-       loadSuggestion();
+    public void yeetClicked(Context context){
+       loadSuggestion(context);
     }
 
-    private void loadSuggestion() {
-        LoginRepository login = LoginRepository.getInstance();
+    private void loadSuggestion(Context context) {
+        LoginRepository login = LoginRepository.getInstance(context);
 
         if (login.isLoggedIn()) {
             Call<RecipeID> call = APICaller.getApiCall().getRecipeSuggestion(login.getUserEmail());

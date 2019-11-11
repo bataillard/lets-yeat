@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.registration;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.api.APICaller;
+import net.hungryboys.letsyeat.api.bodies.RegistrationBody;
 import net.hungryboys.letsyeat.data.RegistrationChoice;
 import net.hungryboys.letsyeat.data.User;
 import net.hungryboys.letsyeat.login.LoginRepository;
@@ -92,12 +94,13 @@ public class RegistrationViewModel extends ViewModel {
      * request should be made to server. This is done asynchronously and the login result LiveData
      * will be updated when finished
      */
-    public void finish() {
+    public void finish(final Context context) {
         final User user = this.user;
 
         RegistrationChoice finalChoice = choice.build();
 
-        Call<LoginResult> call = APICaller.getApiCall().register(user, finalChoice);
+        Call<LoginResult> call = APICaller.getApiCall().register(new RegistrationBody(user, finalChoice));
+
         call.enqueue(new retrofit2.Callback<LoginResult>() {
             @Override
             public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
@@ -105,7 +108,7 @@ public class RegistrationViewModel extends ViewModel {
                     LoginResult login = response.body();
 
                     if (login.isSuccess() && !login.needsRegistration()) {
-                        LoginRepository.getInstance().saveUserCredentials(user, response.body());
+                        LoginRepository.getInstance(context).saveUserCredentials(user, response.body(), context);
                     }
 
                     registrationResult.postValue(response.body());

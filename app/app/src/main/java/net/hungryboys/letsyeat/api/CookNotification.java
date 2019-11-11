@@ -97,7 +97,7 @@ public class CookNotification  extends FirebaseMessagingService{
      * @param token The new token.
      */
     private void sendRegistrationToServer(String token) {
-        LoginRepository loginRepository = LoginRepository.getInstance();
+        LoginRepository loginRepository = LoginRepository.getInstance(getApplicationContext());
 
         if (loginRepository.isLoggedIn()) {
             Call<String> call = APICaller.getApiCall().updateFirebaseToken(token, loginRepository.getUserEmail());

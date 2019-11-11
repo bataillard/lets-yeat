@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.browse;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -40,10 +41,10 @@ public class BrowseViewModel extends ViewModel {
      * When called for the first time, it will request a new
      * @return immutable LiveData object on a List<RecipeStub>
      */
-    public LiveData<List<RecipeStub>> getRecipeStubs() {
+    public LiveData<List<RecipeStub>> getRecipeStubs(Context context) {
         if (recipes == null) {
             recipes = new MutableLiveData<>();
-            loadRecipes();
+            loadRecipes(context);
         }
 
         return recipes;
@@ -63,12 +64,12 @@ public class BrowseViewModel extends ViewModel {
      * server in the background and updates the LiveData asynchronously.
      * @param search the current text in search bar
      */
-    public void searchTextChanged(String search) {
+    public void searchTextChanged(String search, Context context) {
         String old = searchText;
         searchText = search;
 
         if (!searchText.equals(old)) {
-            search();
+            search(context);
         }
     }
 
@@ -78,7 +79,7 @@ public class BrowseViewModel extends ViewModel {
      * @param tag specific tag that has changed
      * @param selected new status of tag, true if selected, false if not
      */
-    public void tagChanged(String tag, boolean selected) {
+    public void tagChanged(String tag, boolean selected, Context context) {
         Set<String> previous = new HashSet<>(selectedTags);
 
         if (selected) {
@@ -88,12 +89,12 @@ public class BrowseViewModel extends ViewModel {
         }
 
         if (!selectedTags.equals(previous)) {
-            search();
+            search(context);
         }
     }
 
-    private void search() {
-        LoginRepository login = LoginRepository.getInstance();
+    private void search(Context context) {
+        LoginRepository login = LoginRepository.getInstance(context);
         List<String> tags = new ArrayList<>(selectedTags);
 
         if (login.isLoggedIn()) {
@@ -118,8 +119,8 @@ public class BrowseViewModel extends ViewModel {
         }
     }
 
-    private void loadRecipes() {
-        LoginRepository login = LoginRepository.getInstance();
+    private void loadRecipes(Context context) {
+        LoginRepository login = LoginRepository.getInstance(context);
 
         if (login.isLoggedIn()) {
             Call<List<RecipeStub>> call = APICaller.getApiCall().getRecipeList(

@@ -131,7 +131,7 @@ public class RecipeFragment extends Fragment {
         cookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mViewModel.cookConfirm();
+                mViewModel.cookConfirm(getContext());
             }
         });
     }
