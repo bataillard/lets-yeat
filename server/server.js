@@ -100,14 +100,6 @@ server.get('/recipe/id', (req, res) => {
 server.get('/recipe/suggest', (req, res) => {
     console.log("getting a suggestion");
     let { email } = req.query;
-
-<<<<<<< HEAD
-   
-    
-=======
-
-
->>>>>>> 81d1421b099d88ec118e2bebcbe7558f62428d1c
     getUserPromise = new Promise(function (resolve, reject) {
         db.collection("user").find({ "email": email }).toArray((err, result) => {
             if (err) {
@@ -130,11 +122,7 @@ server.get('/recipe/suggest', (req, res) => {
         db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
             if (err) {
                 res.status(401).json("Database Failure");
-<<<<<<< HEAD
             }else if (result.length == 0) {
-=======
-            } else if (result.length == 0) {
->>>>>>> 81d1421b099d88ec118e2bebcbe7558f62428d1c
                 res.status(401).json("No available recipes");
             } else {
                 recip = new RecipeID(result[0]._id);
@@ -162,11 +150,8 @@ server.get('/recipe/list', (req, res) => {
                 if (err) {
                     res.status(400).json("Database Failure");
                 } else {
-<<<<<<< HEAD
-                    if(result[0] != undefined){
-=======
+
                     if (result[0] != undefined) {
->>>>>>> 81d1421b099d88ec118e2bebcbe7558f62428d1c
                         console.log("first stub: " + result[0].name);
                     }
                     var i = 0;
@@ -183,29 +168,19 @@ server.get('/recipe/list', (req, res) => {
                         if (err) {
                             res.status(400).json("Database Failure");
                         } else {
-<<<<<<< HEAD
-                            if(result[0] != undefined){
-=======
+
                             if (result[0] != undefined) {
->>>>>>> 81d1421b099d88ec118e2bebcbe7558f62428d1c
                                 console.log("first stub: " + result[0].name);
                             }
                             var i = 0;
                             let currentLength = stubs.length;
                             console.log(currentLength);
-<<<<<<< HEAD
                             for (i = 0; i < Math.min(max-currentLength, result.length) ; i++) {
                                 var idd = new RecipeID(result[i]._id);
                                 console.log(result[i].tags)
                                 if (!(allIDs.includes(result[i]._id))) {
                                 
-=======
-                            for (i = 0; i < Math.min(max - currentLength, result.length); i++) {
-                                var idd = new RecipeID(result[i]._id);
-                                console.log(result[i].tags)
-                                if (!(allIDs.includes(result[i]._id))) {
 
->>>>>>> 81d1421b099d88ec118e2bebcbe7558f62428d1c
                                     var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
                                     stubs.push(stub);
                                     allIDs.push(result[i]._id);
