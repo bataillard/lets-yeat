@@ -100,6 +100,7 @@ function parseRecipeFromUrl(ar_url){
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
+        console.log(ar_url)
         const time_in_minutues = parseCookingTime($);
         // function returns nothing if food network doesn't provide 
         // prep time. This recipe will be discarded.
@@ -113,6 +114,7 @@ function parseRecipeFromUrl(ar_url){
         const difficulty = 3;
 
         const recipe_title = $("#recipe-main-content").text()
+
         return new Recipe(ar_url, recipe_title, picture_url, 
             time_in_minutues, difficulty, ingredients, 
             instructions, tags);
@@ -153,13 +155,15 @@ function parseCookingTime($){
     const time = $(".ready-in-time").text()
     var num = time.match(/\d+/g);
     var unit = time.match(/(m|h)/g) // either m(inute) or h(our)
-
+    console.log(unit)
     // in corner case that time is 1 hr 35 min
     // parse individual numbers and return results in minutes
-    if(unit.legnth > 1){
-        return Number(num[0]) * minutes_in_hour + Number(num[1]);
+    if(num.length > 1){
+        var total_time_min = Number(num[0]) * minutes_in_hour + Number(num[1]);
+        return total_time_min;
     }else{
-        return unit == "m"? Number(num) : Number(num) * minutes_in_hour;
+        var total_time_min = unit == "m"? Number(num) : Number(num) * minutes_in_hour;
+        return total_time_min;
     }
 }
 
@@ -207,6 +211,12 @@ function parseTags($){
 }
 
 getRecipes(10).then(x => {
+    var count = 0;
+    for (item of x){
+        if (item != null)
+            count++;
+    }
     console.log(x)
-})
+    console.log(count)
+});
 
