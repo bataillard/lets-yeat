@@ -105,10 +105,9 @@ function parseRecipeFromUrl(ar_url){
         // html class name of recipe title is "recipeTitle"
         const recipe_title = $(".recipeTitle").text()
 
-        return null;
-        // return new Recipe(fn_url, recipe_title, picture_url, 
-        //     time_in_minutues, difficulty, ingredients, 
-        //     instructions, tags);
+        return new Recipe(fn_url, recipe_title, picture_url, 
+            time_in_minutues, difficulty, ingredients, 
+            instructions, tags);
     })
     .catch(function(error){
         console.log("Encountered error.",error)
@@ -192,5 +191,4 @@ function parseTags($){
     return tags;
 }
 
-var test_url = "https://www.allrecipes.com/recipe/8665/braised-balsamic-chicken/?internalSource=recipe%20hub&referringContentType=Recipe%20Hub&clickId=cardslot%2062"
-parseRecipeFromUrl(test_url)
+console.log(getRecipes(1))
