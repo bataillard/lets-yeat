@@ -114,8 +114,8 @@ function parseRecipeFromUrl(ar_url){
 
         // TODO 
         // html class name of recipe title is "recipeTitle"
-        const recipe_title = $(".recipeTitle").text()
-
+        const recipe_title = $("#recipe-main-content").text()
+        console.log(recipe_title)
         return new Recipe(ar_url, "TEMP", picture_url, 
             time_in_minutues, difficulty, ingredients, 
             instructions, tags);
