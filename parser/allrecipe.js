@@ -58,20 +58,30 @@ function getRecipes(number_of_recipes){
     });
 }
 
+/**
+ * 
+ * Given a url,
+ * get all recipe urls from the page showcasing all recipes.
+ * 
+ */
 function getRecipeUrls(recipes_url){
     var js_code;
     return rp(recipes_url).then(html => {
         var $ = cheerio.load(html);
         var recipe_url_list= [];
 
-        // contains the JSON object we need for all links
-        // to individual recipes
-        js_code = $("#wrapper section > script").html()//[0].text();
-        const match_data = js_code.match(/var viewModel = (.*);/);
-        var recipe_list = JSON.parse(match_data[1]).Records;
-        for (recipe of recipe_list){
-            recipe_url_list.push(FOODNETWORK_BASE+recipe.LinkURL)
-        }
+        $('.fixed-recipe-card__h3 a[href]').each((index, elem) => {
+            // link may be something else, only want
+            // "https://www.allrecipes.com/recipe/-----"
+            //  don't want "https://www.allrecipes.com/cook/------"
+            var potential_recipe_url = $(elem).attr('href');
+            var recipe_begin = new RegExp('https://www.allrecipes.com/recipe/')
+            if (potential_recipe_url.match(recipe_begin)){
+                console.log(potential_recipe_url);
+                recipe_url_list.push(potential_recipe_url);
+            }
+                
+         });
         return Promise.resolve(recipe_url_list);
     }).catch(() => Promise.resolve([])); // In case of error while parsing list, return empty list
 }
@@ -102,10 +112,11 @@ function parseRecipeFromUrl(ar_url){
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
 
+        // TODO 
         // html class name of recipe title is "recipeTitle"
         const recipe_title = $(".recipeTitle").text()
 
-        return new Recipe(fn_url, recipe_title, picture_url, 
+        return new Recipe(ar_url, "TEMP", picture_url, 
             time_in_minutues, difficulty, ingredients, 
             instructions, tags);
     })
@@ -191,4 +202,6 @@ function parseTags($){
     return tags;
 }
 
-console.log(getRecipes(1))
+getRecipes(1).then(x => {
+    console.log("Done")
+})
