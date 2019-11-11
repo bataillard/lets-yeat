@@ -185,7 +185,8 @@ function parseRecipeImage($){
 function parseTags($){
     potential_tags = [];
     // tags in Food network is under see-more class
-    $(".see-more .category a").each(function(i, elem){
+    $(".toggle-similar__title").each(function(i, elem){
+        console.log($(this).html)
         potential_tags.push($(this).html().toLowerCase());
     })
     // Intersection of words and potential tags
