@@ -91,7 +91,7 @@ function getRecipeUrls(recipes_url){
 /**
  * Parsing promise of a single recipe from url
  * - ar stands for all recipe
- * input: url of single food network recipe
+ * input: url of single Allrecipe recipe
  * return: a function that returns promise of one Recipe object
  */
 
@@ -112,11 +112,8 @@ function parseRecipeFromUrl(ar_url){
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
 
-        // TODO 
-        // html class name of recipe title is "recipeTitle"
         const recipe_title = $("#recipe-main-content").text()
-        console.log(recipe_title)
-        return new Recipe(ar_url, "TEMP", picture_url, 
+        return new Recipe(ar_url, recipe_title, picture_url, 
             time_in_minutues, difficulty, ingredients, 
             instructions, tags);
     })
@@ -133,7 +130,7 @@ function parseCookingInstructions($){
     var instructions = [];
     
     $(".recipe-directions__list--item").each(function(_,element){
-        var step = $(this).html()
+        var step = $(this).text()
         // last item also has same class but not part of instruction (hidden)
         // we don't want that.
         if (step != null && step.length !=0){
@@ -152,6 +149,10 @@ function parseCookingInstructions($){
  *   should discard the recipe.
  */
 function parseCookingTime($){
+
+    //TODO: bug = when time is in both hours and minutes e.g. 1 hr 35 min
+    // will result in cooking time of 1 min since detects min as unit and captures 1 so [1 min]
+
     // total prep time in food network is always provided in minutes
     const time = $(".ready-in-time").text()
     var num = Number(time.match(/\d+/)); // 
@@ -202,6 +203,6 @@ function parseTags($){
     return tags;
 }
 
-getRecipes(1).then(x => {
-    console.log("Done")
+getRecipes(10).then(x => {
+    console.log(x)
 })
