@@ -10,6 +10,10 @@ const cheerio = require('cheerio');
 const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
 
+const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__dirname,"./tags.json"))).tags);
+
+module.export = {getRecipes};
+
  // ================================ Navigating Site ================================= //
 const ALLRECIPE_BASE = "https://www.allrecipes.com";
 const CATEGORY = "/recipes";
@@ -20,7 +24,6 @@ const PAGE = "/?page=";
  * return: array containing 
  */
 function getRecipes(number_of_recipes){
-    console.log("Website is ",ALLRECIPE_BASE,CATEGORY,PAGE)
     let recipe_promises = [];
 
     // initialize recipes owed
@@ -88,7 +91,6 @@ function parseRecipeFromUrl(ar_url){
         // param is just selectors.
         var $ = cheerio.load(html);
         const time_in_minutues = parseCookingTime($);
-        console.log("Time is ", time_in_minutues)
         // function returns nothing if food network doesn't provide 
         // prep time. This recipe will be discarded.
         if (!time_in_minutues)
@@ -128,7 +130,6 @@ function parseCookingInstructions($){
             instructions.push(step.trim());
         }
     })
-    console.log(instructions)
     return instructions;
 }
 
@@ -145,7 +146,6 @@ function parseCookingTime($){
     const time = $(".ready-in-time").text()
     var num = Number(time.match(/\d+/)); // 
     var unit = time.match(/[a-zA-Z]+$/); // either m(inute) or h(our)
-    console.log("Here");
     return unit == "m"? num : num*60;
 }
 
@@ -171,7 +171,6 @@ function parseIngredients($){
 function parseRecipeImage($){
     try{
         const image_src = $(".rec-photo")[0].attribs["src"];
-        console.log(image_src)
         return image_src;
     } catch (err){
         console.log("Parse image error: ", err)
@@ -184,14 +183,12 @@ function parseRecipeImage($){
  */
 function parseTags($){
     potential_tags = [];
-    // tags in Food network is under see-more class
+    // tags in all recipe is under "toggle-similar__title" class
     $(".toggle-similar__title").each(function(i, elem){
-        console.log($(this).html)
-        potential_tags.push($(this).html().toLowerCase());
+        potential_tags.push($(this).html().toLowerCase().trim());
     })
     // Intersection of words and potential tags
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
-    
     return tags;
 }
 
