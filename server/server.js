@@ -13,7 +13,7 @@ var firebasepath = "/home/ubc/firebasekey.json"
 
 // this is Martin's emulator device access token
 var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
-var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5RPV0w04H_eIMUaHZKuJghtjFB-NeOx3w4bVnjZY2sC3DtTQnBfjQqszG6SKa5nWpWog_hYEraaeOeBFrpRvEBjP-kui" 
+var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5RPV0w04H_eIMUaHZKuJghtjFB-NeOx3w4bVnjZY2sC3DtTQnBfjQqszG6SKa5nWpWog_hYEraaeOeBFrpRvEBjP-kui"
 // get for Luca's device, testing with Kyle's
 
 var parser = require('../parser')
@@ -33,13 +33,13 @@ var recipe
 const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";
 
 
-mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
+mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
     if (err) return console.log(err)
     db = client.db('backenddb')
     users = db.collection("user")
     recipes = db.collection("recipe")
     // listen to port
-    server.listen(3001,function(){
+    server.listen(3001, function () {
         console.log("server is up!!!!")
     })
     // initialization for firebase
@@ -57,8 +57,8 @@ mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }
 /******************************************************************************/
 /******************************************************************************/
 server.get('/test', (req, res) => {
-     db.collection("recipe").find().toArray((err, result) => {
-        if(err){
+    db.collection("recipe").find().toArray((err, result) => {
+        if (err) {
             console.log(err);
         } else {
             console.log(result[0]);
@@ -95,45 +95,152 @@ server.get('/recipe/id', (req, res) => {
     })
 })
 
-server.get('/us', (req, res) => {
-    console.log("here");
-    res.json("Success");
-})
-
 /* Get a new recipe suggestion
  * Returns just the id for the new recipe*/
 server.get('/recipe/suggest', (req, res) => {
     console.log("getting a suggestion");
-    db.collection("recipe").find().toArray((err, result) => {
-        recip = new RecipeID(result[0]._id);
-        if (result.length == 0) {
-            res.status(401).json("No available recipes");
-        } else {
-            res.status(200).json(recip);
-        }
+    let { email } = req.query;
+
+
+
+    getUserPromise = new Promise(function (resolve, reject) {
+        db.collection("user").find({ "email": email }).toArray((err, result) => {
+            if (err) {
+                reject("Database Failure");
+            } else if (result.length != 1) {
+                reject("No user with that email");
+            } else {
+                let user = new User(result[0].email, result[0].password, result[0].preferences, result[0].cookTime, result[0].token);
+                resolve(user);
+            }
+        })
+
     })
+
+    getUserPromise.then(function (retrievedUser) {
+        console.log(retrievedUser);
+        retrievedUser.preferences = ['chicken'];
+        console.log(retrievedUser.preferences);
+
+        db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
+            if (err) {
+                res.status(401).json("Database Failure");
+            } else if (result.length == 0) {
+                res.status(401).json("No available recipes");
+            } else {
+                recip = new RecipeID(result[0]._id);
+                res.status(200).json(recip);
+            }
+        })
+
+    }, function (err) {
+        console.log(err);
+        res.status(400).json(err);
+    });
 })
 
 
 /* Get a list of recipe stubs to display to the user
  * Returns only the id, name, picture, time, and difficulty */
 server.get('/recipe/list', (req, res) => {
-    let {max} = req.query;
-    db.collection("recipe").find().toArray((err, result) => {
-        if (err) {
-            res.status(400).json("database failure with code: " + err);
-        } else {
-            console.log("first stub: " + result[0]);
-            var i = 0;
-            var stubs = []
-            for (i = 0; i < Math.min(max, result.length); i++) {
-                var idd = new RecipeID(result[i]._id);
-                var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
-                stubs.push(stub);
-            }
-            res.status(200).json(stubs);
+    let { email, max, search, tags } = req.query;
+
+    if (search != undefined || tags != undefined) {
+        if (tags != undefined) {
+            console.log(tags);
+            tags = ['beef'];
+            db.collection("recipe").find({ tags: { $all: tags } }).toArray((err, result) => {
+                if (err) {
+                    res.status(400).json("Database Failure");
+                } else {
+                    if (result[0] != undefined) {
+                        console.log("first stub: " + result[0].name);
+                    }
+                    var i = 0;
+                    var stubs = []
+                    var allIDs = []
+                    for (i = 0; i < Math.min(max, result.length); i++) {
+                        var idd = new RecipeID(result[i]._id);
+                        allIDs.push(result[i]._id);
+                        var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                        stubs.push(stub);
+                        console.log(result[i].tags)
+                    }
+                    db.collection("recipe").find({ name: search }).toArray((err, result) => {
+                        if (err) {
+                            res.status(400).json("Database Failure");
+                        } else {
+                            if (result[0] != undefined) {
+                                console.log("first stub: " + result[0].name);
+                            }
+                            var i = 0;
+                            let currentLength = stubs.length;
+                            console.log(currentLength);
+                            for (i = 0; i < Math.min(max - currentLength, result.length); i++) {
+                                var idd = new RecipeID(result[i]._id);
+                                console.log(result[i].tags)
+                                if (!(allIDs.includes(result[i]._id))) {
+
+                                    var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                                    stubs.push(stub);
+                                    allIDs.push(result[i]._id);
+                                }
+                            }
+                            if (stubs.length > 0) {
+                                res.status(200).json(stubs);
+                            } else {
+                                res.status(400).json("no recipes matching those tags or search");
+                            }
+                        }
+                    })
+                }
+            })
+
         }
-    })
+    } else {
+        getUserPromise = new Promise(function (resolve, reject) {
+            db.collection("user").find({ "email": email }).toArray((err, result) => {
+                if (err) {
+                    reject("Database Failure");
+                } else if (result.length != 1) {
+                    reject("No user with that email");
+                } else {
+                    let user = new User(result[0].email, result[0].password, result[0].preferences, result[0].cookTime, result[0].token);
+                    resolve(user);
+                }
+            })
+
+        })
+
+        getUserPromise.then(function (retrievedUser) {
+            console.log(retrievedUser);
+            retrievedUser.preferences = ['chicken'];
+            console.log(retrievedUser.preferences);
+
+            db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
+                if (err) {
+                    res.status(401).json("Database Failure");
+                } else if (result.length == 0) {
+                    res.status(401).json("No available recipes");
+                } else {
+                    console.log("first stub: " + result[0]);
+                    var i = 0;
+                    var stubs = []
+                    for (i = 0; i < Math.min(max, result.length); i++) {
+                        console.log(result[i].tags)
+                        var idd = new RecipeID(result[i]._id);
+                        var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                        stubs.push(stub);
+                    }
+                    res.status(200).json(stubs);
+                }
+            })
+
+        }, function (err) {
+            console.log(err);
+            res.status(400).json(err);
+        });
+    }
 })
 
 
@@ -156,7 +263,7 @@ server.post('/notification/new', (req, res) => {
         }).catch((error) => {
             res.status(400).json("Something went terribly wrong");
         })
-     })
+    })
 })
 
 
@@ -167,7 +274,7 @@ server.put("/user/token", (req, res) => {
     var update = { $set: {} };
     update.$set["token"] = token;
     users.updateOne({ "email": email }, update)
-        res.status(200).json("Token update complete.")
+    res.status(200).json("Token update complete.")
 
 })
 
@@ -179,7 +286,7 @@ server.post("/user/login", (req, res) => {
     console.log(email);
     db.collection("user").find({ "email": email }).toArray((err, result) => {
         console.log(result);
-        if(err){
+        if (err) {
             login = new LoginResult(false, false, "asdnfjk");
             res.status(400).json(login)
         } else if (result.length != 1) {
@@ -226,8 +333,24 @@ server.post("/user/register", (req, res) => {
         }
     })
 })
+/******************************************************************************/
+/******************************************************************************/
+/*****************************Helper Functions*********************************/
+/******************************************************************************/
+/******************************************************************************/
 
-
+function getUserByEmail(email) {
+    db.collection("user").find({ "email": email }).toArray((err, result) => {
+        if (err) {
+            return ["Database Failure", 400];
+        } else if (result.length != 1) {
+            return ["No user with that email", 401];
+        } else {
+            let user = new User(result[0].email, result[0].password, result[0].preferences, result[0].cookTime, result[0].token);
+            return [user, 200];
+        }
+    })
+};
 
 /******************************************************************************/
 /******************************************************************************/
@@ -271,10 +394,20 @@ class RecipeStub {
     }
 }
 
-class LoginResult{
-    constructor(success, needsRegistration, serverAuthToken){
+class LoginResult {
+    constructor(success, needsRegistration, serverAuthToken) {
         this.success = success;
         this.needsRegistration = needsRegistration;
         this.serverAuthToken = serverAuthToken;
+    }
+}
+
+class User {
+    constructor(email, secret, preferences, cookTime, token) {
+        this.email = email;
+        this.secret = secret;
+        this.preferences = preferences;
+        this.cookTime = cookTime;
+        this.token = token;
     }
 }
