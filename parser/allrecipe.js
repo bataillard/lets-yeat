@@ -120,22 +120,15 @@ function parseRecipeFromUrl(ar_url){
 function parseCookingInstructions($){
     var instructions = [];
     
-    $(".recipeInstructions").find('p').each(function(_,element){
+    $(".recipe-directions__list--item").each(function(_,element){
         var step = $(this).html()
-        
-        // sometimes credits are given in the same classes, so remove those.
-        if (step != null && (step.search("href") == -1)){
-            /**
-             * TODO:
-             * - fix copyright sign
-             */
-            // text is steps, led by 1. 2. 3. numbers. Assuming no more than 99 steps.
-            // always trim off first 3 char and check 4th char if is space, trim it as well.
-            step = step.substring(3).trim()
-            //first char is always space, trim it
+        // last item also has same class but not part of instruction (hidden)
+        // we don't want that.
+        if (step != null && step.length !=0){
             instructions.push(step.trim());
         }
     })
+    console.log(instructions)
     return instructions;
 }
 
