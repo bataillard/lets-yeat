@@ -110,7 +110,7 @@ function parseRecipeFromUrl(st_url){
         const difficulty = 3;
 
         const recipe_title = $(".post-title h1").text()
-        
+
         return null;
         // if (time_in_minutes != null && picture_url != null)
         //     return new Recipe(ar_url, recipe_title, picture_url, 
@@ -150,7 +150,8 @@ function parseCookingInstructions($){
  */
 function parseCookingTime($){
     // total prep time in food network is always provided in minutes
-    const time = $(".ready-in-time").text()
+    const time = $(".wprm-recipe-time").text()
+    console.log(time)
     var num = time.match(/\d+/g);
     var unit = time.match(/(m|h)/g) // either m(inute) or h(our)
     // in corner case that time is 1 hr 35 min
