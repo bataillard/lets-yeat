@@ -177,6 +177,7 @@ function parseIngredients($){
 function parseRecipeImage($){
     try{
         const image_src = $(".rec-photo")
+        console.log(image_src[0].attribs["src"])
         return image_src[0].attribs["src"];
     } catch (err){
         // if error, link will be null as flag to recipient to discard
@@ -197,10 +198,12 @@ function parseTags($){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
-var x = 50;
-getRecipes(x).then(x => {
-    for (rec in x){
-        console.log(`${rec} ${x[rec]}`)
-    }
-    console.log("done");
-})
+// var x = 50;
+// getRecipes(x).then(x => {
+//     for (rec in x){
+//         console.log(`${rec} ${x[rec]}`)
+//     }
+//     console.log("done");
+// })
+
+parseRecipeFromUrl("https://www.allrecipes.com/recipe/10366/tender-crisp-sugar-cookies/?internalSource=rotd&referringContentType=Homepage&clickId=cardslot%201")

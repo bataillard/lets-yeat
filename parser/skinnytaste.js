@@ -108,7 +108,6 @@ function parseRecipeFromUrl(st_url){
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
-        console.log(picture_url)
         const recipe_title = $(".post-title h1").text()
 
         return null;
@@ -185,8 +184,8 @@ function parseIngredients($){
  */
 function parseRecipeImage($){
     try{
-        const image_src = $(".wprm-recipe-image")
-        return image_src[0].attribs["src"];
+        const image_src = $(".wprm-recipe-image .attachment-post-thumbnail")
+        return image_src[0].attribs["data-src"];
     } catch (err){
         // if error, link will be null as flag to recipient to discard
         return null;
@@ -214,5 +213,5 @@ function parseTags($){
 //     console.log("done");
 // })
 console.log("--------------------------------------------------*******************************************")
-var url = "https://www.skinnytaste.com/air-fryer-turkey-breast/"
+var url = "https://www.skinnytaste.com/skinny-scalloped-potato-gratin/"
 parseRecipeFromUrl(url);
