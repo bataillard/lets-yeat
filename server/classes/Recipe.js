@@ -1,5 +1,5 @@
 class Recipe {
-	constructot(id, name, pictureURL, time, difficulty, ingredients, tags, instructions) {
+	constructor(id, name, pictureURL, time, difficulty, ingredients, tags, instructions) {
 		this.id = id;
 		this.name = name;
 		this.pictureURL = pictureURL;

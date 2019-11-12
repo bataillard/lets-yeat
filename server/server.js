@@ -66,9 +66,14 @@ server.get('/test', (req, res) => {
     })
 })
 
-/* Get recipe from recipe ID
+/**
+ * 
+ * Get recipe from recipe ID
  * returns the entire recipe json object on success
- * returns 401 on bad input ID, and 400 on database failure*/
+ * returns 401 on bad input ID, and 400 on database failure
+ *  
+ */
+
 server.get('/recipe/id', (req, res) => {
     let { id } = req.query;
     console.log(id)
@@ -94,9 +99,14 @@ server.get('/recipe/id', (req, res) => {
         }
     })
 })
+/**
+ * Input: user id (email in this case)
+ * 
+ * Function: Get a new recipe suggestion
+ * Return: id for recommended recipe
+ * 
+ */
 
-/* Get a new recipe suggestion
- * Returns just the id for the new recipe*/
 server.get('/recipe/suggest', (req, res) => {
     console.log("getting a suggestion");
     let { email } = req.query;
