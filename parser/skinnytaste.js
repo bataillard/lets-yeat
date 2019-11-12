@@ -108,7 +108,7 @@ function parseRecipeFromUrl(st_url){
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
-
+        console.log(picture_url)
         const recipe_title = $(".post-title h1").text()
 
         return null;
@@ -142,11 +142,8 @@ function parseCookingInstructions($){
 
 /**
  * input: function with loaded HTML of recipe
- * return: cooking time in minutes
+ * return: total cooking time in minutes
  * 
- * NOTE: food network is inconsistent in cooking time
- * - on the rare occasion that no prep time is provided,
- *   should discard the recipe.
  */
 function parseCookingTime($){
     // total prep time in food network is always provided in minutes
@@ -188,7 +185,7 @@ function parseIngredients($){
  */
 function parseRecipeImage($){
     try{
-        const image_src = $(".rec-photo")
+        const image_src = $(".wprm-recipe-image")
         return image_src[0].attribs["src"];
     } catch (err){
         // if error, link will be null as flag to recipient to discard
