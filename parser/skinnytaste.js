@@ -98,7 +98,7 @@ function getRecipeUrls(recipes_url){
  */
 
 function parseRecipeFromUrl(st_url){
-    return rp(ar_url).then(html =>{
+    return rp(st_url).then(html =>{
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
@@ -110,7 +110,7 @@ function parseRecipeFromUrl(st_url){
         const difficulty = 3;
 
         const recipe_title = $(".post-title h1").text()
-        console.log(recipe_title)
+        
         return null;
         // if (time_in_minutes != null && picture_url != null)
         //     return new Recipe(ar_url, recipe_title, picture_url, 
