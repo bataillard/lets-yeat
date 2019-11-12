@@ -169,8 +169,9 @@ function parseCookingTime($){
  */
 function parseIngredients($){
     var ingredients = [];
-    var list = $("*[itemprop = 'recipeIngredient']").each(function(_,element){
-        var item = $(this).html()
+    var list = $("li.wprm-recipe-ingredient").each(function(_,element){
+        var item = $(this).text()
+        console.log(item)
         if (item != null){
             ingredients.push(item.trim());
         }
