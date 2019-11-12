@@ -195,9 +195,12 @@ function parseRecipeImage($){
  */
 function parseTags($){
     potential_tags = [];
-    // tags in all recipe is under "toggle-similar__title" class
-    $(".toggle-similar__title").each(function(i, elem){
-        potential_tags.push($(this).html().toLowerCase().trim());
+    var match_words = new RegExp(/\b($word)\b/i);
+    $(".wprm-recipe-keyword").then(function(i, elem){
+        var matches = elem.text().matchAll(match_words);
+        console.log(matches)
+        for (word of matches)
+            potential_tags.push(word.toLowerCase().trim());
     })
     // Intersection of words and potential tags
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
