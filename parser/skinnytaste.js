@@ -128,10 +128,8 @@ function parseRecipeFromUrl(st_url){
 function parseCookingInstructions($){
     var instructions = [];
     
-    $(".recipe-directions__list--item").each(function(_,element){
+    $("li.wprm-recipe-instruction").each(function(_,element){
         var step = $(this).text()
-        // last item also has same class but not part of instruction (hidden)
-        // we don't want that.
         if (step != null && step.length !=0){
             instructions.push(step.trim());
         }
@@ -165,13 +163,12 @@ function parseCookingTime($){
 
 /**
  * input: function with loaded HTML of recipe
- * return: array of Ingredient objects (name, amount, unit)
+ * return: array of Ingredient objects
  */
 function parseIngredients($){
     var ingredients = [];
     var list = $("li.wprm-recipe-ingredient").each(function(_,element){
-        var item = $(this).text()
-        console.log(item)
+        var item = $(this).text();
         if (item != null){
             ingredients.push(item.trim());
         }
