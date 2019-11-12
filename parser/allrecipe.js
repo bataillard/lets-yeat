@@ -16,7 +16,7 @@ const recipes_per_page = 16;
 const recipe_count_buffer = 20; // some recipes are cut from selection, this allows for margin of error
 module.export = {getRecipes};
 
- // ================================ Navigating Site ================================= //
+// ================================ Site Navigation  ================================= //
 const ALLRECIPE_BASE = "https://www.allrecipes.com";
 const CATEGORY = "/recipes";
 const PAGE = "/?page=";
@@ -42,7 +42,6 @@ function getAllRecipes(number_of_recipes){
         page_count++;
         var recipe_urls = getRecipeUrls(page_url);
         recipe_promises.push(recipe_urls);
-        console.log(recipe_owed)
         recipe_owed -= recipes_per_page;
     }
     // We now have Array[Promise[Array[URL]]], which we transform into Promise[Array[Array[URL]]] then flatten array
@@ -57,7 +56,6 @@ function getAllRecipes(number_of_recipes){
     });
 }
 
-
 /**
  * 
  * Given a url,
@@ -65,7 +63,6 @@ function getAllRecipes(number_of_recipes){
  * 
  */
 function getRecipeUrls(recipes_url){
-    var js_code;
     return rp(recipes_url).then(html => {
         var $ = cheerio.load(html);
         var recipe_url_list= [];
