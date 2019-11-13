@@ -1,5 +1,6 @@
 package net.hungryboys.letsyeat.api;
 
+import net.hungryboys.letsyeat.api.bodies.NotificationBody;
 import net.hungryboys.letsyeat.api.bodies.RegistrationBody;
 import net.hungryboys.letsyeat.data.Recipe;
 import net.hungryboys.letsyeat.data.RecipeID;
@@ -49,13 +50,7 @@ public interface APICalls {
     /* Notification / Firebase API Calls */
 
     @POST("/notification/new")
-    Call<String> registerNotification(@Query("email") String email,
-                                      @Query("recipeId") RecipeID recipeID);
-
-    @POST("/notification/new")
-    Call<String> registerNotification(@Query("email") String email,
-                                      @Query("id") RecipeID recipeID,
-                                      @Query("time") Date datetime);
+    Call<String> registerNotification(@Body NotificationBody notificationBody);
 
 
     @PATCH("/user/token")
