@@ -104,7 +104,7 @@ function parseRecipeFromUrl(st_url){
         var $ = cheerio.load(html);
         const time_in_minutes = parseCookingTime($);
         const picture_url = parseRecipeImage($);
-        const tags = parseTags($);
+        //const tags = parseTags($);
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
@@ -134,6 +134,7 @@ function parseCookingInstructions($){
             instructions.push(step.trim());
         }
     })
+    console.log(instructions)
     return instructions;
 }
 
@@ -145,14 +146,12 @@ function parseCookingInstructions($){
 function parseCookingTime($){
     // total prep time in food network is always provided in minutes
     const time = $(".wprm-recipe-total-time-container .wprm-recipe-time").text()
-    console.log(time)
     var num = time.match(/\d+/g);
-    var unit = time.match(/(hr|mins)/g) // either m(inute) or h(our)
+    var unit = time.match(/(hr|mins)/g) // either h(r) or m(ins)
     // in corner case that time is 1 hr 35 min
     // parse individual numbers and return results in minutes
     if(num!= null && num.length > 1){
         var total_time_min = Number(num[0]) * minutes_in_hour + Number(num[1]);
-        console.log(total_time_min)
         return total_time_min;
     }else{
         var total_time_min = unit == "mins"? Number(num) : Number(num) * minutes_in_hour;
@@ -196,8 +195,8 @@ function parseRecipeImage($){
 function parseTags($){
     potential_tags = [];
     var match_words = new RegExp(/\b($word)\b/i);
-    $(".wprm-recipe-keyword").then(function(i, elem){
-        var matches = elem.text().matchAll(match_words);
+    $(".wprm-recipe-keyword").each(function(i, elem){
+        var matches = $(this).html().matchAll(match_words);
         console.log(matches)
         for (word of matches)
             potential_tags.push(word.toLowerCase().trim());
