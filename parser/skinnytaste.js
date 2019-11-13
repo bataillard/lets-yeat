@@ -110,11 +110,10 @@ function parseRecipeFromUrl(st_url){
         const difficulty = 3;
         const recipe_title = $(".post-title h1").text()
 
-        return null;
-        // if (time_in_minutes != null && picture_url != null)
-        //     return new Recipe(ar_url, recipe_title, picture_url, 
-        //         time_in_minutes, difficulty, ingredients, 
-        //         instructions, tags);
+        if (time_in_minutes != null && picture_url != null)
+            return new Recipe(ar_url, recipe_title, picture_url, 
+                time_in_minutes, difficulty, ingredients, 
+                instructions, tags);
     })
     .catch(function(error){
         console.log("Encountered error.",error)
@@ -201,10 +200,8 @@ function parseTags($){
     for (word of matches){
         potential_tags.push(word.toLowerCase());
     }
-    console.log(potential_tags)
     // Intersection of words and potential tags
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
-    console.log(tags)
     return tags;
 }
 // var x = 50;
@@ -215,5 +212,10 @@ function parseTags($){
 //     console.log("done");
 // })
 console.log("--------------------------------------------------*******************************************")
-var url = "https://www.skinnytaste.com/skinny-scalloped-potato-gratin/"
-parseRecipeFromUrl(url);
+x = 1
+getRecipes(x).then(x => {
+    for (rec in x){
+        console.log(`${rec} ${x[rec]}`)
+    }
+    console.log("done");
+})

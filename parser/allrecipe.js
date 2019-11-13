@@ -198,6 +198,8 @@ function parseTags($){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
+
+// example test code: this is how you request recipes
 // var x = 50;
 // getRecipes(x).then(x => {
 //     for (rec in x){
@@ -205,5 +207,3 @@ function parseTags($){
 //     }
 //     console.log("done");
 // })
-
-parseRecipeFromUrl("https://www.allrecipes.com/recipe/10366/tender-crisp-sugar-cookies/?internalSource=rotd&referringContentType=Homepage&clickId=cardslot%201")
