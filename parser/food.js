@@ -159,17 +159,18 @@ function parseCookingInstructions($){
  *   should discard the recipe.
  */
 function parseCookingTime($){
-    // total prep time in food network is always provided in minutes
-    const time = $(".ready-in-time").text()
+    const time = $(".recipe-facts__details.recipe-facts__time :not(.recipe-facts__title)").text()
     var num = time.match(/\d+/g);
-    var unit = time.match(/(m|h)/g) // either m(inute) or h(our)
+    var unit = time.match(/(mins|hrs)/g) // either m(ins) or h(rs)
     // in corner case that time is 1 hr 35 min
     // parse individual numbers and return results in minutes
     if(num!= null && num.length > 1){
         var total_time_min = Number(num[0]) * minutes_in_hour + Number(num[1]);
+        console.log(total_time_min)
         return total_time_min;
     }else{
-        var total_time_min = unit == "m"? Number(num) : Number(num) * minutes_in_hour;
+        var total_time_min = unit == "mins"? Number(num) : Number(num) * minutes_in_hour;
+        console.log(total_time_min)
         return total_time_min;
     }
 }
@@ -223,5 +224,6 @@ function parseTags($){
 //     }
 //     console.log("done");
 // })
-var x = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
-parseRecipeFromUrl(x)
+var url1 = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
+var url2 = "https://www.food.com/recipe/kittencals-italian-melt-in-your-mouth-meatballs-69173"
+parseRecipeFromUrl(url2)
