@@ -185,12 +185,10 @@ function parseIngredients($){
         // then get rid of spaces for ranges
         // e.g. "1 -2" should be "1-2" meaning 1 to 2
         item = item.replace(/\s+/g, ' ').replace(/\s-/,'-');
-        console.log(item)
         if (item != null){
             ingredients.push(item.trim());
         }
     })
-    console.log(ingredients)
     return ingredients;
 }
 
@@ -218,7 +216,7 @@ function parseRecipeImage($){
 function parseTags($){
     potential_tags = [];
     // tags in all recipe is under "toggle-similar__title" class
-    $(".toggle-similar__title").each(function(i, elem){
+    $(".recipe-breadcrumbs__text.category").each(function(i, elem){
         potential_tags.push($(this).html().toLowerCase().trim());
     })
     // Intersection of words and potential tags
@@ -234,4 +232,4 @@ function parseTags($){
 // })
 var url1 = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
 var url2 = "https://www.food.com/recipe/kittencals-italian-melt-in-your-mouth-meatballs-69173"
-parseRecipeFromUrl(url2)
+parseRecipeFromUrl(url1)
