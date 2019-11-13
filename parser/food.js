@@ -48,7 +48,7 @@ function getAllRecipes(number_of_recipes){
     while (recipe_owed > 0){
         var page_url;
         // when on page one, no extra params to url
-        if(page_acount == 1){
+        if(page_count == 1){
             page_url = FOOD_BASE + CATEGORY + PAGE1;
         }
         else{
@@ -57,7 +57,6 @@ function getAllRecipes(number_of_recipes){
         page_count++;
         var recipe_urls = getRecipeUrls(page_url);
         recipe_promises.push(recipe_urls);
-        console.log(recipe_owed)
         recipe_owed -= recipes_per_page;
     }
     // We now have Array[Promise[Array[URL]]], which we transform into Promise[Array[Array[URL]]] then flatten array
@@ -95,7 +94,7 @@ function getRecipeUrls(recipes_url){
         match_data = match_data.substring(0, match_data.length -1); // last char is ";" get rid of it
         var recipe_list = JSON.parse(match_data).response.results;
         for (recipe of recipe_list){
-            console.log(recipe.record_url)
+            // console.log(recipe.record_url)
             recipe_url_list.push(recipe.record_url)
         }
         return Promise.resolve(recipe_url_list);
@@ -205,11 +204,17 @@ function parseIngredients($){
  */
 function parseRecipeImage($){
     try{
-        // image is lazy loaded
-        const image_src = $(".recipe-hero__item")
-        //console.log(image_src.html())
-        //console.log(image_src[0].attribs["data-src"])
-        return null;image_src[0].attribs["data-src"];
+        // image is lazy loaded, more complicated, have to get JS code.
+        var js_code;
+        js_code = $('script:contains("@context":"http://schema.org")').html()
+        var match_data = JSON.parse(js_code);
+        var image_src;
+        if(match_data.video)
+            image_src = match_data.video[0].thumbnailUrl;
+        else{ // second way of parsing images when the schema changes
+            image_src = match_data.image;
+        }
+        return image_src;
     } catch (err){
         // if error, link will be null as flag to recipient to discard
         console.log(err)
@@ -244,3 +249,7 @@ var url2 = "https://www.food.com/recipe/kittencals-italian-melt-in-your-mouth-me
 // var url3 = "https://www.food.com/recipe?ref=nav"
 // getRecipeUrls(url3)
 
+
+getRecipes(10).then(x=>{
+    console.log(x)
+})
