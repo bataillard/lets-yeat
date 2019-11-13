@@ -139,7 +139,7 @@ function parseRecipeFromUrl(f_url){
 function parseCookingInstructions($){
     var instructions = [];
     
-    $(".recipe-directions__list--item").each(function(_,element){
+    $("li.recipe-directions__step").each(function(_,element){
         var step = $(this).text()
         // last item also has same class but not part of instruction (hidden)
         // we don't want that.
@@ -166,11 +166,9 @@ function parseCookingTime($){
     // parse individual numbers and return results in minutes
     if(num!= null && num.length > 1){
         var total_time_min = Number(num[0]) * minutes_in_hour + Number(num[1]);
-        console.log(total_time_min)
         return total_time_min;
     }else{
         var total_time_min = unit == "mins"? Number(num) : Number(num) * minutes_in_hour;
-        console.log(total_time_min)
         return total_time_min;
     }
 }
@@ -196,10 +194,14 @@ function parseIngredients($){
  */
 function parseRecipeImage($){
     try{
-        const image_src = $(".rec-photo")
-        return image_src[0].attribs["src"];
+        // image is lazy loaded
+        const image_src = $(".recipe-hero__item")
+        //console.log(image_src.html())
+        //console.log(image_src[0].attribs["data-src"])
+        return null;image_src[0].attribs["data-src"];
     } catch (err){
         // if error, link will be null as flag to recipient to discard
+        console.log(err)
         return null;
     }
 }

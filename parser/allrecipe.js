@@ -177,7 +177,6 @@ function parseIngredients($){
 function parseRecipeImage($){
     try{
         const image_src = $(".rec-photo")
-        console.log(image_src[0].attribs["src"])
         return image_src[0].attribs["src"];
     } catch (err){
         // if error, link will be null as flag to recipient to discard
