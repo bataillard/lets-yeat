@@ -66,7 +66,7 @@ function getRecipeUrls(recipes_url){
 
         // contains the JSON object we need for all links
         // to individual recipes
-        js_code = $("#wrapper section > script").html()//[0].text();
+        js_code = $("#wrapper section > script").html();
         const match_data = js_code.match(/var viewModel = (.*);/);
         var recipe_list = JSON.parse(match_data[1]).Records;
         for (recipe of recipe_list){

@@ -72,7 +72,6 @@ function getAllRecipes(number_of_recipes){
     });
 }
 
-
 /**
  * 
  * Given a url,
@@ -80,22 +79,30 @@ function getAllRecipes(number_of_recipes){
  * 
  */
 function getRecipeUrls(recipes_url){
+    // recipe urls are lazy loaded onto website as well
+    // - this adds complexity to parsing
+    var js_code;
     return rp(recipes_url).then(html => {
         var $ = cheerio.load(html);
         var recipe_url_list= [];
 
-        $('.fixed-recipe-card__h3 a[href]').each((index, elem) => {
-            // link may be something else, only want
-            // "https://www.allrecipes.com/recipe/-----"
-            //  don't want "https://www.allrecipes.com/cook/------"
-            var potential_recipe_url = $(elem).attr('href');
-            var recipe_begin = new RegExp('https://www.allrecipes.com/recipe/')
-            if (potential_recipe_url.match(recipe_begin)){
-                recipe_url_list.push(potential_recipe_url);
-            }
-         });
+        // contains the JSON object we need for all links
+        // to individual recipes, data is always stored in var initialData = {...JSON}
+        //https://stackoverflow.com/questions/53393718/how-to-find-specific-javascript-code-in-pared-html-using-cheerio-with-nodejs
+        js_code = $('script:contains("initialData")') 
+        var match_data = js_code.html().match(/var initialData = (.*);/); // returns an array
+        match_data = match_data[0].replace(/var initialData = /,"");
+        match_data = match_data.substring(0, match_data.length -1); // last char is ";" get rid of it
+        var recipe_list = JSON.parse(match_data).response.results;
+        for (recipe of recipe_list){
+            console.log(recipe.record_url)
+            recipe_url_list.push(recipe.record_url)
+        }
         return Promise.resolve(recipe_url_list);
-    }).catch(() => Promise.resolve([])); // In case of error while parsing list, return empty list
+    }).catch((err) => {
+        console.log(err)
+        Promise.resolve([])
+    }); // In case of error while parsing list, return empty list
 }
 
 // ================================ Single Recipe Parsing ================================= //
@@ -113,7 +120,7 @@ function parseRecipeFromUrl(f_url){
         // param is just selectors.
         var $ = cheerio.load(html);
         const time_in_minutes = parseCookingTime($);
-        const picture_url = parseRecipeImage($);
+        const picture_url = parseRecipeImage($); //TODO: not done yet
         const tags = parseTags($);
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
@@ -121,11 +128,11 @@ function parseRecipeFromUrl(f_url){
 
         const recipe_title = $(".recipe-title h1").text()
         console.log(recipe_title)
-        return null;
-        // if (time_in_minutes != null && picture_url != null)
-        //     return new Recipe(f_url, recipe_title, picture_url, 
-        //         time_in_minutes, difficulty, ingredients, 
-        //         instructions, tags);
+
+        if (time_in_minutes != null)// && picture_url != null)
+            return new Recipe(f_url, recipe_title, picture_url, 
+                time_in_minutes, difficulty, ingredients, 
+                instructions, tags);
     })
     .catch(function(error){
         console.log("Encountered error.",error)
@@ -232,4 +239,8 @@ function parseTags($){
 // })
 var url1 = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
 var url2 = "https://www.food.com/recipe/kittencals-italian-melt-in-your-mouth-meatballs-69173"
-parseRecipeFromUrl(url1)
+// parseRecipeFromUrl(url1)
+
+// var url3 = "https://www.food.com/recipe?ref=nav"
+// getRecipeUrls(url3)
+
