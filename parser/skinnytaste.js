@@ -196,7 +196,9 @@ function parseTags($){
     potential_tags = [];
     var match_words = new RegExp(/\b($word)\b/i);
     $(".wprm-recipe-keyword").each(function(i, elem){
-        var matches = $(this).html().matchAll(match_words);
+        var matches = $(this).html()
+        console.log(typeof matches)
+        //matchAll(match_words);
         console.log(matches)
         for (word of matches)
             potential_tags.push(word.toLowerCase().trim());
