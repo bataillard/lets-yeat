@@ -6,7 +6,7 @@
 
 const path = require('path')
 const rp = require('request-promise');
-const $ = require('cheerio');
+const cheerio = require('cheerio');
 const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
 
@@ -102,13 +102,13 @@ function getRecipeUrls(recipes_url){
 
 /**
  * Parsing promise of a single recipe from url
- * - ar stands for all recipe
+ * - f stands for food
  * input: url of single Allrecipe recipe
  * return: a function that returns promise of one Recipe object
  */
 
-function parseRecipeFromUrl(ar_url){
-    return rp(ar_url).then(html =>{
+function parseRecipeFromUrl(f_url){
+    return rp(f_url).then(html =>{
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
@@ -119,11 +119,13 @@ function parseRecipeFromUrl(ar_url){
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
 
-        const recipe_title = $("#recipe-main-content").text()
-        if (time_in_minutes != null && picture_url != null)
-            return new Recipe(ar_url, recipe_title, picture_url, 
-                time_in_minutes, difficulty, ingredients, 
-                instructions, tags);
+        const recipe_title = $(".recipe-title h1").text()
+        console.log(recipe_title)
+        return null;
+        // if (time_in_minutes != null && picture_url != null)
+        //     return new Recipe(f_url, recipe_title, picture_url, 
+        //         time_in_minutes, difficulty, ingredients, 
+        //         instructions, tags);
     })
     .catch(function(error){
         console.log("Encountered error.",error)
@@ -214,10 +216,12 @@ function parseTags($){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
-var x = 1;
-getRecipes(x).then(x => {
-    for (rec in x){
-        console.log(`${rec} ${x[rec]}`)
-    }
-    console.log("done");
-})
+// var x = 1;
+// getRecipes(x).then(x => {
+//     for (rec in x){
+//         console.log(`${rec} ${x[rec]}`)
+//     }
+//     console.log("done");
+// })
+var x = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
+parseRecipeFromUrl(x)
