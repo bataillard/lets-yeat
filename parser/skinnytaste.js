@@ -28,6 +28,7 @@ function getRecipes(request_num_recipes){
         return allRecipes;
     })
 }
+
 /*
  * input: number of reqested recipes + buffer
  * return: array containing recipe objects, may include null
@@ -42,7 +43,6 @@ function getAllRecipes(number_of_recipes){
         page_count++;
         var recipe_urls = getRecipeUrls(page_url);
         recipe_promises.push(recipe_urls);
-        console.log(recipe_owed)
         recipe_owed -= recipes_per_page;
     }
     // We now have Array[Promise[Array[URL]]], which we transform into Promise[Array[Array[URL]]] then flatten array
@@ -72,7 +72,7 @@ function getRecipeUrls(recipes_url){
         $('div.archive-post a[href]').each((index, elem) => {
             var potential_recipe_url = $(elem).attr('href');
 
-            var recipe_meal_plan = new RegExp('https://www.skinnytaste.com/skinnytaste');
+            var recipe_meal_plan = new RegExp('meal-plan');
             var recipe_category= new RegExp('https://www.skinnytaste.com/recipes/');
             
             // a usual recipe url looks like:
@@ -99,6 +99,7 @@ function getRecipeUrls(recipes_url){
 
 function parseRecipeFromUrl(st_url){
     return rp(st_url).then(html =>{
+       
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
@@ -110,10 +111,12 @@ function parseRecipeFromUrl(st_url){
         const difficulty = 3;
         const recipe_title = $(".post-title h1").text()
 
-        if (time_in_minutes != null && picture_url != null)
-            return new Recipe(ar_url, recipe_title, picture_url, 
+        if (time_in_minutes != null && picture_url != null && tags != null){
+            console.log(++where)
+            return new Recipe(st_url, recipe_title, picture_url, 
                 time_in_minutes, difficulty, ingredients, 
                 instructions, tags);
+        }
     })
     .catch(function(error){
         console.log("Encountered error.",error)
@@ -153,7 +156,6 @@ function parseCookingTime($){
         return total_time_min;
     }else{
         var total_time_min = unit == "mins"? Number(num) : Number(num) * minutes_in_hour;
-        console.log(total_time_min)
         return total_time_min;
     }
 }
@@ -195,7 +197,9 @@ function parseTags($){
     var match_words = new RegExp(/(\w)+/ig);
     var keywords = $(".wprm-recipe-keyword").text();
     var matches = keywords.match(match_words);
-
+    // second line of defense, when wrong url are passed
+    if(matches == null)
+        return null;
     // make every word lower case for uniformity
     for (word of matches){
         potential_tags.push(word.toLowerCase());
@@ -204,18 +208,19 @@ function parseTags($){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
-// var x = 50;
-// getRecipes(x).then(x => {
-//     for (rec in x){
-//         console.log(`${rec} ${x[rec]}`)
-//     }
-//     console.log("done");
-// })
 console.log("--------------------------------------------------*******************************************")
-x = 1
-getRecipes(x).then(x => {
-    for (rec in x){
-        console.log(`${rec} ${x[rec]}`)
-    }
-    console.log("done");
-})
+
+/** How to batch parse recipes */
+// x = 50
+// getRecipes(x).then(x => {
+//     var count = 0;
+//     for ( y of x){
+//         count ++;
+//     }
+//     //console.log(x)
+//     console.log("done, count is ",count);
+// }).catch((err)=>{console.log(err)})
+// var where = 0;
+
+/** How to parse single recipe */
+// parseRecipeFromUrl("https://www.skinnytaste.com/skinny-scalloped-potato-gratin/").then(x=>console.log(x))

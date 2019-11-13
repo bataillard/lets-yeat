@@ -214,7 +214,7 @@ function parseTags($){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
-var x = 50;
+var x = 1;
 getRecipes(x).then(x => {
     for (rec in x){
         console.log(`${rec} ${x[rec]}`)
