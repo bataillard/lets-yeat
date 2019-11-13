@@ -179,12 +179,18 @@ function parseCookingTime($){
  */
 function parseIngredients($){
     var ingredients = [];
-    var list = $("*[itemprop = 'recipeIngredient']").each(function(_,element){
-        var item = $(this).html()
+    var list = $(".recipe-ingredients__ingredient").each(function(_,element){
+        var item = $(this).text()
+        // first replace duplicate spaces
+        // then get rid of spaces for ranges
+        // e.g. "1 -2" should be "1-2" meaning 1 to 2
+        item = item.replace(/\s+/g, ' ').replace(/\s-/,'-');
+        console.log(item)
         if (item != null){
             ingredients.push(item.trim());
         }
     })
+    console.log(ingredients)
     return ingredients;
 }
 
