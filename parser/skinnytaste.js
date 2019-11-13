@@ -104,7 +104,7 @@ function parseRecipeFromUrl(st_url){
         var $ = cheerio.load(html);
         const time_in_minutes = parseCookingTime($);
         const picture_url = parseRecipeImage($);
-        //const tags = parseTags($);
+        const tags = parseTags($);
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
@@ -134,7 +134,6 @@ function parseCookingInstructions($){
             instructions.push(step.trim());
         }
     })
-    console.log(instructions)
     return instructions;
 }
 
@@ -194,17 +193,18 @@ function parseRecipeImage($){
  */
 function parseTags($){
     potential_tags = [];
-    var match_words = new RegExp(/\b($word)\b/i);
-    $(".wprm-recipe-keyword").each(function(i, elem){
-        var matches = $(this).html()
-        console.log(typeof matches)
-        //matchAll(match_words);
-        console.log(matches)
-        for (word of matches)
-            potential_tags.push(word.toLowerCase().trim());
-    })
+    var match_words = new RegExp(/(\w)+/ig);
+    var keywords = $(".wprm-recipe-keyword").text();
+    var matches = keywords.match(match_words);
+
+    // make every word lower case for uniformity
+    for (word of matches){
+        potential_tags.push(word.toLowerCase());
+    }
+    console.log(potential_tags)
     // Intersection of words and potential tags
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
+    console.log(tags)
     return tags;
 }
 // var x = 50;
