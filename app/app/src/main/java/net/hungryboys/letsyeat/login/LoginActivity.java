@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -25,6 +24,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -119,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
     private void setupLoginButtons() {
         loginButton = findViewById(R.id.email_login_btn);
         registerButton = findViewById(R.id.register_btn);
-        googleLoginButton = findViewById(R.id.sign_in_button);
+        googleLoginButton = findViewById(R.id.google_login_button);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

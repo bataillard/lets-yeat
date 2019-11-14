@@ -240,6 +240,8 @@ public class LoginRepository {
      * Removes user credentials saved, after logout
      */
     public void removeUserCredentials() {
+        Log.i(TAG_LOGIN_REPO, "Removing user credentials for keystore");
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             removeUserCredentialsFromKeyStore();
         } else {
