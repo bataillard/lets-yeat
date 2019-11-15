@@ -1,14 +1,22 @@
 package net.hungryboys.letsyeat.recipe;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,6 +32,7 @@ import net.hungryboys.letsyeat.data.Ingredient;
 import net.hungryboys.letsyeat.data.Recipe;
 import net.hungryboys.letsyeat.data.RecipeID;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 /**
@@ -34,6 +43,7 @@ import java.util.Locale;
  */
 public class RecipeFragment extends Fragment {
     private static final String ARG_RECIPE_ID = "recipe_id";
+    private static final String TAG_RECIPE = "RecipeFragment";
 
     private static final String DIFFICULTY_FORMAT = "%.1f";
 
@@ -110,7 +120,16 @@ public class RecipeFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);
-        mViewModel.setId((RecipeID) getArguments().getSerializable(ARG_RECIPE_ID));
+
+        Bundle args = getArguments();
+        RecipeID recipeID = args == null ? null : (RecipeID) args.getSerializable(ARG_RECIPE_ID);
+
+        if (recipeID != null) {
+            mViewModel.setId(recipeID);
+        } else {
+            Toast.makeText(getContext(), R.string.cannot_load_recipe, Toast.LENGTH_SHORT).show();
+            Log.e(TAG_RECIPE, "Recipe ID in RecipeFragment is null");
+        }
 
         mViewModel.getRecipe().observe(this, new Observer<Recipe>() {
             @Override
@@ -131,9 +150,84 @@ public class RecipeFragment extends Fragment {
         cookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mViewModel.cookConfirm(getContext());
+                cookPressed();
             }
         });
+    }
+
+    private void cookPressed() {
+        // Ask if user wants default time or custom time
+
+        DialogInterface.OnClickListener customTime = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                cookCustomDate();
+            }
+        };
+
+        DialogInterface.OnClickListener defaultTime = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mViewModel.cookConfirm(getContext());
+            }
+        };
+
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setMessage(R.string.when_cook_meal)
+                .setPositiveButton(R.string.select_default_time, defaultTime)
+                .setNeutralButton(R.string.select_custom_time, customTime)
+                .create();
+
+        dialog.show();
+    }
+
+    private void cookCustomDate() {
+        // If user choses custom time, ask user for date
+
+        if (getContext() == null) {
+            Log.e(TAG_RECIPE, "Could not get Context in Fragment to build Dialogs");
+            return;
+        }
+
+        DatePickerDialog.OnDateSetListener dateSelect = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                mViewModel.setCookCustomDate(year, month, dayOfMonth);
+                cookCustomTime();
+            }
+        };
+
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog datePicker = new DatePickerDialog(getContext(), dateSelect,
+                now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
+
+        datePicker.show();
+
+    }
+
+    private void cookCustomTime() {
+        // If user chose custom time, ask user for time
+
+        if (getContext() == null) {
+            Log.e(TAG_RECIPE, "Could not get Context in Fragment to build Dialogs");
+            return;
+        }
+
+        TimePickerDialog.OnTimeSetListener timeSelect = new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                mViewModel.setCustomTime(hourOfDay, minute);
+                mViewModel.cookConfirm(getContext());
+                Toast.makeText(getContext(), R.string.cook_confirmed, Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        Calendar now = Calendar.getInstance();
+        TimePickerDialog timePicker = new TimePickerDialog(getContext(), timeSelect,
+                now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), true);
+
+        timePicker.show();
+
     }
 
     private void changeIngredients(Ingredient[] ingredients) {

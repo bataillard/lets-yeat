@@ -9,9 +9,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import net.hungryboys.letsyeat.api.APICaller;
+import net.hungryboys.letsyeat.api.bodies.NotificationBody;
 import net.hungryboys.letsyeat.login.LoginRepository;
 import net.hungryboys.letsyeat.data.Recipe;
 import net.hungryboys.letsyeat.data.RecipeID;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,6 +29,7 @@ public class RecipeViewModel extends ViewModel {
     private static final String TAG_RECIPE = "RecipeViewModel";
 
     private MutableLiveData<Recipe> recipe = new MutableLiveData<>();
+    private Calendar cookDate = null;
     private RecipeID id;
 
     /**
@@ -57,24 +62,48 @@ public class RecipeViewModel extends ViewModel {
      * notification at the correct time
      */
     public void cookConfirm(Context context) {
-        if (id != null && LoginRepository.getInstance(context).isLoggedIn()) {
-            String email = LoginRepository.getInstance(context).getUserEmail();
-
-            Call<String> call = APICaller.getApiCall().registerNotification(email, id);
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    Log.d(TAG_RECIPE, "Cook confirmed");
-                }
-
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-                    Log.e(TAG_RECIPE, "Could not confirm cook", t);
-                }
-            });
-
-
+        if (id == null || !LoginRepository.getInstance(context).isLoggedIn()) {
+            Log.i(TAG_RECIPE, "Could not login or id null: " + id);
+            return;
         }
+
+
+        String email = LoginRepository.getInstance(context).getUserEmail();
+        Date cookTime = cookDate == null ? null : cookDate.getTime();
+
+        NotificationBody body = new NotificationBody(email, id, cookTime);
+
+        Call<String> call = APICaller.getApiCall().registerNotification(body);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Log.d(TAG_RECIPE, "Cook confirmed");
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e(TAG_RECIPE, "Could not confirm cook", t);
+            }
+        });
+    }
+
+    public void setCookCustomDate(int year, int month, int dayOfMonth) {
+        if (cookDate == null) {
+            cookDate = Calendar.getInstance();
+        }
+
+        cookDate.set(Calendar.YEAR, year);
+        cookDate.set(Calendar.MONTH, month);
+        cookDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+    }
+
+    public void setCustomTime(int hourOfDay, int minute) {
+        if (cookDate == null) {
+            cookDate = Calendar.getInstance();
+        }
+
+        cookDate.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        cookDate.set(Calendar.MINUTE, minute);
     }
 
     private void loadRecipe() {

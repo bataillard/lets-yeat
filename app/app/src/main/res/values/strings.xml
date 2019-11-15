@@ -52,4 +52,15 @@
     <string name="cook">Cook</string>
     <string name="google_login_failed">Google Login Failed</string>
     <string name="registration_failed">Registration failed</string>
+    <string name="cannot_load_recipe">Cannot load recipe</string>
+
+    <string name="select_default_time">Default Time</string>
+    <string name="select_custom_time">Custom Time</string>
+    <string name="when_cook_meal">When would you like to cook your meal?</string>
+    <string name="cook_confirmed">Cook confirmed</string>
+
+    <string-array name="select_times">
+        <item>@string/select_custom_time</item>
+        <item>@string/select_default_time</item>
+    </string-array>
 </resources>
