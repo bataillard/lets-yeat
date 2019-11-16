@@ -111,7 +111,7 @@ function parseRecipeFromUrl(fn_url){
             instructions, tags);
     })
     .catch(function(error){
-        console.log("Encountered error.",error)
+        // console.log("Encountered error.",error)
     })
 }
 
@@ -168,7 +168,6 @@ function parseIngredients($){
     // var regex = //
     var list = $(".recipe-ingredients p").each(function(_,element){
         var item = $(this).next().html()
-        console.log(item)
         if (item != null){
             /**
              * TODO: 2x
@@ -193,7 +192,7 @@ function parseRecipeImage($){
         // first two chars is '//' so strip that away. Those are at index 0 and 1
         return image_src.substring(2);
     } catch (err){
-        console.log("Parse image error: ", err)
+        //console.log("Parse image error: ", err)
         return null;
     }
 }
@@ -212,7 +211,3 @@ function parseTags($){
     
     return tags;
 }
-
-getRecipes(1).then(x => {
-    console.log(x)
-})
