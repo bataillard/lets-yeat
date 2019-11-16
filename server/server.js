@@ -141,16 +141,20 @@ server.get('/recipe/suggest', (req, res) => {
  * Returns only the id, name, picture, time, and difficulty */
 server.get('/recipe/list', (req, res) => {
     let { email, max, search, tags } = req.query;
-
     if (search != undefined || tags != undefined) {
         if (tags != undefined) {
+            console.log(tags[1].length)
+            if (tags[1].length == 1) {
+                temp = tags;
+                tags = [];
+                tags.push(temp);
+                console.log(tags);
+            }
             console.log(tags);
-            tags = ['beef'];
             db.collection("recipe").find({ tags: { $all: tags } }).toArray((err, result) => {
                 if (err) {
                     res.status(400).json("Database Failure");
                 } else {
-
                     if (result[0] != undefined) {
                         console.log("first stub: " + result[0].name);
                     }
@@ -164,35 +168,43 @@ server.get('/recipe/list', (req, res) => {
                         stubs.push(stub);
                         console.log(result[i].tags)
                     }
-                    db.collection("recipe").find({ name: search }).toArray((err, result) => {
-                        if (err) {
-                            res.status(400).json("Database Failure");
+                    if (search == "") {
+                        if (stubs.length > 0) {
+                            res.status(200).json(stubs);
                         } else {
+                            res.status(400).json("no recipes matching those tags or search");
+                        }
+                    } else {
+                        db.collection("recipe").find({ name: search }).toArray((err, result) => {
+                            if (err) {
+                                res.status(400).json("Database Failure");
+                            } else {
 
-                            if (result[0] != undefined) {
-                                console.log("first stub: " + result[0].name);
-                            }
-                            var i = 0;
-                            let currentLength = stubs.length;
-                            console.log(currentLength);
-                            for (i = 0; i < Math.min(max-currentLength, result.length) ; i++) {
-                                var idd = new RecipeID(result[i]._id);
-                                console.log(result[i].tags)
-                                if (!(allIDs.includes(result[i]._id))) {
-                                
+                                if (result[0] != undefined) {
+                                    console.log("first stub: " + result[0].name);
+                                }
+                                var i = 0;
+                                let currentLength = stubs.length;
+                                console.log(currentLength);
+                                for (i = 0; i < Math.min(max - currentLength, result.length); i++) {
+                                    var idd = new RecipeID(result[i]._id);
+                                    console.log(result[i].tags)
+                                    if (!(allIDs.includes(result[i]._id))) {
 
-                                    var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
-                                    stubs.push(stub);
-                                    allIDs.push(result[i]._id);
+
+                                        var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                                        stubs.push(stub);
+                                        allIDs.push(result[i]._id);
+                                    }
+                                }
+                                if (stubs.length > 0) {
+                                    res.status(200).json(stubs);
+                                } else {
+                                    res.status(400).json("no recipes matching those tags or search");
                                 }
                             }
-                            if (stubs.length > 0) {
-                                res.status(200).json(stubs);
-                            } else {
-                                res.status(400).json("no recipes matching those tags or search");
-                            }
-                        }
-                    })
+                        })
+                    }
                 }
             })
 
@@ -223,11 +235,11 @@ server.get('/recipe/list', (req, res) => {
                 } else if (result.length == 0) {
                     res.status(401).json("No available recipes");
                 } else {
-                    console.log("first stub: " + result[0]);
+                    console.log("first stub: " + result[0].tags);
                     var i = 0;
                     var stubs = []
                     for (i = 0; i < Math.min(max, result.length); i++) {
-                        console.log(result[i].tags)
+                        console.log(result[i].time)
                         var idd = new RecipeID(result[i]._id);
                         var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
                         stubs.push(stub);
@@ -282,9 +294,10 @@ server.put("/user/token", (req, res) => {
 /* Attempt logging in a user 
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
-    let { email, secret, firebaseToken, fromGoogle } = req.body;
-    console.log(email);
-    db.collection("user").find({ "email": email }).toArray((err, result) => {
+    console.log("Logging in");
+    let  user  = req.body;
+    console.log(user);
+    db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         console.log(result);
         if (err) {
             login = new LoginResult(false, false, "asdnfjk");
@@ -292,7 +305,7 @@ server.post("/user/login", (req, res) => {
         } else if (result.length != 1) {
             login = new LoginResult(true, true, "asdnfjk");
             res.status(200).json(login);
-        } else if ((result[0].password) !== secret) {
+        } else if ((result[0].password) !== user.secret) {
             login = new LoginResult(false, false, "asdnfjk");
             res.status(200).json(login);
         } else {
