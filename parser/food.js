@@ -14,7 +14,7 @@ const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__
 const minutes_in_hour = 60;
 const recipes_per_page = 8;
 const recipe_count_buffer = 10;
-module.export = {getRecipes};
+module.exports = {getRecipes};
 
 // ================================ Site Navigation  ================================= //
 const FOOD_BASE = "https://www.food.com";
@@ -94,12 +94,11 @@ function getRecipeUrls(recipes_url){
         match_data = match_data.substring(0, match_data.length -1); // last char is ";" get rid of it
         var recipe_list = JSON.parse(match_data).response.results;
         for (recipe of recipe_list){
-            // console.log(recipe.record_url)
             recipe_url_list.push(recipe.record_url)
         }
         return Promise.resolve(recipe_url_list);
     }).catch((err) => {
-        console.log(err)
+        //console.log(err)
         Promise.resolve([])
     }); // In case of error while parsing list, return empty list
 }
@@ -126,7 +125,6 @@ function parseRecipeFromUrl(f_url){
         const difficulty = 3;
 
         const recipe_title = $(".recipe-title h1").text()
-        console.log(recipe_title)
 
         if (time_in_minutes != null)// && picture_url != null)
             return new Recipe(f_url, recipe_title, picture_url, 
@@ -134,7 +132,7 @@ function parseRecipeFromUrl(f_url){
                 instructions, tags);
     })
     .catch(function(error){
-        console.log("Encountered error.",error)
+        //console.log("Encountered error.",error)
     })
 }
 
@@ -217,7 +215,7 @@ function parseRecipeImage($){
         return image_src;
     } catch (err){
         // if error, link will be null as flag to recipient to discard
-        console.log(err)
+        //console.log(err)
         return null;
     }
 }

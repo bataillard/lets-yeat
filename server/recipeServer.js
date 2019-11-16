@@ -8,7 +8,7 @@ const parse2 = require('../parser/foodnetwork')
 const parse3 = require('../parser/allrecipe')
 const parse4 = require('../parser/food')
 const parse5 = require('../parser/skinnytaste')
-const toGet = 40;
+const toGet = 1;
 const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
 var db
@@ -16,6 +16,7 @@ var recipe
 
 mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
     if (err) return console.log(err)
+    console.log("Parsing recipes . . .")
     db = client.db('backenddb')
 	recipe = db.collection("recipe")
 })
@@ -65,3 +66,5 @@ var batch_foodnetworth = parse5.getRecipes(toGet).then(batch =>{
     }
     console.log("Insertion 5 success: Skinny Taste.");
 })
+
+return;

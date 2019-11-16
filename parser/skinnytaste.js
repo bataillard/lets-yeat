@@ -14,7 +14,7 @@ const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__
 const minutes_in_hour = 60;
 const recipes_per_page = 24;
 const recipe_count_buffer = 10; // some recipes are cut from selection, this allows for margin of error
-module.export = {getRecipes};
+module.exports = {getRecipes};
 
 // ================================ Site Navigation  ================================= //
 const SKINNY_BASE = "https://www.skinnytaste.com/";
@@ -112,14 +112,13 @@ function parseRecipeFromUrl(st_url){
         const recipe_title = $(".post-title h1").text()
 
         if (time_in_minutes != null && picture_url != null && tags != null){
-            console.log(++where)
             return new Recipe(st_url, recipe_title, picture_url, 
                 time_in_minutes, difficulty, ingredients, 
                 instructions, tags);
         }
     })
     .catch(function(error){
-        console.log("Encountered error.",error)
+        //console.log("Encountered error.",error)
     })
 }
 

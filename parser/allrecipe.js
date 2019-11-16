@@ -14,7 +14,7 @@ const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__
 const minutes_in_hour = 60;
 const recipes_per_page = 16;
 const recipe_count_buffer = 20; // some recipes are cut from selection, this allows for margin of error
-module.export = {getRecipes};
+module.exports = {getRecipes};
 
 // ================================ Site Navigation  ================================= //
 const ALLRECIPE_BASE = "https://www.allrecipes.com";
@@ -23,7 +23,7 @@ const PAGE = "/?page=";
 
 function getRecipes(request_num_recipes){
     return getAllRecipes(request_num_recipes+recipe_count_buffer).then((requested_recipes)=>{
-        requested_recipes = requested_recipes.filter(Boolean)
+        requested_recipes = requested_recipes.filter(Boolean);
         const allRecipes = [].concat(...requested_recipes).slice(0, request_num_recipes);
         return allRecipes;
     })
