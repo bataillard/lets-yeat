@@ -208,7 +208,6 @@ function parseTags($){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
-console.log("--------------------------------------------------*******************************************")
 
 /** How to batch parse recipes */
 // x = 50

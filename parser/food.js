@@ -242,14 +242,14 @@ function parseTags($){
 //     }
 //     console.log("done");
 // })
-var url1 = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
-var url2 = "https://www.food.com/recipe/kittencals-italian-melt-in-your-mouth-meatballs-69173"
+// var url1 = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
+// var url2 = "https://www.food.com/recipe/kittencals-italian-melt-in-your-mouth-meatballs-69173"
 // parseRecipeFromUrl(url1)
 
 // var url3 = "https://www.food.com/recipe?ref=nav"
 // getRecipeUrls(url3)
 
 
-getRecipes(10).then(x=>{
-    console.log(x)
-})
+// getRecipes(10).then(x=>{
+//     console.log(x)
+// })
