@@ -265,7 +265,12 @@ server.post('/notification/new', (req, res) => {
     let dt = Date.now();
     let curDate = new Date(dt);
     if (notificationBody.time != undefined) {
-        let testDate = new Date(notificationBody.time)
+        let temp = new Date(notificationBody.time)
+        temp = temp.getTime();
+        temp += (8 * 60 * 60 * 1000);
+        secs = temp % 60000;
+        temp -= secs;
+        testDate = new Date(temp);
         console.log(testDate);
         console.log(curDate);
         let timeTillNot = testDate.getTime() - curDate.getTime();
@@ -290,12 +295,18 @@ server.post('/notification/new', (req, res) => {
             cookt += (curDate.getYear() + 1900) + "-";
             cookt += (curDate.getMonth() + 1) + "-";
             cookt += (curDate.getDate() ) +  "T";
-            
+            console.log(t.hourOfDay);
+            let hours = 0 + t.hourOfDay;
 
-            if (t.hourOfDay < 10) {
-                cookt += "0" + t.hourOfDay + ":";
+            hours += 8;
+            console.log(hours);
+            if(hours > 24){
+                hours -= 24;
+            }
+            if (hours < 10) {
+                cookt += "0" + hours + ":";
             } else {
-                cookt += t.hourOfDay + ":";
+                cookt += hours + ":";
             }
 
             if (t.minute < 10) {
@@ -303,11 +314,8 @@ server.post('/notification/new', (req, res) => {
             } else {
                 cookt += t.minute + ":"
             }
-            if (t.second < 10) {
-                cookt += "0" + t.second; 
-            } else {
-                cookt += t.second;
-            }
+            
+            cookt += "00";
             console.log(cookt);
             let testDate = new Date(cookt);
             console.log(testDate);
