@@ -256,26 +256,41 @@ server.get('/recipe/list', (req, res) => {
 })
 
 
+
 /* Add a new notification for a specified user */
 server.post('/notification/new', (req, res) => {
-    let { email, RecipeID } = req.query;
+    let notificationBody = req.body;
+    let dt = Date.now();
+    let curDate = new Date(dt);
+    let testDate = new Date(notificationBody.time)
+    console.log(testDate);
+    console.log(curDate);
+    let timeTillNot = testDate.getTime() - curDate.getTime();
+    if (timeTillNot < 0) {
+        console.log("bad time");
+        res.status(400).json("Negative notificaion time");
+    } else {
 
-    db.collection("user").find({ "email": email }).toArray((err, result) => {
-        var message = {
-            notification: {
-                title: "Time to cook",
-                body: "Get in the kitchen and make mama proud!",
-            },
-            token: result[0].token
-        }
+        let timeOut = setTimeout(function () {
+            db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+                var message = {
+                    notification: {
+                        title: "Time to cook",
+                        body: "Get in the kitchen and make mama proud!",
+                    },
+                    token: result[0].token
+                }
 
-        // send message via firebase push notification to Kyle's phone
-        admin.messaging().send(message).then((response) => {
-            res.status(200).json("Sent message");
-        }).catch((error) => {
-            res.status(400).json("Something went terribly wrong");
-        })
-    })
+                // send message via firebase push notification to Kyle's phone
+                admin.messaging().send(message).then((response) => {
+                    console.log("message sent")
+                }).catch((error) => {
+                    console.log("Something went terribly wrong");
+                })
+            })
+        }, timeTillNot)
+        res.status(200).json("notification should be G");
+    }
 })
 
 
@@ -301,9 +316,12 @@ server.post("/user/login", (req, res) => {
         console.log(result);
         if (err) {
             login = new LoginResult(false, false, "asdnfjk");
-            res.status(400).json(login)
-        } else if (result.length != 1) {
+            res.status(400).json(login) 
+        }else if (result.length != 1) {
             login = new LoginResult(true, true, "asdnfjk");
+            res.status(200).json(login);
+        } else if (user.fromGoogle) {
+            login = new LoginResult(true, false, "asdnfjk");
             res.status(200).json(login);
         } else if ((result[0].password) !== user.secret) {
             login = new LoginResult(false, false, "asdnfjk");
@@ -424,3 +442,4 @@ class User {
         this.token = token;
     }
 }
+
