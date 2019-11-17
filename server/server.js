@@ -29,6 +29,7 @@ var db
 var user
 var recipe
 
+
 // parse receipes from 1st website
 const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";
 
@@ -125,7 +126,8 @@ server.get('/recipe/suggest', (req, res) => {
             }else if (result.length == 0) {
                 res.status(401).json("No available recipes");
             } else {
-                recip = new RecipeID(result[0]._id);
+                randNum = Math.floor(Math.random() * Math.floor(result.length))
+                recip = new RecipeID(result[randNum]._id);
                 res.status(200).json(recip);
             }
         })
@@ -262,36 +264,93 @@ server.post('/notification/new', (req, res) => {
     let notificationBody = req.body;
     let dt = Date.now();
     let curDate = new Date(dt);
-    let testDate = new Date(notificationBody.time)
-    console.log(testDate);
-    console.log(curDate);
-    let timeTillNot = testDate.getTime() - curDate.getTime();
-    if (timeTillNot < 0) {
-        console.log("bad time");
-        res.status(400).json("Negative notificaion time");
+    if (notificationBody.time != undefined) {
+        let testDate = new Date(notificationBody.time)
+        console.log(testDate);
+        console.log(curDate);
+        let timeTillNot = testDate.getTime() - curDate.getTime();
+        if (timeTillNot < 0) {
+            console.log("bad time");
+            res.status(400).json("Negative notificaion time");
+        } else {
+
+            makeNewNotification(timeTillNot, notificationBody);
+
+            res.status(200).json("notification should be G");
+        }
     } else {
+        
+        db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+            if (result.length == 0) {
+                res.status(400).json("Bad email");
+            }
+            console.log(result[0].cookTime)
+            let t = result[0].cookTime
+            let cookt = "";
+            cookt += (curDate.getYear() + 1900) + "-";
+            cookt += (curDate.getMonth() + 1) + "-";
+            cookt += (curDate.getDate() ) +  "T";
+            
 
-        let timeOut = setTimeout(function () {
-            db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
-                var message = {
-                    notification: {
-                        title: "Time to cook",
-                        body: "Get in the kitchen and make mama proud!",
-                    },
-                    token: result[0].token
-                }
+            if (t.hourOfDay < 10) {
+                cookt += "0" + t.hourOfDay + ":";
+            } else {
+                cookt += t.hourOfDay + ":";
+            }
 
-                // send message via firebase push notification to Kyle's phone
-                admin.messaging().send(message).then((response) => {
-                    console.log("message sent")
-                }).catch((error) => {
-                    console.log("Something went terribly wrong");
-                })
-            })
-        }, timeTillNot)
-        res.status(200).json("notification should be G");
+            if (t.minute < 10) {
+                cookt += "0" + t.minute + ":";
+            } else {
+                cookt += t.minute + ":"
+            }
+            if (t.second < 10) {
+                cookt += "0" + t.second; 
+            } else {
+                cookt += t.second;
+            }
+            console.log(cookt);
+            let testDate = new Date(cookt);
+            console.log(testDate);
+            if (testDate < curDate) {
+
+                testDate.setDate(testDate.getDate() + 1)
+            }
+            console.log(testDate);
+            console.log(curDate);
+            let timeTillNot = testDate.getTime() - curDate.getTime();
+            if (timeTillNot < 0) {
+                console.log("bad time");
+                res.status(400).json("Negative notificaion time");
+            } else {
+
+                makeNewNotification(timeTillNot, notificationBody);
+
+                res.status(200).json("notification should be G");
+            }
+        })
     }
 })
+
+function makeNewNotification(timeTillNot, notificationBody) {
+    let timeOut = setTimeout(function () {
+        db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+            var message = {
+                notification: {
+                    title: "Time to cook",
+                    body: "Get in the kitchen and make mama proud!",
+                },
+                token: result[0].token
+            }
+
+            // send message via firebase push notification to Kyle's phone
+            admin.messaging().send(message).then((response) => {
+                console.log("message sent")
+            }).catch((error) => {
+                console.log("Something went terribly wrong");
+            })
+        })
+    }, timeTillNot)
+}
 
 
 /* Update a users firebase token */
