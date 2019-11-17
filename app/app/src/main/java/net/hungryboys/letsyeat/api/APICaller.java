@@ -15,8 +15,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class APICaller {
 
-    private static final String BASE_URL = "http://52.183.98.8:3001/";
-
+//    private static final String BASE_URL = "http://52.183.98.8:3001/";
+private static final String BASE_URL = "localhost:3001/";
     /**
      * Build the Retrofit API caller based on the API Calls defined in {@link APICalls}
      * @return an APICalls Interface that can be used to make calls to server

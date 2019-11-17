@@ -1,11 +1,15 @@
-// ================ Imports ================
-"use strict";
-const path = require("path");
-const rp = require("request-promise");
-const $ = require("cheerio");
-const Recipe = require("./recipe.js").Recipe;
-const Ingredient = require("./recipe.js").Ingredient;
+/**
+ * This file parses budgetbytes.com into Recipe objects
+ * - one of 5 parsers that make up the non-trivial component of
+ *   CPEN 321 Let's Yeat, software engineering project.
+ */
 
+'use strict';
+const path = require('path')
+const rp = require('request-promise');
+const $ = require('cheerio');
+const Recipe = require('./recipe.js').Recipe;
+const Ingredient = require('./recipe.js').Ingredient;
 // ================ Global Variables ================
 
 // TIL path is relative to where the Node process is started
@@ -16,7 +20,52 @@ const BUDGETBYTES_ARCHIVE = "https://www.budgetbytes.com/archive";
 const BB_OLDEST_YEAR = 2009;
 const BB_OLDEST_MONTH = 5;
 
-// ================ Helper Functions ================
+/**
+ * Parses up to `max` recipes on budgetbytes from the month of `fromDate`
+ * to the month of `toDate` (inclusive)
+ * @param {int} max : maximum number of recipes returned
+ * @param {Date} fromDate : start of parsing range
+ * @param {Date} toDate : end of parsing range, if in the future, will stop at current month
+ */
+exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
+    // Validate arguments
+
+    if (inFuture(fromYear, fromMonth)) {
+        return Promise.reject(new Error("Cannot start date range in future: " + fromYear + "-" + fromMonth));
+    }
+
+    if (inFuture(BB_OLDEST_YEAR, BB_OLDEST_MONTH, fromYear, fromMonth)) {  // If before oldest recipe in BB
+        return Promise.reject(new Error("Date range starts too early: " + fromYear + "-" + fromMonth));
+    }
+
+    const now = new Date();
+    let year = inFuture(toYear, toMonth) ? now.getFullYear() : toYear;
+    let month = inFuture(toYear, toMonth) ? now.getMonth() : toMonth;
+    
+    // Go trough budgetbytes archive in reverse order, add each page's recipes to list 
+    
+    let recipesPromises = [];
+    while (year > fromYear || year == fromYear && month >= fromMonth) {
+        let localMonth = month;     // Declare local variables in block scope to avoid problems with closure in promise
+        let localYear = year;
+        recipesPromises.push(findRecipesInArchive(localYear, localMonth))
+
+        month--;
+        if (month == 0) {
+            year--;
+            month = 12;
+        }
+    }
+
+    // We now have Array[Promise[Array[URL]]], which we transform into Promise[Array[Array[URL]]] then flatten array
+    // Then parse each URL => Promise[Array[Promise[Recipe]]], which we flatten again and return Promise[Array[Recipe]]
+    return Promise.all(recipesPromises).then(urls => {
+        const flatURLs = [].concat(...urls).slice(0, max); // Keep only max recipes
+        const promises = flatURLs.map(exports.parseUrl);
+
+        return Promise.all(promises);
+    });
+}
 
 function inFuture(year, month, toYear, toMonth) {
     let now = new Date();
@@ -35,7 +84,6 @@ function findRecipesInArchive(year, month) {
         $(".archive-post > a", monthHtml).each((i, e) => {
             recipeList.push($(e).attr("href"));
         });
-
         return Promise.resolve(recipeList);
     }).catch(() => Promise.resolve([]));        // In case of error while parsing list, return empty list
 }

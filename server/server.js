@@ -29,7 +29,6 @@ var db
 var user
 var recipe
 
-
 // parse receipes from 1st website
 const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";
 
@@ -269,6 +268,9 @@ server.get('/recipe/list', (req, res) => {
 })
 
 
+/* Add a new notification for a specified user */
+server.post('/notification/new', (req, res) => {
+    let { email, RecipeID } = req.query;
 
 /* Add a new notification for a specified user */
 server.post('/notification/new', (req, res) => {
@@ -520,4 +522,3 @@ class User {
         this.token = token;
     }
 }
-
