@@ -6,7 +6,7 @@
 // for Tim's computer
 //var firebasepath = "/home/firebasekey.json"
 // if running on Server
-var firebasepath = "/home/ubc/firebasekey.json"
+var firebasepath = "/home/ubc/project/server/service-account-file.json"
 // if running on you rown computer, use the following:
 // var firebasepath = "PATH-TO-THIS-FILE/firebasekey.json"
 // this file is credentials for firebase admin, Martin has sent it to the group in slack
@@ -15,7 +15,7 @@ var firebasepath = "/home/ubc/firebasekey.json"
 var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
 var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5RPV0w04H_eIMUaHZKuJghtjFB-NeOx3w4bVnjZY2sC3DtTQnBfjQqszG6SKa5nWpWog_hYEraaeOeBFrpRvEBjP-kui"
 // get for Luca's device, testing with Kyle's
-
+//var serviceAccount = require("/home/ubc/project/server/service-account-file.json")
 var parser = require('../parser')
 //var recipees = require('/classes')
 var admin = require('firebase-admin')
@@ -28,6 +28,7 @@ server.use(express.json())
 var db
 var user
 var recipe
+
 
 // parse receipes from 1st website
 const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";
@@ -44,6 +45,7 @@ mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true
     })
     // initialization for firebase
     admin.initializeApp({
+        //credential: admin.credential.cert(serviceAccount)
         credential: admin.credential.applicationDefault()
     })
     console.log("server is up!!!!")
@@ -135,7 +137,8 @@ server.get('/recipe/suggest', (req, res) => {
             }else if (result.length == 0) {
                 res.status(401).json("No available recipes");
             } else {
-                recip = new RecipeID(result[0]._id);
+                randNum = Math.floor(Math.random() * Math.floor(result.length))
+                recip = new RecipeID(result[randNum]._id);
                 res.status(200).json(recip);
             }
         })
@@ -151,16 +154,20 @@ server.get('/recipe/suggest', (req, res) => {
  * Returns only the id, name, picture, time, and difficulty */
 server.get('/recipe/list', (req, res) => {
     let { email, max, search, tags } = req.query;
-
     if (search != undefined || tags != undefined) {
         if (tags != undefined) {
+            console.log(tags[1].length)
+            if (tags[1].length == 1) {
+                temp = tags;
+                tags = [];
+                tags.push(temp);
+                console.log(tags);
+            }
             console.log(tags);
-            tags = ['beef'];
             db.collection("recipe").find({ tags: { $all: tags } }).toArray((err, result) => {
                 if (err) {
                     res.status(400).json("Database Failure");
                 } else {
-
                     if (result[0] != undefined) {
                         console.log("first stub: " + result[0].name);
                     }
@@ -174,35 +181,43 @@ server.get('/recipe/list', (req, res) => {
                         stubs.push(stub);
                         console.log(result[i].tags)
                     }
-                    db.collection("recipe").find({ name: search }).toArray((err, result) => {
-                        if (err) {
-                            res.status(400).json("Database Failure");
+                    if (search == "") {
+                        if (stubs.length > 0) {
+                            res.status(200).json(stubs);
                         } else {
+                            res.status(400).json("no recipes matching those tags or search");
+                        }
+                    } else {
+                        db.collection("recipe").find({ name: search }).toArray((err, result) => {
+                            if (err) {
+                                res.status(400).json("Database Failure");
+                            } else {
 
-                            if (result[0] != undefined) {
-                                console.log("first stub: " + result[0].name);
-                            }
-                            var i = 0;
-                            let currentLength = stubs.length;
-                            console.log(currentLength);
-                            for (i = 0; i < Math.min(max-currentLength, result.length) ; i++) {
-                                var idd = new RecipeID(result[i]._id);
-                                console.log(result[i].tags)
-                                if (!(allIDs.includes(result[i]._id))) {
-                                
+                                if (result[0] != undefined) {
+                                    console.log("first stub: " + result[0].name);
+                                }
+                                var i = 0;
+                                let currentLength = stubs.length;
+                                console.log(currentLength);
+                                for (i = 0; i < Math.min(max - currentLength, result.length); i++) {
+                                    var idd = new RecipeID(result[i]._id);
+                                    console.log(result[i].tags)
+                                    if (!(allIDs.includes(result[i]._id))) {
 
-                                    var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
-                                    stubs.push(stub);
-                                    allIDs.push(result[i]._id);
+
+                                        var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                                        stubs.push(stub);
+                                        allIDs.push(result[i]._id);
+                                    }
+                                }
+                                if (stubs.length > 0) {
+                                    res.status(200).json(stubs);
+                                } else {
+                                    res.status(400).json("no recipes matching those tags or search");
                                 }
                             }
-                            if (stubs.length > 0) {
-                                res.status(200).json(stubs);
-                            } else {
-                                res.status(400).json("no recipes matching those tags or search");
-                            }
-                        }
-                    })
+                        })
+                    }
                 }
             })
 
@@ -233,11 +248,11 @@ server.get('/recipe/list', (req, res) => {
                 } else if (result.length == 0) {
                     res.status(401).json("No available recipes");
                 } else {
-                    console.log("first stub: " + result[0]);
+                    console.log("first stub: " + result[0].tags);
                     var i = 0;
                     var stubs = []
                     for (i = 0; i < Math.min(max, result.length); i++) {
-                        console.log(result[i].tags)
+                        console.log(result[i].time)
                         var idd = new RecipeID(result[i]._id);
                         var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
                         stubs.push(stub);
@@ -254,27 +269,107 @@ server.get('/recipe/list', (req, res) => {
 })
 
 
+
 /* Add a new notification for a specified user */
 server.post('/notification/new', (req, res) => {
-    let { email, RecipeID } = req.query;
+    let notificationBody = req.body;
+    let dt = Date.now();
+    let curDate = new Date(dt);
+    if (notificationBody.time != undefined) {
+        let temp = new Date(notificationBody.time)
+        temp = temp.getTime();
+        temp += (8 * 60 * 60 * 1000);
+        secs = temp % 60000;
+        temp -= secs;
+        testDate = new Date(temp);
+        console.log(testDate);
+        console.log(curDate);
+        let timeTillNot = testDate.getTime() - curDate.getTime();
+        if (timeTillNot < 0) {
+            console.log("bad time");
+            res.status(400).json("Negative notificaion time");
+        } else {
 
-    db.collection("user").find({ "email": email }).toArray((err, result) => {
-        var message = {
-            notification: {
-                title: "Time to cook",
-                body: "Get in the kitchen and make mama proud!",
-            },
-            token: result[0].token
+            makeNewNotification(timeTillNot, notificationBody);
+
+            res.status(200).json("notification should be G");
         }
+    } else {
+        
+        db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+            if (result.length == 0) {
+                res.status(400).json("Bad email");
+            }
+            console.log(result[0].cookTime)
+            let t = result[0].cookTime
+            let cookt = "";
+            cookt += (curDate.getYear() + 1900) + "-";
+            cookt += (curDate.getMonth() + 1) + "-";
+            cookt += (curDate.getDate() ) +  "T";
+            console.log(t.hourOfDay);
+            let hours = 0 + t.hourOfDay;
 
-        // send message via firebase push notification to Kyle's phone
-        admin.messaging().send(message).then((response) => {
-            res.status(200).json("Sent message");
-        }).catch((error) => {
-            res.status(400).json("Something went terribly wrong");
+            hours += 8;
+            console.log(hours);
+            if(hours > 24){
+                hours -= 24;
+            }
+            if (hours < 10) {
+                cookt += "0" + hours + ":";
+            } else {
+                cookt += hours + ":";
+            }
+
+            if (t.minute < 10) {
+                cookt += "0" + t.minute + ":";
+            } else {
+                cookt += t.minute + ":"
+            }
+            
+            cookt += "00";
+            console.log(cookt);
+            let testDate = new Date(cookt);
+            console.log(testDate);
+            if (testDate < curDate) {
+
+                testDate.setDate(testDate.getDate() + 1)
+            }
+            console.log(testDate);
+            console.log(curDate);
+            let timeTillNot = testDate.getTime() - curDate.getTime();
+            if (timeTillNot < 0) {
+                console.log("bad time");
+                res.status(400).json("Negative notificaion time");
+            } else {
+
+                makeNewNotification(timeTillNot, notificationBody);
+
+                res.status(200).json("notification should be G");
+            }
         })
-    })
+    }
 })
+
+function makeNewNotification(timeTillNot, notificationBody) {
+    let timeOut = setTimeout(function () {
+        db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+            var message = {
+                notification: {
+                    title: "Time to cook",
+                    body: "Get in the kitchen and make mama proud!",
+                },
+                token: result[0].token
+            }
+
+            // send message via firebase push notification to Kyle's phone
+            admin.messaging().send(message).then((response) => {
+                console.log("message sent")
+            }).catch((error) => {
+                console.log("Something went terribly wrong");
+            })
+        })
+    }, timeTillNot)
+}
 
 
 /* Update a users firebase token */
@@ -292,17 +387,21 @@ server.put("/user/token", (req, res) => {
 /* Attempt logging in a user 
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
-    let { email, secret, firebaseToken, fromGoogle } = req.body;
-    console.log(email);
-    db.collection("user").find({ "email": email }).toArray((err, result) => {
+    console.log("Logging in");
+    let  user  = req.body;
+    console.log(user);
+    db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         console.log(result);
         if (err) {
             login = new LoginResult(false, false, "asdnfjk");
-            res.status(400).json(login)
-        } else if (result.length != 1) {
+            res.status(400).json(login) 
+        }else if (result.length != 1) {
             login = new LoginResult(true, true, "asdnfjk");
             res.status(200).json(login);
-        } else if ((result[0].password) !== secret) {
+        } else if (user.fromGoogle) {
+            login = new LoginResult(true, false, "asdnfjk");
+            res.status(200).json(login);
+        } else if ((result[0].password) !== user.secret) {
             login = new LoginResult(false, false, "asdnfjk");
             res.status(200).json(login);
         } else {
@@ -421,3 +520,4 @@ class User {
         this.token = token;
     }
 }
+
