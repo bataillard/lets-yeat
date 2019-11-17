@@ -267,11 +267,6 @@ server.get('/recipe/list', (req, res) => {
     }
 })
 
-
-/* Add a new notification for a specified user */
-server.post('/notification/new', (req, res) => {
-    let { email, RecipeID } = req.query;
-
 /* Add a new notification for a specified user */
 server.post('/notification/new', (req, res) => {
     let notificationBody = req.body;
@@ -493,7 +488,7 @@ class Ingredient {
         this.quantity = quantity;
         this.unit = unit;
     }
-}
+};
 
 class RecipeStub {
     constructor(id, name, pictureUrl, time, difficulty) {
@@ -503,7 +498,7 @@ class RecipeStub {
         this.time = time;
         this.difficulty = difficulty;
     }
-}
+};
 
 class LoginResult {
     constructor(success, needsRegistration, serverAuthToken) {
@@ -511,7 +506,7 @@ class LoginResult {
         this.needsRegistration = needsRegistration;
         this.serverAuthToken = serverAuthToken;
     }
-}
+};
 
 class User {
     constructor(email, secret, preferences, cookTime, token) {
@@ -521,4 +516,4 @@ class User {
         this.cookTime = cookTime;
         this.token = token;
     }
-}
+};
