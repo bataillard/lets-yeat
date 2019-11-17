@@ -109,7 +109,7 @@ function parseRecipeFromUrl(ar_url){
                 instructions, tags);
     })
     .catch(function(error){
-        console.log("Encountered error.",error)
+        //console.log("Encountered error.",error)
     })
 }
 
