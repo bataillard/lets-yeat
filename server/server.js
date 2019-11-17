@@ -6,7 +6,7 @@
 // for Tim's computer
 //var firebasepath = "/home/firebasekey.json"
 // if running on Server
-var firebasepath = "/home/ubc/firebasekey.json"
+var firebasepath = "/home/ubc/project/server/service-account-file.json"
 // if running on you rown computer, use the following:
 // var firebasepath = "PATH-TO-THIS-FILE/firebasekey.json"
 // this file is credentials for firebase admin, Martin has sent it to the group in slack
@@ -15,7 +15,7 @@ var firebasepath = "/home/ubc/firebasekey.json"
 var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
 var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5RPV0w04H_eIMUaHZKuJghtjFB-NeOx3w4bVnjZY2sC3DtTQnBfjQqszG6SKa5nWpWog_hYEraaeOeBFrpRvEBjP-kui"
 // get for Luca's device, testing with Kyle's
-
+var serviceAccount = require("/home/ubc/project/server/service-account-file.json")
 var parser = require('../parser')
 //var recipees = require('/classes')
 var admin = require('firebase-admin')
@@ -44,7 +44,7 @@ mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true
     })
     // initialization for firebase
     admin.initializeApp({
-        credential: admin.credential.applicationDefault()
+        credential: admin.credential.cert(serviceAccount)
     })
     console.log("server is up!!!!")
 })
