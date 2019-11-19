@@ -90,7 +90,7 @@ server.get('/recipe/id', (req, res) => {
                 ing.push(temp);
             });
 
-            var recipe = new Recipe(recipID, result[0].name, result[0].url, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
+            var recipe = new Recipe(recipID, result[0].name, result[0].pictureURL, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
 
             if (err) {
                 res.status(400).json("Error with database");

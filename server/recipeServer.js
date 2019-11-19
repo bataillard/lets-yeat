@@ -8,7 +8,7 @@ const parse2 = require('../parser/foodnetwork')
 const parse3 = require('../parser/allrecipe')
 const parse4 = require('../parser/food')
 const parse5 = require('../parser/skinnytaste')
-const toGet = 1;
+const toGet = 30;
 const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
 var db;
