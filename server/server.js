@@ -90,7 +90,7 @@ server.get('/recipe/id', (req, res) => {
                 ing.push(temp);
             });
 
-            var recipe = new Recipe(recipID, result[0].name, result[0].pictureURL, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
+            var recipe = new Recipe(recipID, result[0].name, result[0].pictureUrl, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
 
             if (err) {
                 res.status(400).json("Error with database");
@@ -204,7 +204,7 @@ server.get('/recipe/list', (req, res) => {
                                     if (!(allIDs.includes(result[i]._id))) {
 
 
-                                        var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                                        var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
                                         stubs.push(stub);
                                         allIDs.push(result[i]._id);
                                     }
@@ -253,7 +253,7 @@ server.get('/recipe/list', (req, res) => {
                     for (i = 0; i < Math.min(max, result.length); i++) {
                         console.log(result[i].time)
                         var idd = new RecipeID(result[i]._id);
-                        var stub = new RecipeStub(idd, result[i].name, result[i].url, result[i].time, result[i].difficulty);
+                        var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
                         stubs.push(stub);
                     }
                     res.status(200).json(stubs);
@@ -464,10 +464,10 @@ function getUserByEmail(email) {
 /******************************************************************************/
 /******************************************************************************/
 class Recipe {
-    constructor(id, name, pictureURL, time, difficulty, ingredients, tags, instructions) {
+    constructor(id, name, pictureUrl, time, difficulty, ingredients, tags, instructions) {
         this.id = id;
         this.name = name;
-        this.pictureURL = pictureURL;
+        this.pictureUrl = pictureUrl;
         this.time = time;
         this.difficulty = difficulty;
         this.ingredients = ingredients;
@@ -494,7 +494,7 @@ class RecipeStub {
     constructor(id, name, pictureUrl, time, difficulty) {
         this.id = id;
         this.name = name;
-        this.pictureURL = pictureUrl;
+        this.pictureUrl = pictureUrl;
         this.time = time;
         this.difficulty = difficulty;
     }
