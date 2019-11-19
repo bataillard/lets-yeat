@@ -3,12 +3,15 @@ package net.hungryboys.letsyeat.browse;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.squareup.picasso.Picasso;
 
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.RecipeID;
@@ -132,7 +135,16 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
             }
         });
 
-        holder.image.setImageResource(R.drawable.placeholder_recipe_photo); // TODO get photo from recipe
+        loadImage(holder.image, recipe.getPictureUrl());
+    }
+
+    private void loadImage(ImageView image, String pictureUrl) {
+        Picasso.get()
+                .load(pictureUrl)
+                .placeholder(R.drawable.placeholder_recipe_photo)
+                .error(R.drawable.placeholder_recipe_photo)
+                .into(image);
+
     }
 
     /**
