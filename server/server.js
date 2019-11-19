@@ -176,7 +176,7 @@ server.get('/recipe/list', (req, res) => {
                     for (i = 0; i < Math.min(max, result.length); i++) {
                         var idd = new RecipeID(result[i]._id);
                         allIDs.push(result[i]._id);
-                        var stub = new RecipeStub(idd, result[i].name, result[i].pictureURL, result[i].time, result[i].difficulty);
+                        var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
                         stubs.push(stub);
                         console.log(result[i].tags)
                     }
