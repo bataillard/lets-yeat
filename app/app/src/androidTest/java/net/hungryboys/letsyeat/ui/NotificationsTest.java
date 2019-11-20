@@ -60,7 +60,10 @@ public class NotificationsTest {
     }
 
     @Test
-    public void sendsNotificationInFiveMinutes() {
+    public void sendsNotificationInOneMinute() {
+        final int ONE_MINUTE_TIMEOUT = 60*1000;
+        final int BUFFER_TIME = 10000;
+
         Intent intent = new Intent();
         intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, RecipeID.placeholder());
         rule.launchActivity(intent);
@@ -87,7 +90,7 @@ public class NotificationsTest {
         onView(withText("OK")).perform(click());
 
         device.openNotification();
-        device.wait(Until.hasObject(By.text("Let's yeat")), DEFAULT_TIMEOUT);
+        device.wait(Until.hasObject(By.text("Let's yeat")), ONE_MINUTE_TIMEOUT + BUFFER_TIME);
         assertTrue(device.hasObject(By.text("Let's yeat")));
     }
 

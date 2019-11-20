@@ -141,7 +141,6 @@ public class RecipeCardAdapter extends RecyclerView.Adapter<RecipeCardAdapter.Vi
     private void loadImage(ImageView image, String pictureUrl) {
         Picasso.get()
                 .load(pictureUrl)
-                .centerCrop()
                 .placeholder(R.drawable.placeholder_recipe_photo)
                 .error(R.drawable.placeholder_recipe_photo)
                 .into(image);
