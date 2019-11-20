@@ -17,8 +17,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import net.hungryboys.letsyeat.R;
-import net.hungryboys.letsyeat.browse.BrowseActivity;
+import net.hungryboys.letsyeat.data.RecipeID;
 import net.hungryboys.letsyeat.login.LoginRepository;
+import net.hungryboys.letsyeat.recipe.RecipeActivity;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,6 +36,9 @@ public class CookNotification  extends FirebaseMessagingService{
 
     private static final String TAG_FIREBASE = "CookNotification";
 
+    private static final String KEY_RECIPE_NAME = "name";
+    private static final String KEY_RECIPE_ID = "id";
+
     /**
      * Called when message is received.
      *
@@ -43,33 +47,19 @@ public class CookNotification  extends FirebaseMessagingService{
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // [START_EXCLUDE]
-        // There are two types of messages data messages and notification messages. Data messages
-        // are handled
-        // here in onMessageReceived whether the app is in the foreground or background. Data
-        // messages are the type
-        // traditionally used with GCM. Notification messages are only received here in
-        // onMessageReceived when the app
-        // is in the foreground. When the app is in the background an automatically generated
-        // notification is displayed.
-        // When the user taps on the notification they are returned to the app. Messages
-        // containing both notification
-        // and data payloads are treated as notification messages. The Firebase console always
-        // sends notification
-        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-        // [END_EXCLUDE]
+
+        Log.d(TAG_FIREBASE, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            //perform some actions
+        if (remoteMessage.getData().size() > 0) {
+            String name = remoteMessage.getData().get(KEY_RECIPE_NAME);
+            RecipeID id = new RecipeID(remoteMessage.getData().get(KEY_RECIPE_ID));
 
-            sendNotification("some default text");
+            sendNotification(name, id);
         }
 
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
+
     }
-    // [END receive_message]
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -122,12 +112,13 @@ public class CookNotification  extends FirebaseMessagingService{
     }
 
     /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param messageBody FCM message body received.
+     * Show notification for given recipe name. When clicked, it launches that recipe's activity
+     * @param recipeName name of the recipe
+     * @param recipeID id of the recipe
      */
-    private void sendNotification(String messageBody) {
-        Intent intent = new Intent(this, BrowseActivity.class);
+    private void sendNotification(String recipeName, RecipeID recipeID) {
+        Intent intent = new Intent(this, RecipeActivity.class);
+        intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, recipeID);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
@@ -136,15 +127,20 @@ public class CookNotification  extends FirebaseMessagingService{
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_stat_cook)
+                        .setSmallIcon(R.drawable.ic_groceries_black_24dp)
                         .setContentTitle(getString(R.string.notification_title))
-                        .setContentText(messageBody)
+                        .setContentText(recipeName)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
                         .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (notificationManager == null) {
+            Log.e(TAG_FIREBASE, "No notification manager found");
+            return;
+        }
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -154,7 +150,7 @@ public class CookNotification  extends FirebaseMessagingService{
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(recipeID.getId().hashCode(), notificationBuilder.build());
     }
 
 }
