@@ -27,6 +27,8 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.Ingredient;
 import net.hungryboys.letsyeat.data.Recipe;
@@ -141,6 +143,7 @@ public class RecipeFragment extends Fragment {
                 title.setText(recipe.getName());
                 time.setText(recipe.getTimeString());
                 difficulty.setText(String.format(Locale.getDefault(), DIFFICULTY_FORMAT, recipe.getDifficulty()));
+                loadImage(image, recipe.getPictureUrl());
 
                 changeIngredients(recipe.getIngredients());
                 changeInstructions(recipe.getInstructions());
@@ -153,6 +156,16 @@ public class RecipeFragment extends Fragment {
                 cookPressed();
             }
         });
+    }
+
+    private void loadImage(ImageView image, String pictureUrl) {
+        Log.d(TAG_RECIPE, "Loading picture: " + pictureUrl);
+        Picasso.get()
+                .load(pictureUrl)
+                .centerCrop()
+                .placeholder(R.drawable.placeholder_recipe_photo)
+                .error(R.drawable.placeholder_recipe_photo)
+                .into(image);
     }
 
     private void cookPressed() {

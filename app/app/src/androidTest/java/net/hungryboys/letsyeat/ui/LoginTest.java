@@ -88,7 +88,12 @@ public class LoginTest {
 
         onView(withId(R.id.google_login_button)).perform(click());
         device.wait(Until.findObject(By.pkg("com.google.android.gms").depth(0)), DEFAULT_TIMEOUT);
-        device.findObject(By.textContains("@")).click();
+        device.wait(Until.findObject(By.textContains("@")), DEFAULT_TIMEOUT);
+
+        if (device.hasObject(By.textContains("@"))) {
+            device.findObject(By.textContains("@")).click();
+        }
+
         device.wait(Until.findObject(By.pkg(Pattern.compile("net.hungryboys.letsyeat.(registration|browse)"))), DEFAULT_TIMEOUT);
 
         LoginRepository repo = LoginRepository.getInstance(intentsRule.getActivity().getApplicationContext());
