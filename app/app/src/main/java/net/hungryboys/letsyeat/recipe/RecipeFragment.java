@@ -162,6 +162,7 @@ public class RecipeFragment extends Fragment {
         Log.d(TAG_RECIPE, "Loading picture: " + pictureUrl);
         Picasso.get()
                 .load(pictureUrl)
+                .centerCrop()
                 .placeholder(R.drawable.placeholder_recipe_photo)
                 .error(R.drawable.placeholder_recipe_photo)
                 .into(image);
