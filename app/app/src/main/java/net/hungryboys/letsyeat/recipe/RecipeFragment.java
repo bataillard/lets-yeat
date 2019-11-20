@@ -159,6 +159,7 @@ public class RecipeFragment extends Fragment {
     }
 
     private void loadImage(ImageView image, String pictureUrl) {
+        Log.d(TAG_RECIPE, "Loading picture: " + pictureUrl);
         Picasso.get()
                 .load(pictureUrl)
                 .placeholder(R.drawable.placeholder_recipe_photo)

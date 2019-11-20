@@ -24,7 +24,7 @@ public class Recipe {
     @Expose
     private final String name;
 
-    @SerializedName("pictureURL")
+    @SerializedName("pictureUrl")
     @Expose
     private final String pictureUrl;
 
@@ -124,7 +124,7 @@ public class Recipe {
      * @return the time to cook recipe formatted as "HH:MM"
      */
     public String getTimeString() {
-        return String.format(Locale.getDefault(),"%2d:%2d", time / 60,  time % 60);
+        return String.format(Locale.getDefault(),"%02d:%02d", time / 60,  time % 60);
     }
 
     /**
