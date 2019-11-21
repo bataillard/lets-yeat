@@ -9,10 +9,12 @@ const rp = require('request-promise');
 const cheerio = require('cheerio');
 const Recipe = require('./recipe.js').Recipe;
 const Ingredient = require('./recipe.js').Ingredient
+const recipes_per_page = 24;
+const recipe_count_buffer = 10;
 
 const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__dirname,"./tags.json"))).tags);
 
-module.export = {getRecipes};
+module.exports = {getRecipes};
 
  // ================================ Navigating Site ================================= //
 const FOODNETWORK_BASE = "https://www.foodnetwork.ca";
@@ -27,23 +29,23 @@ function getRecipes(number_of_recipes){
     let recipe_promises = [];
 
     // initialize recipes owed
-    var recipe_count = number_of_recipes;
+    var recipe_owed = number_of_recipes + recipe_count_buffer;
     var page_count = 1; 
-    // while (recipe_count > 0){
-    //     var page_url;
-    //     // url on page one doesn't have /?fspn=X where X is page number
-    //     // on page 1 it is just https://www.foodnetwork.ca/everyday-cooking/recipes
-    //     if (page_count == 1){
-    //         page_url = FOODNETWORK_BASE + CATEGORY;
-    //     }else{
-    //         page_url = FOODNETWORK_BASE + CATEGORY + PAGE + page_count.toString();
-    //     }
-    //     page_count++;
-    //     var recipe_urls = getRecipeUrls(page_url);
-    //     recipe_promises.push(recipe_urls);
-    //     recipe_count -= recipe_urls.length;
-    // }
-    recipe_promises.push(getRecipeUrls(FOODNETWORK_BASE+CATEGORY));
+    while (recipe_owed > 0){
+        var page_url;
+        // url on page one doesn't have /?fspn=X where X is page number
+        // on page 1 it is just https://www.foodnetwork.ca/everyday-cooking/recipes
+        if (page_count == 1){
+            page_url = FOODNETWORK_BASE + CATEGORY;
+        }else{
+            page_url = FOODNETWORK_BASE + CATEGORY + PAGE + page_count.toString();
+        }
+        page_count++;
+        var recipe_urls = getRecipeUrls(page_url);
+        recipe_promises.push(recipe_urls);
+        recipe_owed -= recipes_per_page ;
+    }
+    //recipe_promises.push(getRecipeUrls(FOODNETWORK_BASE+CATEGORY));
 
     // We now have Array[Promise[Array[URL]]], which we transform into Promise[Array[Array[URL]]] then flatten array
     // Then parse each URL => Promise[Array[Promise[Recipe]]], which we flatten again and return Promise[Array[Recipe]]
@@ -211,3 +213,8 @@ function parseTags($){
     
     return tags;
 }
+
+
+// getRecipes(2).then(x=>{
+//     console.log(x)
+// })
