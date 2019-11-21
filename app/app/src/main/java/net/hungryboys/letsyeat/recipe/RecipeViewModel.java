@@ -14,8 +14,11 @@ import net.hungryboys.letsyeat.login.LoginRepository;
 import net.hungryboys.letsyeat.data.Recipe;
 import net.hungryboys.letsyeat.data.RecipeID;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -67,11 +70,17 @@ public class RecipeViewModel extends ViewModel {
             return;
         }
 
-
         String email = LoginRepository.getInstance(context).getUserEmail();
-        Date cookTime = cookDate == null ? null : cookDate.getTime();
+        String dateString = null;
+        if (cookDate != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        NotificationBody body = new NotificationBody(email, id, cookTime);
+            Date cookTime = cookDate.getTime();
+            dateString = sdf.format(cookTime);
+        }
+
+        NotificationBody body = new NotificationBody(email, id, dateString);
 
         Call<String> call = APICaller.getApiCall().registerNotification(body);
         call.enqueue(new Callback<String>() {
