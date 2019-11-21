@@ -19,7 +19,7 @@ const possibleTags = new Set(JSON.parse(require("fs").readFileSync(path.join(__d
 const BUDGETBYTES_ARCHIVE = "https://www.budgetbytes.com/archive";
 const BB_OLDEST_YEAR = 2009;
 const BB_OLDEST_MONTH = 5;
-
+module.exports = {parseByDate};
 /**
  * Parses up to `max` recipes on budgetbytes from the month of `fromDate`
  * to the month of `toDate` (inclusive)
@@ -27,7 +27,7 @@ const BB_OLDEST_MONTH = 5;
  * @param {Date} fromDate : start of parsing range
  * @param {Date} toDate : end of parsing range, if in the future, will stop at current month
  */
-exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
+function parseByDate(max, fromYear, fromMonth, toYear, toMonth) {
     // Validate arguments
 
     if (inFuture(fromYear, fromMonth)) {
@@ -61,7 +61,7 @@ exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
     // Then parse each URL => Promise[Array[Promise[Recipe]]], which we flatten again and return Promise[Array[Recipe]]
     return Promise.all(recipesPromises).then(urls => {
         const flatURLs = [].concat(...urls).slice(0, max); // Keep only max recipes
-        const promises = flatURLs.map(exports.parseUrl);
+        const promises = flatURLs.map(parseUrl);
 
         return Promise.all(promises);
     });
@@ -88,6 +88,36 @@ function findRecipesInArchive(year, month) {
     }).catch(() => Promise.resolve([]));        // In case of error while parsing list, return empty list
 }
 
+<<<<<<< HEAD
+=======
+
+// ================================ Single Recipe Parsing ================================= //
+
+/**
+ * Returns a promise to a single Recipe from given url
+ * @param bb_url : URL to specific budgetbytes recipe
+ */
+function parseUrl(bb_url) {
+    return rp(bb_url).then(html => {
+        const pictureUrl = parseImgSrc(html);
+        const tags = parseTags(html);
+
+        const recipe = $(".wprm-recipe-container > .wprm-recipe", html);
+
+        const name = $(".wprm-recipe-name", recipe).text();
+        const time = parseTime(recipe);
+        const difficulty = 3;
+        const ingredients = parseIngredients(recipe);
+        const instructions = parseInstructions(recipe);
+        if (name == null || time == 0)
+            return null;
+        else
+            return new Recipe(bb_url, name, pictureUrl, time, difficulty, 
+                ingredients, instructions, tags);
+    });
+}
+
+>>>>>>> feature/parserfix
 function parseImgSrc(html) {
     try {
         const noscriptTag = $(".post > p > noscript", html);
@@ -150,6 +180,7 @@ function parseInstructions(recipe) {
 
     return instructions;
 }
+<<<<<<< HEAD
 
 // ================ Parsing Functions ================
 
@@ -221,3 +252,16 @@ exports.parseUrl = function (bbURL) {
             ingredients, instructions, tags);
     });
 };
+=======
+const url = "https://www.budgetbytes.com/maple-brown-butter-pumpkin-pie/"
+const url2test = "https://www.budgetbytes.com/10-foods-i-freeze-to-save-money-and-reduce-waste/"
+// parseUrl(url2test).then( x =>{
+//     console.log(x)
+// })
+
+// parseByDate(50, 2019,9,2019,10).then(x=>{
+
+//     console.log(x);
+// }
+// )
+>>>>>>> feature/parserfix
