@@ -58,13 +58,30 @@ mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true
 /******************************************************************************/
 /******************************************************************************/
 server.get('/test', (req, res) => {
-    db.collection("recipe").find().toArray((err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(result[0]);
-        }
-    })
+    
+       
+        db.collection("user").find({ "email": "kk" }).toArray((err, result) => {
+            let id = new RecipeID("5dcf98163c161c51d495594c")
+            var message = {
+                notification: {
+                    title: "Time to cook",
+                    body: "Get in the kitchen and make mama proud!",
+                },
+                data: {
+                    id: "5dcf98163c161c51d495594c",
+                    name: "Cranberry Cream Cheese Dip"
+                },
+                token: result[0].token
+            }
+
+            // send message via firebase push notification to Kyle's phone
+            admin.messaging().send(message).then((response) => {
+                console.log("message sent")
+            }).catch((error) => {
+                console.log("Something went terribly wrong");
+            })
+        })
+    
 })
 
 /**
@@ -154,7 +171,7 @@ server.get('/recipe/suggest', (req, res) => {
 server.get('/recipe/list', (req, res) => {
     let { email, max, search, tags } = req.query;
     if (search != undefined || tags != undefined) {
-        if (tags != undefined) {
+        if (tags != undefined) { 
             console.log(tags[1].length)
             if (tags[1].length == 1) {
                 temp = tags;
@@ -272,88 +289,113 @@ server.post('/notification/new', (req, res) => {
     let notificationBody = req.body;
     let dt = Date.now();
     let curDate = new Date(dt);
-    if (notificationBody.time != undefined) {
-        let temp = new Date(notificationBody.time)
-        temp = temp.getTime();
-        temp += (8 * 60 * 60 * 1000);
-        secs = temp % 60000;
-        temp -= secs;
-        testDate = new Date(temp);
-        console.log(testDate);
-        console.log(curDate);
-        let timeTillNot = testDate.getTime() - curDate.getTime();
-        if (timeTillNot < 0) {
-            console.log("bad time");
-            res.status(400).json("Negative notificaion time");
+    console.log(notificationBody.id)
+    db.collection("recipe").find({  "_id": new ObjectId(notificationBody.id.id) }).toArray((err, recipeResult) => {
+        if (err) {
+            res.status(400).json("Database Failure");
+        } else if (recipeResult.length == 0){
+            res.status(400).json("Bad Recipe ID");
         } else {
+            console.log(recipeResult[0].time);
+            let recName = recipeResult[0].name;
+            if (notificationBody.time != undefined) {
+                let temp = new Date(notificationBody.time)
+                temp = temp.getTime();
+                temp -= recipeResult[0].time * 60 * 1000
+                //temp += (8 * 60 * 60 * 1000);
+                secs = temp % 60000;
+                temp -= secs;
+                testDate = new Date(temp);
+                console.log(testDate);
+                console.log(curDate);
+                let timeTillNot = testDate.getTime() - curDate.getTime();
+                if (timeTillNot < 0) {
+                    console.log("bad time");
+                    res.status(400).json("Negative notificaion time");
+                } else {
 
-            makeNewNotification(timeTillNot, notificationBody);
+                    makeNewNotification(timeTillNot, notificationBody, recName);
 
-            res.status(200).json("notification should be G");
+                    res.status(200).json("notification should be G");
+                }
+            } else {
+                var rectime = recipeResult[0].time
+                db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+                    if (result.length == 0) {
+                        res.status(401).json("Bad email");
+                    }
+                    console.log(result[0].cookTime)
+                    let t = result[0].cookTime
+                    let cookt = "";
+                    cookt += (curDate.getYear() + 1900) + "-";
+                    cookt += (curDate.getMonth() + 1) + "-";
+                    cookt += (curDate.getDate()) + "T";
+                    console.log(t.hourOfDay);
+                    let hours = 0 + t.hourOfDay;
+    
+                    //hours += 8;
+                    console.log(hours);
+                    if (hours > 24) {
+                        hours -= 24;
+                    }
+                    if (hours < 10) {
+                        cookt += "0" + hours + ":";
+                    } else {
+                        cookt += hours + ":";
+                    }
+
+                    if (t.minute < 10) {
+                        cookt += "0" + t.minute + ":";
+                    } else {
+                        cookt += t.minute + ":"
+                    }
+
+                    cookt += "00";
+                    console.log(cookt);
+                    let temp = new Date(cookt);
+                    temp = temp.getTime();
+                    temp -= rectime * 60 * 1000
+                    secs = temp % 60000;
+                    temp -= secs;
+                    let testDate = new Date(temp);
+
+                    console.log(testDate);
+                    if (testDate < curDate) {
+
+                        testDate.setDate(testDate.getDate() + 1)
+                    }
+                    console.log(testDate);
+                    console.log(curDate);
+                    let timeTillNot = testDate.getTime() - curDate.getTime();
+                    if (timeTillNot < 0) {
+                        console.log("bad time");
+                        res.status(404).json("Negative notificaion time");
+                    } else {
+
+                        makeNewNotification(timeTillNot, notificationBody, recName);
+
+                        res.status(200).json("notification should be G");
+                    }
+                })
+            }
         }
-    } else {
-        
-        db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
-            if (result.length == 0) {
-                res.status(400).json("Bad email");
-            }
-            console.log(result[0].cookTime)
-            let t = result[0].cookTime
-            let cookt = "";
-            cookt += (curDate.getYear() + 1900) + "-";
-            cookt += (curDate.getMonth() + 1) + "-";
-            cookt += (curDate.getDate() ) +  "T";
-            console.log(t.hourOfDay);
-            let hours = 0 + t.hourOfDay;
-
-            hours += 8;
-            console.log(hours);
-            if(hours > 24){
-                hours -= 24;
-            }
-            if (hours < 10) {
-                cookt += "0" + hours + ":";
-            } else {
-                cookt += hours + ":";
-            }
-
-            if (t.minute < 10) {
-                cookt += "0" + t.minute + ":";
-            } else {
-                cookt += t.minute + ":"
-            }
-            
-            cookt += "00";
-            console.log(cookt);
-            let testDate = new Date(cookt);
-            console.log(testDate);
-            if (testDate < curDate) {
-
-                testDate.setDate(testDate.getDate() + 1)
-            }
-            console.log(testDate);
-            console.log(curDate);
-            let timeTillNot = testDate.getTime() - curDate.getTime();
-            if (timeTillNot < 0) {
-                console.log("bad time");
-                res.status(400).json("Negative notificaion time");
-            } else {
-
-                makeNewNotification(timeTillNot, notificationBody);
-
-                res.status(200).json("notification should be G");
-            }
-        })
-    }
+    })
 })
 
-function makeNewNotification(timeTillNot, notificationBody) {
+function makeNewNotification(timeTillNot, notificationBody, recName) {
+    console.log(notificationBody.email)
     let timeOut = setTimeout(function () {
+        console.log(recName);
         db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+            
             var message = {
                 notification: {
                     title: "Time to cook",
                     body: "Get in the kitchen and make mama proud!",
+                },
+                data: {
+                        id: notificationBody.id.id,
+                        name: recName
                 },
                 token: result[0].token
             }
