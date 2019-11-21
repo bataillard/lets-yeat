@@ -88,8 +88,6 @@ function findRecipesInArchive(year, month) {
     }).catch(() => Promise.resolve([]));        // In case of error while parsing list, return empty list
 }
 
-<<<<<<< HEAD
-=======
 
 // ================================ Single Recipe Parsing ================================= //
 
@@ -117,7 +115,6 @@ function parseUrl(bb_url) {
     });
 }
 
->>>>>>> feature/parserfix
 function parseImgSrc(html) {
     try {
         const noscriptTag = $(".post > p > noscript", html);
@@ -180,79 +177,6 @@ function parseInstructions(recipe) {
 
     return instructions;
 }
-<<<<<<< HEAD
-
-// ================ Parsing Functions ================
-
-/**
- * Parses up to `max` recipes on budgetbytes from the month of `fromDate`
- * to the month of `toDate` (inclusive)
- * @param {int} max : maximum number of recipes returned
- * @param {Date} fromDate : start of parsing range
- * @param {Date} toDate : end of parsing range, if in the future, will stop at current month
- */
-exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
-    // Validate arguments
-
-    if (inFuture(fromYear, fromMonth)) {
-        return Promise.reject(new Error("Cannot start date range in future: " + fromYear + "-" + fromMonth));
-    } 
-
-    if (inFuture(BB_OLDEST_YEAR, BB_OLDEST_MONTH, fromYear, fromMonth)) {  // If before oldest recipe in BB
-        return Promise.reject(new Error("Date range starts too early: " + fromYear + "-" + fromMonth));
-    }
-
-    const now = new Date();
-    let year = inFuture(toYear, toMonth) ? now.getFullYear() : toYear;
-    let month = inFuture(toYear, toMonth) ? now.getMonth() : toMonth;
-    
-    // Go trough budgetbytes archive in reverse order, add each page's recipes to list 
-    
-    let recipesPromises = [];
-    while (year > fromYear || year === fromYear && month >= fromMonth) {
-        let localMonth = month;     // Declare local variables in block scope to avoid problems with closure in promise
-        let localYear = year;       
-        recipesPromises.push(findRecipesInArchive(localYear, localMonth));
-
-        month--;
-        if (month === 0) {
-            year--;
-            month = 12;
-        }
-    }
-
-    // We now have Array[Promise[Array[URL]]], which we transform into Promise[Array[Array[URL]]] then flatten array
-    // Then parse each URL => Promise[Array[Promise[Recipe]]], which we flatten again and return Promise[Array[Recipe]]
-    return Promise.all(recipesPromises).then(urls => {
-        const flatURLs = [].concat(...urls).slice(0, max); // Keep only max recipes
-        const promises = flatURLs.map(exports.parseUrl);
-
-        return Promise.all(promises);
-    });
-};
-
-/**
- * Returns a promise to a single Recipe from given url
- * @param bbURL : URL to specific budgetbytes recipe
- */
-exports.parseUrl = function (bbURL) {
-    return rp(bbURL).then(html => {
-        const pictureUrl = parseImgSrc(html);
-        const tags = parseTags(html);
-
-        const recipe = $(".wprm-recipe-container > .wprm-recipe", html);
-
-        const name = $(".wprm-recipe-name", recipe).text();
-        const time = parseTime(recipe);
-        const difficulty = 3;
-        const ingredients = parseIngredients(recipe);
-        const instructions = parseInstructions(recipe);
-        
-        return new Recipe(bbURL, name, pictureUrl, time, difficulty, 
-            ingredients, instructions, tags);
-    });
-};
-=======
 const url = "https://www.budgetbytes.com/maple-brown-butter-pumpkin-pie/"
 const url2test = "https://www.budgetbytes.com/10-foods-i-freeze-to-save-money-and-reduce-waste/"
 // parseUrl(url2test).then( x =>{
@@ -264,4 +188,3 @@ const url2test = "https://www.budgetbytes.com/10-foods-i-freeze-to-save-money-an
 //     console.log(x);
 // }
 // )
->>>>>>> feature/parserfix
