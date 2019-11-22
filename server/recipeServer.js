@@ -13,12 +13,17 @@ const mongoClient = require('mongodb').MongoClient
 const serverURL = "mongodb://localhost:27017/";
 var db;
 var recipe;
-
+var fs = require('fs');
+var logger
+var logging = true;
 mongoClient.connect(serverURL, {useNewUrlParser: true,useUnifiedTopology: true }, (err,client) =>{
     if (err) return console.log(err)
     console.log("Parsing recipes . . .")
     db = client.db('backenddb')
-	recipe = db.collection("recipe")
+    recipe = db.collection("recipe")
+    logger = fs.createWriteStream('log.txt', {
+        flags: 'a' // 'a' means appending (old data will be preserved)
+      })
 })
 
 // (max, fromYear, fromMonth, toYear, toMonth)
@@ -27,6 +32,8 @@ function batch_budgetbytes(){
         for (each_recipe of batch){
             if(each_recipe != null){
                 recipe.insertOne(each_recipe)
+                if (logging)
+                    logger.write(each_recipe.name+" ")
             }
         }
         console.log("Insertion 1 success: budgetbyte.");
@@ -38,6 +45,8 @@ function batch_foodnetwork(){
         for (each_recipe of batch){
             if(each_recipe != null){
                 recipe.insertOne(each_recipe)
+                if (logging)
+                    logger.write(each_recipe.name+" ")
             }
         }
         console.log("Insertion 2 success: food network.");
@@ -49,6 +58,8 @@ function batch_allrecipe(){
         for (each_recipe of batch){
             if(each_recipe != null){
                 recipe.insertOne(each_recipe)
+                if (logging)
+                    logger.write(each_recipe.name+" ")
             }
         }
         console.log("Insertion 3 success: all recipe.");
@@ -60,6 +71,8 @@ function batch_food(){
         for (each_recipe of batch){
             if(each_recipe != null){
                 recipe.insertOne(each_recipe)
+                if (logging)
+                    logger.write(each_recipe.name+" ")
             }
         }
         console.log("Insertion 4 success: food.");
@@ -71,6 +84,8 @@ function batch_foodnetworth(){
         for (each_recipe of batch){
             if(each_recipe != null){
                 recipe.insertOne(each_recipe)
+                if (logging)
+                    logger.write(each_recipe.name+" ")
             }
         }
         console.log("Insertion 5 success: Skinny Taste.");
