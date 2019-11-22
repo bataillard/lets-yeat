@@ -96,13 +96,18 @@ function findRecipesInArchive(year, month) {
  * @param bb_url : URL to specific budgetbytes recipe
  */
 function parseUrl(bb_url) {
+    // to artificailly slow down parsing process so website doesn't reject us.
+    setTimeout(function(){
+        // do nothing
+    },500);
     return rp(bb_url).then(html => {
         const pictureUrl = parseImgSrc(html);
-        const tags = parseTags(html);
+        
 
         const recipe = $(".wprm-recipe-container > .wprm-recipe", html);
 
         const name = $(".wprm-recipe-name", recipe).text();
+        const tags = parseTags(html, name);
         const time = parseTime(recipe);
         const difficulty = 3;
         const ingredients = parseIngredients(recipe);
@@ -128,15 +133,15 @@ function parseImgSrc(html) {
 
 }
 
-function parseTags(html) {
+function parseTags(html,name) {
     function extractBreadcrumbs(html) {
         return $("#breadcrumbs", html).text();
     }
-
-    const words = extractBreadcrumbs(html).split(" ")   // split into words
+    var match_words = new RegExp(/(\w)+/ig);
+    var words = extractBreadcrumbs(html).split(" ")   // split into words
         .map(s => s.replace(/\W/g, "").toLowerCase())   // remove special chars
         .filter(s => s.length > 0);                     // remove empty words
-    
+    words.concat(name.match(match_words))
     // Intersection of words and potential tags
     const tags = [...new Set(words)].filter(w => possibleTags.has(w));
     

@@ -65,6 +65,7 @@ function getAllRecipes(number_of_recipes){
  * 
  */
 function getRecipeUrls(recipes_url){
+    
     return rp(recipes_url).then(html => {
         var $ = cheerio.load(html);
         var recipe_url_list= [];
@@ -98,6 +99,10 @@ function getRecipeUrls(recipes_url){
  */
 
 function parseRecipeFromUrl(st_url){
+    // to artificailly slow down parsing process so website doesn't reject us.
+    setTimeout(function(){
+        // do nothing
+    },500);
     return rp(st_url).then(html =>{
        
         // $ is function with our loaded HTML, ready for us to use
@@ -105,11 +110,12 @@ function parseRecipeFromUrl(st_url){
         var $ = cheerio.load(html);
         const time_in_minutes = parseCookingTime($);
         const picture_url = parseRecipeImage($);
-        const tags = parseTags($);
+        const recipe_title = $(".post-title h1").text()
+        const tags = parseTags($, recipe_title);
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
-        const recipe_title = $(".post-title h1").text()
+        
 
         if (time_in_minutes != null && picture_url != null && tags != null){
             return new Recipe(st_url, recipe_title, picture_url, 
@@ -191,7 +197,7 @@ function parseRecipeImage($){
  * input: function with loaded HTML of recipe
  * return: array of tags
  */
-function parseTags($){
+function parseTags($,name){
     potential_tags = [];
     var match_words = new RegExp(/(\w)+/ig);
     var keywords = $(".wprm-recipe-keyword").text();
@@ -199,6 +205,8 @@ function parseTags($){
     // second line of defense, when wrong url are passed
     if(matches == null)
         return null;
+    // add recipe title words to matches
+    matches.concat(name.match(match_words));
     // make every word lower case for uniformity
     for (word of matches){
         potential_tags.push(word.toLowerCase());

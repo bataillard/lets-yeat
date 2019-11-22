@@ -89,6 +89,10 @@ function getRecipeUrls(recipes_url){
  */
 
 function parseRecipeFromUrl(fn_url){
+    // to artificailly slow down parsing process so website doesn't reject us.
+    setTimeout(function(){
+        // do nothing
+    },500);
     return rp(fn_url).then(html =>{
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
