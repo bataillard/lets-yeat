@@ -113,18 +113,21 @@ function getRecipeUrls(recipes_url){
  */
 
 function parseRecipeFromUrl(f_url){
+    // to artificailly slow down parsing process so website doesn't reject us.
+    setTimeout(function(){
+        // do nothing
+    },500);
     return rp(f_url).then(html =>{
+        const recipe_title = $(".recipe-title h1").text()
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
         const time_in_minutes = parseCookingTime($);
-        const picture_url = parseRecipeImage($); //TODO: not done yet
-        const tags = parseTags($);
+        const picture_url = parseRecipeImage($);
+        const tags = parseTags($, recipe_title);
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
-
-        const recipe_title = $(".recipe-title h1").text()
 
         if (time_in_minutes != null)// && picture_url != null)
             return new Recipe(f_url, recipe_title, picture_url, 
@@ -223,12 +226,14 @@ function parseRecipeImage($){
  * input: function with loaded HTML of recipe
  * return: array of tags
  */
-function parseTags($){
+function parseTags($, name){
     potential_tags = [];
     // tags in all recipe is under "toggle-similar__title" class
     $(".recipe-breadcrumbs__text.category").each(function(i, elem){
         potential_tags.push($(this).html().toLowerCase().trim());
     })
+    var match_words = new RegExp(/(\w)+/ig);
+    potential_tags.concat(name.match(match_words));
     // Intersection of words and potential tags
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;

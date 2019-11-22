@@ -32,8 +32,9 @@ function batch_budgetbytes(){
         for (each_recipe of batch){
             if(each_recipe != null){
                 recipe.insertOne(each_recipe)
-                if (logging)
+                if (logging){
                     logger.write(each_recipe.name+" ")
+                }
             }
         }
         console.log("Insertion 1 success: budgetbyte.");

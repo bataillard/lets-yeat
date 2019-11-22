@@ -13,7 +13,7 @@ const Ingredient = require('./recipe.js').Ingredient
 const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__dirname,"./tags.json"))).tags);
 const minutes_in_hour = 60;
 const recipes_per_page = 16;
-const recipe_count_buffer = 20; // some recipes are cut from selection, this allows for margin of error
+const recipe_count_buffer = 40; // some recipes are cut from selection, this allows for margin of error
 module.exports = {getRecipes};
 
 // ================================ Site Navigation  ================================= //
@@ -91,6 +91,10 @@ function getRecipeUrls(recipes_url){
  */
 
 function parseRecipeFromUrl(ar_url){
+    // to artificailly slow down parsing process so website doesn't reject us.
+    setTimeout(function(){
+        // do nothing
+    },500);
     return rp(ar_url).then(html =>{
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
@@ -101,7 +105,7 @@ function parseRecipeFromUrl(ar_url){
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
-
+        
         const recipe_title = $("#recipe-main-content").text()
         if (time_in_minutes != null && picture_url != null)
             return new Recipe(ar_url, recipe_title, picture_url, 
@@ -128,6 +132,7 @@ function parseCookingInstructions($){
             instructions.push(step.trim());
         }
     })
+    
     return instructions;
 }
 
@@ -199,10 +204,11 @@ function parseTags($){
 }
 
 // example test code: this is how you request recipes
-// var x = 50;
+// var x = 10;
+// var count = 0;
 // getRecipes(x).then(x => {
-//     for (rec in x){
-//         console.log(`${rec} ${x[rec]}`)
+//     for (rec of x){
+//         count++
 //     }
-//     console.log("done");
+//     console.log(count)
 // })
