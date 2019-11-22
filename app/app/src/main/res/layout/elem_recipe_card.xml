@@ -8,7 +8,11 @@
     android:layout_margin="@dimen/activity_horizontal_margin"
     android:layout_marginBottom="4dp"
     app:cardCornerRadius="6dp"
-    app:cardElevation="10dp">
+    app:cardElevation="10dp"
+
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,38 +21,36 @@
 
         <ImageView
             android:id="@+id/recipe_card_image"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_weight="2"
 
             android:scaleType="centerCrop"
             android:contentDescription="@string/placeholder_recipe_name"
             tools:src="@drawable/placeholder_recipe_photo" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingBottom="16dp">
+            android:layout_weight="3"
+            android:paddingBottom="16dp"
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/recipe_card_name"
 
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
 
                 android:contentDescription="@string/placeholder_recipe_name"
                 android:text="@string/placeholder_recipe_name"
                 android:scrollHorizontally="false"
-                android:maxLines="2"
+                android:maxLines="4"
 
                 android:textColor="@color/textColorRecipeListItem"
-                android:textSize="28sp"/>
+                android:textSize="22sp"/>
 
 
             <TextView
@@ -57,11 +59,7 @@
                 android:layout_width="wrap_content"
 
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
-
                 android:drawableStart="@drawable/ic_timer_black_20dp"
-                android:drawableLeft="@drawable/ic_timer_black_20dp"
 
                 android:drawablePadding="5dp"
 
@@ -78,8 +76,6 @@
                 android:layout_width="wrap_content"
 
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginRight="16dp"
 
                 android:drawableEnd="@drawable/ic_star_border_black_20dp"
                 android:drawableRight="@drawable/ic_star_border_black_20dp"
