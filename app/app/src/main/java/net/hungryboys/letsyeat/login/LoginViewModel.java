@@ -11,8 +11,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
-import net.hungryboys.letsyeat.api.APICaller;
 import net.hungryboys.letsyeat.R;
+import net.hungryboys.letsyeat.api.APICaller;
 import net.hungryboys.letsyeat.data.User;
 
 import retrofit2.Call;
@@ -40,7 +40,9 @@ public class LoginViewModel extends ViewModel {
         LoginRepository login = LoginRepository.getInstance(context);
 
         if (login.isLoggedIn()) {
-            loginResult.setValue(LoginResult.success(false, login.getServerAuthToken()));
+            login(login.getUserEmail(), login.getSecret(), context);
+
+            //loginResult.setValue(LoginResult.success(false, login.getServerAuthToken()));
         }
 
         return loginResult;
