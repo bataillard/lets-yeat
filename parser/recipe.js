@@ -44,7 +44,7 @@ exports.Ingredient = class Ingredient {
      */
     static convertQuantity(quantity) {
         const fractionRegExp = /(\d+)\s*\/\s*(\d+)/;
-        const numberRegExp = /\d+[.]?/;
+        const numberRegExp = /\d+([.]\d+)?/;
         
         if (typeof quantity === "string") {
             if (fractionRegExp.test(quantity)) {

@@ -66,8 +66,7 @@ function parseByDate(max, fromYear, fromMonth, toYear, toMonth) {
         return Promise.all(promises);
     });
 }
-
-function inFuture(year, month, toYear, toMonth) {
+function inPast(year, month, toYear, toMonth) {
     let now = new Date();
     if (toYear && toMonth) {
         now.setFullYear(toYear);
@@ -188,7 +187,46 @@ const url2test = "https://www.budgetbytes.com/10-foods-i-freeze-to-save-money-an
 //     console.log(x)
 // })
 
-// parseByDate(50, 2019,9,2019,10).then(x=>{
+//export for testing
+module.exports.inPast = inPast;
+module.exports.findRecipesInArchive = findRecipesInArchive;
+module.exports.parseImgSrc = parseImgSrc;
+module.exports.parseTags = parseTags;
+module.exports.parseTime = parseTime;
+module.exports.parseIngredients = parseIngredients;
+module.exports.parseInstructions = parseInstructions;
+
+// ================ Parsing Functions ================
+
+/**
+ * Parses up to `max` recipes on budgetbytes from the month of `fromDate`
+ * to the month of `toDate` (inclusive)
+ * @param {int} max : maximum number of recipes returned
+ * @param {Date} fromDate : start of parsing range
+ * @param {Date} toDate : end of parsing range, if in the future, will stop at current month
+ */
+exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
+    // Validate arguments
+
+    if (inPast(fromYear, fromMonth)) {
+        return Promise.reject(new Error("Cannot start date range in future: " + fromYear + "-" + fromMonth));
+    } 
+
+    if (inPast(BB_OLDEST_YEAR, BB_OLDEST_MONTH, fromYear, fromMonth)) {  // If before oldest recipe in BB
+        return Promise.reject(new Error("Date range starts too early: " + fromYear + "-" + fromMonth));
+    }
+
+    const now = new Date();
+    let year = inPast(toYear, toMonth) ? now.getFullYear() : toYear;
+    let month = inPast(toYear, toMonth) ? now.getMonth() : toMonth;
+    
+    // Go trough budgetbytes archive in reverse order, add each page's recipes to list 
+    
+    let recipesPromises = [];
+    while (year > fromYear || year === fromYear && month >= fromMonth) {
+        let localMonth = month;     // Declare local variables in block scope to avoid problems with closure in promise
+        let localYear = year;       
+        recipesPromises.push(findRecipesInArchive(localYear, localMonth));
 
 //     console.log(x);
 // }

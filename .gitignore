@@ -26,6 +26,7 @@ bin/
 gen/
 out/
 release/
+server/Tests/globalConfig.json
 
 # Gradle files
 .gradle/

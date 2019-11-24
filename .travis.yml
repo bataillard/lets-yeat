@@ -15,13 +15,15 @@ matrix:
             - mongodb
 
           install:
-            - npm install server
-            - npm install parser
+            - npm install --dev
+            - npm install --dev ./server
+            - npm install --dev ./parser
           
           script:
             # node_js build
             # this is a placeholder for test or build script
-            - echo "test here"
+            - npm test
+            
             
         - language: android
           dist: trusty
