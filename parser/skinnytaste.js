@@ -174,7 +174,7 @@ function parseIngredients($){
     var list = $("li.wprm-recipe-ingredient").each(function(_,element){
         var item = $(this).text();
         if (item != null){
-            ingredients.push(item.trim());
+            ingredients.push(new Ingredients(item.trim()));
         }
     })
     return ingredients;

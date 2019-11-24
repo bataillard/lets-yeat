@@ -181,7 +181,7 @@ function parseIngredients($){
              * 2 - fix copyright sign
              */
             // first char is always space, trim it
-            ingredients.push(item.trim());
+            ingredients.push(new Ingredient(item.trim()));
         }
     })
     return ingredients;
@@ -219,6 +219,6 @@ function parseTags($){
 }
 
 
-// getRecipes(2).then(x=>{
+// getRecipes(10).then(x=>{
 //     console.log(x)
 // })

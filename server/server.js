@@ -6,7 +6,7 @@
 // for Tim's computer
 //var firebasepath = "/home/firebasekey.json"
 // if running on Server
-var firebasepath = "/home/ubc/project/server/service-account-file.json"
+var firebasepath = "/home/ubc/project/server/google.json"
 // if running on you rown computer, use the following:
 // var firebasepath = "PATH-TO-THIS-FILE/firebasekey.json"
 // this file is credentials for firebase admin, Martin has sent it to the group in slack
@@ -15,7 +15,7 @@ var firebasepath = "/home/ubc/project/server/service-account-file.json"
 var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
 var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5RPV0w04H_eIMUaHZKuJghtjFB-NeOx3w4bVnjZY2sC3DtTQnBfjQqszG6SKa5nWpWog_hYEraaeOeBFrpRvEBjP-kui"
 // get for Luca's device, testing with Kyle's
-var serviceAccount = require("/home/ubc/project/server/package-lock.json")
+var serviceAccount = require("/home/ubc/project/server/google.json")
 var parser = require('../parser')
 var admin = require('firebase-admin')
 const express = require('express')
@@ -170,7 +170,6 @@ server.get('/recipe/suggest', (req, res) => {
  * Returns only the id, name, picture, time, and difficulty */
 server.get('/recipe/list', (req, res) => {
     let { email, max, search, tags } = req.query;
-    if (search != undefined || tags != undefined) {
         if (tags != undefined) { 
             console.log(tags[1].length)
             if (tags[1].length == 1) {
@@ -252,7 +251,7 @@ server.get('/recipe/list', (req, res) => {
 			})
 
 			getUserPromise.then(function (retrievedUser) {
-				console.log(retrievedUser);
+				console.log("user in list" + retrievedUser);
 	//            retrievedUser.preferences = ['chicken'];
 	//            console.log(retrievedUser.preferences);
 
@@ -280,9 +279,7 @@ server.get('/recipe/list', (req, res) => {
 				res.status(400).json(err);
 			});
 		}
-	} else {
-		res.status(400).json("No user or tags specified");
-	}
+	
 })
 
 /* Add a new notification for a specified user */

@@ -30,17 +30,17 @@ module.exports = {parseByDate};
 function parseByDate(max, fromYear, fromMonth, toYear, toMonth) {
     // Validate arguments
 
-    if (inFuture(fromYear, fromMonth)) {
+    if (inPast(fromYear, fromMonth)) {
         return Promise.reject(new Error("Cannot start date range in future: " + fromYear + "-" + fromMonth));
     }
 
-    if (inFuture(BB_OLDEST_YEAR, BB_OLDEST_MONTH, fromYear, fromMonth)) {  // If before oldest recipe in BB
+    if (inPast(BB_OLDEST_YEAR, BB_OLDEST_MONTH, fromYear, fromMonth)) {  // If before oldest recipe in BB
         return Promise.reject(new Error("Date range starts too early: " + fromYear + "-" + fromMonth));
     }
 
     const now = new Date();
-    let year = inFuture(toYear, toMonth) ? now.getFullYear() : toYear;
-    let month = inFuture(toYear, toMonth) ? now.getMonth() : toMonth;
+    let year = inPast(toYear, toMonth) ? now.getFullYear() : toYear;
+    let month = inPast(toYear, toMonth) ? now.getMonth() : toMonth;
     
     // Go trough budgetbytes archive in reverse order, add each page's recipes to list 
     
