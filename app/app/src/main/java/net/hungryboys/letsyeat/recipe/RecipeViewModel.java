@@ -10,9 +10,9 @@ import androidx.lifecycle.ViewModel;
 
 import net.hungryboys.letsyeat.api.APICaller;
 import net.hungryboys.letsyeat.api.bodies.NotificationBody;
-import net.hungryboys.letsyeat.login.LoginRepository;
 import net.hungryboys.letsyeat.data.Recipe;
 import net.hungryboys.letsyeat.data.RecipeID;
+import net.hungryboys.letsyeat.login.LoginRepository;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,8 +32,19 @@ public class RecipeViewModel extends ViewModel {
     private static final String TAG_RECIPE = "RecipeViewModel";
 
     private MutableLiveData<Recipe> recipe = new MutableLiveData<>();
+    private MutableLiveData<NotificationResult> notifStatus = new MutableLiveData<>();
     private Calendar cookDate = null;
     private RecipeID id;
+
+    public static final class NotificationResult {
+        final RecipeID id;
+        final boolean status;
+
+        public NotificationResult(RecipeID id, boolean status) {
+            this.id = id;
+            this.status = status;
+        }
+    }
 
     /**
      * @return an observable LiveData object containing the recipe that was requested to server
@@ -48,6 +59,10 @@ public class RecipeViewModel extends ViewModel {
         }
 
         return recipe;
+    }
+
+    public LiveData<NotificationResult> getNotificationResult() {
+        return notifStatus;
     }
 
     /**
@@ -70,6 +85,8 @@ public class RecipeViewModel extends ViewModel {
             return;
         }
 
+        final RecipeID id = this.id;
+
         String email = LoginRepository.getInstance(context).getUserEmail();
         String dateString = null;
         if (cookDate != null) {
@@ -86,11 +103,17 @@ public class RecipeViewModel extends ViewModel {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                Log.d(TAG_RECIPE, "Cook confirmed");
+                if (response.isSuccessful()) {
+                    notifStatus.postValue(new NotificationResult(id, true));
+                    Log.d(TAG_RECIPE, "Cook confirmed");
+                } else  {
+                    notifStatus.postValue(new NotificationResult(id, false));
+                    Log.i(TAG_RECIPE, "Invalid Time");                }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
+                notifStatus.postValue(new NotificationResult(id, false));
                 Log.e(TAG_RECIPE, "Could not confirm cook", t);
             }
         });
