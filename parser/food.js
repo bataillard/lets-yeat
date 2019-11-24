@@ -193,7 +193,7 @@ function parseIngredients($){
         // e.g. "1 -2" should be "1-2" meaning 1 to 2
         item = item.replace(/\s+/g, ' ').replace(/\s-/,'-');
         if (item != null){
-            ingredients.push(new Ingredients(item.trim(),"",""));
+            ingredients.push(new Ingredients(item.trim()));
         }
     })
     return ingredients;

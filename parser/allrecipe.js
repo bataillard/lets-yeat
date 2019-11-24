@@ -169,7 +169,7 @@ function parseIngredients($){
     var list = $("*[itemprop = 'recipeIngredient']").each(function(_,element){
         var item = $(this).html()
         if (item != null){
-            ingredients.push(new Ingredients(item.trim(),"",""));
+            ingredients.push(new Ingredients(item.trim()));
         }
     })
     return ingredients;
