@@ -17,11 +17,10 @@ var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5
 // get for Luca's device, testing with Kyle's
 var serviceAccount = require("/home/ubc/project/server/service-account-file.json")
 var parser = require('../parser')
-//var recipees = require('/classes')
 var admin = require('firebase-admin')
 const express = require('express')
 const mongoClient = require('mongodb').MongoClient
-const serverURL = "mongodb://localhost:27017/";
+const serverURL = "mongodb://127.0.0.1:27017/";
 var ObjectId = require('mongodb').ObjectID;
 var server = express();
 server.use(express.json())
@@ -29,18 +28,22 @@ var db
 var user
 var recipe
 
+module.exports.server = server;
+
+
 // parse receipes from 1st website
 const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";
 
 
-mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
+
+mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true }, async (err, client) => {
     if (err) return console.log(err)
     db = client.db('backenddb')
     users = db.collection("user")
     recipes = db.collection("recipe")
     // listen to port
-    server.listen(3001, function () {
-        console.log("server is up!!!!")
+	server.listen(3001, function () {
+        console.log("server is up!!!!");
     })
     // initialization for firebase
     admin.initializeApp({
@@ -49,7 +52,6 @@ mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true
     })
     console.log("server is up!!!!")
 })
-
 
 
 /******************************************************************************/
@@ -95,7 +97,8 @@ server.get('/test', (req, res) => {
 server.get('/recipe/id', (req, res) => {
     let { id } = req.query;
     console.log(id)
-    db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
+	db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
+		console.log(result)
         if (result.length == 0) {
             res.status(401).json("No recipe with this ID");
         } else {
@@ -143,15 +146,12 @@ server.get('/recipe/suggest', (req, res) => {
     })
 
     getUserPromise.then(function (retrievedUser) {
-        console.log(retrievedUser);
-        retrievedUser.preferences = ['chicken'];
-        console.log(retrievedUser.preferences);
 
         db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
             if (err) {
                 res.status(401).json("Database Failure");
             }else if (result.length == 0) {
-                res.status(401).json("No available recipes");
+                res.status(402).json("No available recipes");
             } else {
                 randNum = Math.floor(Math.random() * Math.floor(result.length))
                 recip = new RecipeID(result[randNum]._id);
@@ -236,52 +236,53 @@ server.get('/recipe/list', (req, res) => {
                     }
                 }
             })
+		} else {
+			getUserPromise = new Promise(function (resolve, reject) {
+				db.collection("user").find({ "email": email }).toArray((err, result) => {
+					if (err) {
+						reject("Database Failure");
+					} else if (result.length != 1) {
+						reject("No user with that email");
+					} else {
+						let user = new User(result[0].email, result[0].password, result[0].preferences, result[0].cookTime, result[0].token);
+						resolve(user);
+					}
+				})
 
-        }
-    } else {
-        getUserPromise = new Promise(function (resolve, reject) {
-            db.collection("user").find({ "email": email }).toArray((err, result) => {
-                if (err) {
-                    reject("Database Failure");
-                } else if (result.length != 1) {
-                    reject("No user with that email");
-                } else {
-                    let user = new User(result[0].email, result[0].password, result[0].preferences, result[0].cookTime, result[0].token);
-                    resolve(user);
-                }
-            })
+			})
 
-        })
+			getUserPromise.then(function (retrievedUser) {
+				console.log(retrievedUser);
+	//            retrievedUser.preferences = ['chicken'];
+	//            console.log(retrievedUser.preferences);
 
-        getUserPromise.then(function (retrievedUser) {
-            console.log(retrievedUser);
-            retrievedUser.preferences = ['chicken'];
-            console.log(retrievedUser.preferences);
+				db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
+					if (err) {
+						res.status(401).json("Database Failure");
+					} else if (result.length == 0) {
+						res.status(401).json("No available recipes");
+					} else {
+						console.log("first stub: " + result[0].tags);
+						var i = 0;
+						var stubs = []
+						for (i = 0; i < Math.min(max, result.length); i++) {
+							console.log(result[i].time)
+							var idd = new RecipeID(result[i]._id);
+							var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
+							stubs.push(stub);
+						}
+						res.status(200).json(stubs);
+					}
+				})
 
-            db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
-                if (err) {
-                    res.status(401).json("Database Failure");
-                } else if (result.length == 0) {
-                    res.status(401).json("No available recipes");
-                } else {
-                    console.log("first stub: " + result[0].tags);
-                    var i = 0;
-                    var stubs = []
-                    for (i = 0; i < Math.min(max, result.length); i++) {
-                        console.log(result[i].time)
-                        var idd = new RecipeID(result[i]._id);
-                        var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
-                        stubs.push(stub);
-                    }
-                    res.status(200).json(stubs);
-                }
-            })
-
-        }, function (err) {
-            console.log(err);
-            res.status(400).json(err);
-        });
-    }
+			}, function (err) {
+				console.log(err);
+				res.status(400).json(err);
+			});
+		}
+	} else {
+		res.status(400).json("No user or tags specified");
+	}
 })
 
 /* Add a new notification for a specified user */
@@ -459,7 +460,7 @@ server.post("/user/register", (req, res) => {
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
         if (result.length != 0) {
             login = new LoginResult(false, false, "asdnfjk");
-            res.status(200).json(login);
+            res.status(409).json(login);
         } else {
             users.insertOne({
                 "email": user.email,
@@ -499,7 +500,6 @@ function getUserByEmail(email) {
         }
     })
 };
-
 /******************************************************************************/
 /******************************************************************************/
 /*********************************Classes**************************************/
@@ -559,3 +559,4 @@ class User {
         this.token = token;
     }
 };
+
