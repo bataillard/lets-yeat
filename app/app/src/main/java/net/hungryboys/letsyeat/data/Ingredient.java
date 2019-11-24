@@ -96,6 +96,10 @@ public class Ingredient {
     @Override
     @NonNull
     public String toString() {
+        if (quantity == null && unit == null) {
+            return getName();
+        }
+
         return String.format(Locale.getDefault(), "%s %s - %s", getQuantity(), getUnit(), getName());
     }
 }
