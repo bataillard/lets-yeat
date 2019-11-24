@@ -181,7 +181,7 @@ function parseIngredients($){
              * 2 - fix copyright sign
              */
             // first char is always space, trim it
-            ingredients.push(item.trim());
+            ingredients.push(new Ingredients(item.trim(),"",""));
         }
     })
     return ingredients;
