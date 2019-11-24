@@ -228,4 +228,4 @@ exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
         let localYear = year;       
         recipesPromises.push(findRecipesInArchive(localYear, localMonth));
     }
-
+}
