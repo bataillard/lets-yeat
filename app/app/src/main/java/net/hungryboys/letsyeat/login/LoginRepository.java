@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi;
 
 import net.hungryboys.letsyeat.data.User;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,12 +20,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.security.AlgorithmParameterGenerator;
 import java.security.AlgorithmParameters;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyStore;
-import java.security.spec.AlgorithmParameterSpec;
 import java.util.Calendar;
 
 import javax.crypto.Cipher;
@@ -260,6 +257,20 @@ public class LoginRepository {
 
             if (keyStoreCredentials != null) {
                 return keyStoreCredentials.serverAuthToken;
+            } else {
+                return null;
+            }
+        } else {
+            return credentials.serverAuthToken;
+        }
+    }
+
+    public String getSecret() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Credentials keyStoreCredentials = getCredentialsFromKeyStore();
+
+            if (keyStoreCredentials != null) {
+                return keyStoreCredentials.user.getSecret();
             } else {
                 return null;
             }

@@ -106,6 +106,7 @@ public class BrowseFragment extends Fragment {
             public void onSelect(RecipeID recipeID) {
                 Intent intent = new Intent(getActivity(), RecipeActivity.class);
                 intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, recipeID);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
         });

@@ -16,6 +16,24 @@
     <string name="tag_vietnamese">vietnamese</string>
     <string name="tag_pasta">pasta</string>
     <string name="tag_pizza">pizza</string>
+    <string name="tag_korean">korean</string>
+    <string name="tag_italian">italian</string>
+    <string name="tag_potato">potato</string>
+    <string name="tag_gratin">gratin</string>
+    <string name="tag_meat">meat</string>
+    <string name="tag_sweet">sweet</string>
+    <string name="tag_baked">baked</string>
+    <string name="tag_salad">salad</string>
+    <string name="tag_bread">bread</string>
+    <string name="tag_cheese">cheese</string>
+    <string name="tag_creamy">creamy</string>
+    <string name="tag_roast">roast</string>
+    <string name="tag_banana">banana</string>
+    <string name="tag_spinach">spinach</string>
+    <string name="tag_fried">fired</string>
+    <string name="tag_breakfast">breakfast</string>
+    <string name="tag_pumpkin">pumpkin</string>
+
 
     <string-array name="tag_strings">
         <item>@string/tag_beef</item>
@@ -34,5 +52,23 @@
         <item>@string/tag_vietnamese</item>
         <item>@string/tag_pasta</item>
         <item>@string/tag_pizza</item>
+        <item>@string/tag_korean</item>
+        <item>@string/tag_italian</item>
+        <item>@string/tag_potato</item>
+        <item>@string/tag_gratin</item>
+        <item>@string/tag_meat</item>
+        <item>@string/tag_sweet</item>
+        <item>@string/tag_baked</item>
+        <item>@string/tag_salad</item>
+        <item>@string/tag_bread</item>
+        <item>@string/tag_cheese</item>
+        <item>@string/tag_creamy</item>
+        <item>@string/tag_roast</item>
+        <item>@string/tag_pasta</item>
+        <item>@string/tag_banana</item>
+        <item>@string/tag_spinach</item>
+        <item>@string/tag_fried</item>
+        <item>@string/tag_breakfast</item>
+        <item>@string/tag_pumpkin</item>
     </string-array>
 </resources>

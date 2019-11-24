@@ -81,13 +81,14 @@ public class NavigationFragment extends Fragment {
             public void onChanged(RecipeID recipeID) {
                 Intent intent = new Intent(getActivity(), RecipeActivity.class);
                 intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, recipeID);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
         });
 
         root = inflater.inflate(R.layout.fragment_navigation, container, false);
         yeatButton = root.findViewById(R.id.yeat_button);
-        bottomNavigationView = root.findViewById(R.id.bottom_navigation_bar);
+        //bottomNavigationView = root.findViewById(R.id.bottom_navigation_bar);
 
         yeatButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +98,7 @@ public class NavigationFragment extends Fragment {
             }
         });
 
-        setupBottomNavigationButtons();
+        //setupBottomNavigationButtons();
 
         return root;
     }

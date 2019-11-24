@@ -47,6 +47,8 @@
                 android:layout_marginEnd="5dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
+
+                android:elevation="2dp"
                 android:background="@drawable/browse_search_box" />
 
             <net.hungryboys.letsyeat.browse.TagButton
@@ -55,16 +57,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@drawable/browse_tags_button_off_no_select"
+                android:elevation="2dp"
+                android:focusable="true"
+                android:clickable="true"
                 android:text="@string/tags" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
+            android:elevation="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/browse_tags_grid"
             android:numColumns="auto_fit"
             android:gravity="center"
             android:background="@drawable/browse_tag_grid_view"
+            android:layout_marginBottom="32dp"
             android:clickable="true"
             android:focusable="true"/>
 
