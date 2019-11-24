@@ -5,8 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import net.hungryboys.letsyeat.data.RecipeID;
 
-import java.util.Date;
-
 public class NotificationBody {
     @SerializedName("email")
     @Expose
@@ -18,9 +16,9 @@ public class NotificationBody {
 
     @SerializedName("time")
     @Expose
-    private Date date;
+    private String date;
 
-    public NotificationBody(String email, RecipeID id, Date date) {
+    public NotificationBody(String email, RecipeID id, String date) {
         this.email = email;
         this.id = id;
         this.date = date;
