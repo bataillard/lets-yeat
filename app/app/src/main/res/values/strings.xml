@@ -58,6 +58,7 @@
     <string name="select_custom_time">Custom Time</string>
     <string name="when_cook_meal">When would you like to cook your meal?</string>
     <string name="cook_confirmed">Cook confirmed</string>
+    <string name="could_not_confirm_cook">Could not confirm cook</string>
 
     <string-array name="select_times">
         <item>@string/select_custom_time</item>

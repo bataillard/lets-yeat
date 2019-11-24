@@ -150,6 +150,17 @@ public class RecipeFragment extends Fragment {
             }
         });
 
+        mViewModel.getNotificationResult().observe(this, new Observer<RecipeViewModel.NotificationResult>() {
+            @Override
+            public void onChanged(RecipeViewModel.NotificationResult notificationResult) {
+                if (notificationResult.status) {
+                    Toast.makeText(getContext(), R.string.cook_confirmed, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), R.string.could_not_confirm_cook, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         cookButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -160,6 +171,10 @@ public class RecipeFragment extends Fragment {
 
     private void loadImage(ImageView image, String pictureUrl) {
         Log.d(TAG_RECIPE, "Loading picture: " + pictureUrl);
+
+        if (!pictureUrl.startsWith("http://") && ! pictureUrl.startsWith("https://")) {
+            pictureUrl = "https://" + pictureUrl;
+        }
         Picasso.get()
                 .load(pictureUrl)
                 .placeholder(R.drawable.placeholder_recipe_photo)
@@ -230,7 +245,6 @@ public class RecipeFragment extends Fragment {
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 mViewModel.setCustomTime(hourOfDay, minute);
                 mViewModel.cookConfirm(getContext());
-                Toast.makeText(getContext(), R.string.cook_confirmed, Toast.LENGTH_SHORT).show();
             }
         };
 
