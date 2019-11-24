@@ -96,8 +96,10 @@ public class LoginTest {
 
         device.wait(Until.findObject(By.pkg(Pattern.compile("net.hungryboys.letsyeat.(registration|browse)"))), DEFAULT_TIMEOUT);
 
-        LoginRepository repo = LoginRepository.getInstance(intentsRule.getActivity().getApplicationContext());
-        assertTrue(repo.isLoggedIn());
+        if (device.hasObject(By.pkg("net.hungryboys.letsyeat.browse"))) {
+            LoginRepository repo = LoginRepository.getInstance(intentsRule.getActivity().getApplicationContext());
+            assertTrue(repo.isLoggedIn());
+        }
     }
 
     @Test

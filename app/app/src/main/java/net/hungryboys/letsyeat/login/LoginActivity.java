@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
     // Login buttons
     private Button loginButton;
     private Button registerButton;
-    private Button googleLoginButton;
+    private SignInButton googleLoginButton;
 
     // Entry fields
     private EditText passwordEditText;
