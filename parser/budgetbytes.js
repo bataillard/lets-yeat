@@ -227,7 +227,5 @@ exports.parseByDate = function (max, fromYear, fromMonth, toYear, toMonth) {
         let localMonth = month;     // Declare local variables in block scope to avoid problems with closure in promise
         let localYear = year;       
         recipesPromises.push(findRecipesInArchive(localYear, localMonth));
+    }
 
-//     console.log(x);
-// }
-// )
