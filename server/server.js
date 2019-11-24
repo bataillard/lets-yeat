@@ -170,71 +170,97 @@ server.get('/recipe/suggest', (req, res) => {
  * Returns only the id, name, picture, time, and difficulty */
 server.get('/recipe/list', (req, res) => {
     let { email, max, search, tags } = req.query;
-        if (tags != undefined) { 
-            console.log(tags[1].length)
-            if (tags[1].length == 1) {
-                temp = tags;
-                tags = [];
-                tags.push(temp);
+        if (tags != undefined || search != undefined) {
+            if(tags != undefined) {
+                console.log(tags[1].length)
+                if (tags[1].length == 1) {
+                    temp = tags;
+                    tags = [];
+                    tags.push(temp);
+                    console.log(tags);
+                }
                 console.log(tags);
+                db.collection("recipe").find({ tags: { $all: tags } }).toArray((err, result) => {
+                    if (err) {
+                        res.status(400).json("Database Failure");
+                    } else {
+                        if (result[0] != undefined) {
+                            console.log("first stub: " + result[0].name);
+                        }
+                        var i = 0;
+                        var stubs = []
+                        var allIDs = []
+                        for (i = 0; i < Math.min(max, result.length); i++) {
+                            var idd = new RecipeID(result[i]._id);
+                            allIDs.push(result[i]._id);
+                            var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
+                            stubs.push(stub);
+                            console.log(result[i].tags)
+                        }
+                        if (search == "") {
+                            if (stubs.length > 0) {
+                                res.status(200).json(stubs);
+                            } else {
+                                res.status(400).json("no recipes matching those tags or search");
+                            }
+                        } else {
+                            db.collection("recipe").find({ name: search }).toArray((err, result) => {
+                                if (err) {
+                                    res.status(400).json("Database Failure");
+                                } else {
+
+                                    if (result[0] != undefined) {
+                                        console.log("first stub: " + result[0].name);
+                                    }
+                                    var i = 0;
+                                    let currentLength = stubs.length;
+                                    console.log(currentLength);
+                                    for (i = 0; i < Math.min(max - currentLength, result.length); i++) {
+                                        var idd = new RecipeID(result[i]._id);
+                                        console.log(result[i].tags)
+                                        if (!(allIDs.includes(result[i]._id))) {
+
+
+                                            var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
+                                            stubs.push(stub);
+                                            allIDs.push(result[i]._id);
+                                        }
+                                    }
+                                    if (stubs.length > 0) {
+                                        res.status(200).json(stubs);
+                                    } else {
+                                        res.status(400).json("no recipes matching those tags or search");
+                                    }
+                                }
+                            })
+                        }
+                    }
+                })
             }
-            console.log(tags);
-            db.collection("recipe").find({ tags: { $all: tags } }).toArray((err, result) => {
-                if (err) {
-                    res.status(400).json("Database Failure");
-                } else {
-                    if (result[0] != undefined) {
-                        console.log("first stub: " + result[0].name);
-                    }
-                    var i = 0;
-                    var stubs = []
-                    var allIDs = []
-                    for (i = 0; i < Math.min(max, result.length); i++) {
-                        var idd = new RecipeID(result[i]._id);
-                        allIDs.push(result[i]._id);
-                        var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
-                        stubs.push(stub);
-                        console.log(result[i].tags)
-                    }
-                    if (search == "") {
+            else{
+                db.collection("recipe").find({ name: search }).toArray((err, result) => {
+                    if (err) {
+                        res.status(400).json("Database Failure");
+                    } else {
+
+                        if (result[0] != undefined) {
+                            console.log("first stub: " + result[0].name);
+                        }
+                        var i = 0;
+                        var stubs = [];
+                        for (i = 0; i < Math.min(max, result.length); i++) {
+                            var idd = new RecipeID(result[i]._id);
+                            var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
+                            stubs.push(stub);
+                        }
                         if (stubs.length > 0) {
                             res.status(200).json(stubs);
                         } else {
                             res.status(400).json("no recipes matching those tags or search");
                         }
-                    } else {
-                        db.collection("recipe").find({ name: search }).toArray((err, result) => {
-                            if (err) {
-                                res.status(400).json("Database Failure");
-                            } else {
-
-                                if (result[0] != undefined) {
-                                    console.log("first stub: " + result[0].name);
-                                }
-                                var i = 0;
-                                let currentLength = stubs.length;
-                                console.log(currentLength);
-                                for (i = 0; i < Math.min(max - currentLength, result.length); i++) {
-                                    var idd = new RecipeID(result[i]._id);
-                                    console.log(result[i].tags)
-                                    if (!(allIDs.includes(result[i]._id))) {
-
-
-                                        var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
-                                        stubs.push(stub);
-                                        allIDs.push(result[i]._id);
-                                    }
-                                }
-                                if (stubs.length > 0) {
-                                    res.status(200).json(stubs);
-                                } else {
-                                    res.status(400).json("no recipes matching those tags or search");
-                                }
-                            }
-                        })
                     }
-                }
-            })
+                })
+            }
 		} else {
 			getUserPromise = new Promise(function (resolve, reject) {
 				db.collection("user").find({ "email": email }).toArray((err, result) => {
