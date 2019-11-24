@@ -17,7 +17,7 @@
         android:clickable="true"
         android:focusable="true"
 
-        android:src="@drawable/ic_star_border_black_20dp"
+        android:src="@drawable/ic_yeat"
 
         app:elevation="50dp"
         android:layout_margin="16dp"/>

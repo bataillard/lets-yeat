@@ -54,8 +54,12 @@ public class User implements Serializable {
         fromGoogle = true;
 
         this.email = account.getEmail();
-        this.secret = account.getServerAuthCode();
         this.firebaseToken = firebaseToken;
+        this.secret = account.getServerAuthCode();
+
+        if (secret == null) {
+            secret = account.getId();
+        }
     }
 
     /**
@@ -63,6 +67,10 @@ public class User implements Serializable {
      */
     public boolean fromGoogle() {
         return fromGoogle;
+    }
+
+    public String getSecret() {
+        return secret;
     }
 
     /**
