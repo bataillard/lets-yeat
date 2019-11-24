@@ -170,7 +170,6 @@ server.get('/recipe/suggest', (req, res) => {
  * Returns only the id, name, picture, time, and difficulty */
 server.get('/recipe/list', (req, res) => {
     let { email, max, search, tags } = req.query;
-    if (search != undefined || tags != undefined) {
         if (tags != undefined) { 
             console.log(tags[1].length)
             if (tags[1].length == 1) {
@@ -252,7 +251,7 @@ server.get('/recipe/list', (req, res) => {
 			})
 
 			getUserPromise.then(function (retrievedUser) {
-				console.log(retrievedUser);
+				console.log("user in list" + retrievedUser);
 	//            retrievedUser.preferences = ['chicken'];
 	//            console.log(retrievedUser.preferences);
 
@@ -280,9 +279,7 @@ server.get('/recipe/list', (req, res) => {
 				res.status(400).json(err);
 			});
 		}
-	} else {
-		res.status(400).json("No user or tags specified");
-	}
+	
 })
 
 /* Add a new notification for a specified user */
