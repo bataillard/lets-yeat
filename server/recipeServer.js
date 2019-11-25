@@ -80,7 +80,7 @@ function batch_food(){
     })
 }
 
-function batch_foodnetworth(){
+function batch_foodnetwork(){
     parse5.getRecipes(toGet).then(batch =>{
         for (each_recipe of batch){
             if(each_recipe != null){
@@ -98,7 +98,7 @@ function parse(){
     batch_allrecipe();
     batch_foodnetwork();
     batch_food();
-    batch_foodnetworth();
+    batch_foodnetwork();
 }
 
 parse();
