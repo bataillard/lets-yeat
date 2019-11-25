@@ -11,12 +11,12 @@ var firebasepath = "/home/ubc/project/server/google.json"
 // var firebasepath = "PATH-TO-THIS-FILE/firebasekey.json"
 // this file is credentials for firebase admin, Martin has sent it to the group in slack
 
-
 // this is Martin's emulator device access token
 var martinDeviceToken = "fcmXO6W_TEQ:APA91bEjSjsLFH4xu5h9rUC_rYKC-J-I5f5t7fmKdsgikji2J-g2yephdxVyeQznxdAmw8SaWETbhQR4MIhw_MpH3VLdpQihJknx9OWUHVNRDjgBpN0k5Le-1D-EeNpJTnqw4qg5cDSH"
 var devicetoken = "e_wP1VIOmw4:APA91bHFToKrYKnYTbe2QpsbdEZ_gpj4ADvc9IU0h-p4VqSM5RPV0w04H_eIMUaHZKuJghtjFB-NeOx3w4bVnjZY2sC3DtTQnBfjQqszG6SKa5nWpWog_hYEraaeOeBFrpRvEBjP-kui"
 // get for Luca's device, testing with Kyle's
 var serviceAccount = require("./google.json")
+//var parser = require("/home/ubc/project/parser")
 var admin = require('firebase-admin')
 const express = require('express')
 const mongoClient = require('mongodb').MongoClient
@@ -37,20 +37,17 @@ const url = "https://www.budgetbytes.com/ground-turkey-stir-fry/";
 
 
 mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true }, async (err, client) => {
-    if (err) return console.log(err)
+    if (err) return 
     db = client.db('backenddb')
     users = db.collection("user")
     recipes = db.collection("recipe")
     // listen to port
-	server.listen(3001, function () {
-        console.log("server is up!!!!");
-    })
+	server.listen(3001, function () {})
     // initialization for firebase
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
         //credential: admin.credential.applicationDefault()
     })
-    console.log("server is up!!!!")
 })
 
 
@@ -59,43 +56,6 @@ mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true
 /**********************************API CALLS***********************************/
 /******************************************************************************/
 /******************************************************************************/
-server.get('/test', (req, res) => {
-
-    db.collection("recipe").find().limit(1).toArray((err, recipeResult) => {
-        if (err) {
-            res.status(400).json("Database Failure");
-        } else if (recipeResult.length == 0){
-            res.status(400).json("Bad Recipe ID");
-        } else {
-            console.log(recipeResult[0].time);
-            let recName = recipeResult[0].name;
-                    console.log(recipeResult[0]._id)
-                    idd = "" + recipeResult[0]._id;
-                    var message = {
-                        notification: {
-                            title: "Time to cook",
-                            body: "Get in the kitchen and make mama proud!",
-                        },
-                        data: {
-                            id: idd,
-                            name: "Cranberry Cream Cheese Dip"
-                        },
-                        token: "ciXArdyXx5U:APA91bF-d9JQPg97hFPrkPT57u5kzN6pJJVHndqV9cspF5Son4J-SpaV1qZuh_OojDNK5Hwl4d9ybZn1ywS0-837NxYpoL7UEea02jDmJAYvN1GDGN_1fjAKGU_X42rGI8yBUXSJQ9HR"
-                    }
-        
-                    // send message via firebase push notification to Kyle's phone
-                    admin.messaging().send(message).then((response) => {
-                        console.log("message sent")
-                    }).catch((error) => {
-                        console.log("Something went terribly wrong");
-                    })
-
-                    res.status(200).json("notification should be G");
-                }
-            
-        
-    })    
-})
 
 /**
  * 
@@ -107,11 +67,8 @@ server.get('/test', (req, res) => {
 
 server.get('/recipe/id', (req, res) => {
     let { id } = req.query;
-    console.log(id);
     if(id == "notification_test"){
-        console.log("we testing");
         db.collection("recipe").find().limit(1).toArray((err, result) => {
-            console.log(result)
             if (result.length == 0) {
                 res.status(401).json("No recipe with this ID");
             } else {
@@ -134,7 +91,6 @@ server.get('/recipe/id', (req, res) => {
         })
     }else{
         db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
-            console.log(result)
             if (result.length == 0) {
                 res.status(401).json("No recipe with this ID");
             } else {
@@ -166,7 +122,6 @@ server.get('/recipe/id', (req, res) => {
  */
 
 server.get('/recipe/suggest', (req, res) => {
-    console.log("getting a suggestion");
     let { email } = req.query;
     getUserPromise = new Promise(function (resolve, reject) {
         db.collection("user").find({ "email": email }).toArray((err, result) => {
@@ -183,7 +138,6 @@ server.get('/recipe/suggest', (req, res) => {
     })
 
     getUserPromise.then(function (retrievedUser) {
-        console.log(retrievedUser.preferences);
         db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
             if (err) {
                 res.status(401).json("Database Failure");
@@ -197,7 +151,6 @@ server.get('/recipe/suggest', (req, res) => {
         })
 
     }, function (err) {
-        console.log("error :" + err);
         res.status(400).json(err);
     });
 })
@@ -209,20 +162,16 @@ server.get('/recipe/list', (req, res) => {
     let { email, max, search, tags } = req.query;
         if (tags != undefined || search != undefined) {
             if(tags != undefined) {
-                console.log(tags[1].length)
                 if (tags[1].length == 1) {
                     temp = tags;
                     tags = [];
                     tags.push(temp);
-                    console.log(tags);
                 }
-                console.log(tags);
                 db.collection("recipe").find({ tags: { $all: tags } }).toArray((err, result) => {
                     if (err) {
                         res.status(400).json("Database Failure");
                     } else {
                         if (result[0] != undefined) {
-                            console.log("first stub: " + result[0].name);
                         }
                         var i = 0;
                         var stubs = []
@@ -232,7 +181,6 @@ server.get('/recipe/list', (req, res) => {
                             allIDs.push(result[i]._id);
                             var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
                             stubs.push(stub);
-                            console.log(result[i].tags)
                         }
                         if (search == "") {
                             if (stubs.length > 0) {
@@ -247,14 +195,11 @@ server.get('/recipe/list', (req, res) => {
                                 } else {
 
                                     if (result[0] != undefined) {
-                                        console.log("first stub: " + result[0].name);
                                     }
                                     var i = 0;
                                     let currentLength = stubs.length;
-                                    console.log(currentLength);
                                     for (i = 0; i < Math.min(max - currentLength, result.length); i++) {
                                         var idd = new RecipeID(result[i]._id);
-                                        console.log(result[i].tags)
                                         if (!(allIDs.includes(result[i]._id))) {
 
 
@@ -279,10 +224,6 @@ server.get('/recipe/list', (req, res) => {
                     if (err) {
                         res.status(400).json("Database Failure");
                     } else {
-
-                        if (result[0] != undefined) {
-                            console.log("first stub: " + result[0].name);
-                        }
                         var i = 0;
                         var stubs = [];
                         for (i = 0; i < Math.min(max, result.length); i++) {
@@ -314,9 +255,7 @@ server.get('/recipe/list', (req, res) => {
 			})
 
 			getUserPromise.then(function (retrievedUser) {
-				console.log("user in list" + retrievedUser);
 	//            retrievedUser.preferences = ['chicken'];
-	//            console.log(retrievedUser.preferences);
 
 				db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
 					if (err) {
@@ -324,11 +263,9 @@ server.get('/recipe/list', (req, res) => {
 					} else if (result.length == 0) {
 						res.status(401).json("No available recipes");
 					} else {
-						console.log("first stub: " + result[0].tags);
 						var i = 0;
 						var stubs = []
 						for (i = 0; i < Math.min(max, result.length); i++) {
-							console.log(result[i].time)
 							var idd = new RecipeID(result[i]._id);
 							var stub = new RecipeStub(idd, result[i].name, result[i].pictureUrl, result[i].time, result[i].difficulty);
 							stubs.push(stub);
@@ -338,7 +275,6 @@ server.get('/recipe/list', (req, res) => {
 				})
 
 			}, function (err) {
-				console.log(err);
 				res.status(400).json(err);
 			});
 		}
@@ -350,16 +286,13 @@ server.post('/notification/new', (req, res) => {
     let notificationBody = req.body;
     let dt = Date.now();
     let curDate = new Date(dt);
-    console.log(notificationBody.id)
     if(notificationBody.id.id == "notification_test"){
-        console.log("testing notification");
         db.collection("recipe").find().limit(1).toArray((err, recipeResult) => {
             if (err) {
                 res.status(400).json("Database Failure");
             } else if (recipeResult.length == 0){
                 res.status(400).json("Bad Recipe ID");
             } else {
-                console.log(recipeResult[0].time);
                 let recName = recipeResult[0].name;
                 if (notificationBody.time != undefined) {
                     let temp = new Date(notificationBody.time)
@@ -367,14 +300,10 @@ server.post('/notification/new', (req, res) => {
                     secs = temp % 60000;
                     temp -= secs;
                     testDate = new Date(temp);
-                    console.log(testDate);
-                    console.log(curDate);
                     let timeTillNot = testDate.getTime() - curDate.getTime();
                     if (timeTillNot < 0) {
-                        console.log("bad time");
                         res.status(400).json("Negative notificaion time");
                     } else {
-                        console.log(recipeResult[0]._id)
                         notificationBody.id.id = "" + recipeResult[0]._id;
                         makeNewNotification(timeTillNot, notificationBody, recName);
     
@@ -390,7 +319,6 @@ server.post('/notification/new', (req, res) => {
             } else if (recipeResult.length == 0){
                 res.status(400).json("Bad Recipe ID");
             } else {
-                console.log(recipeResult[0].time);
                 let recName = recipeResult[0].name;
                 if (notificationBody.time != undefined) {
                     let temp = new Date(notificationBody.time)
@@ -400,11 +328,10 @@ server.post('/notification/new', (req, res) => {
                     secs = temp % 60000;
                     temp -= secs;
                     testDate = new Date(temp);
-                    console.log(testDate);
-                    console.log(curDate);
+                    console.log("our time" + testDate);
+                    console.log("server time" + curDate)
                     let timeTillNot = testDate.getTime() - curDate.getTime();
                     if (timeTillNot < 0) {
-                        console.log("bad time");
                         res.status(400).json("Negative notificaion time");
                     } else {
 
@@ -418,17 +345,14 @@ server.post('/notification/new', (req, res) => {
                         if (result.length == 0) {
                             res.status(401).json("Bad email");
                         }
-                        console.log(result[0].cookTime)
                         let t = result[0].cookTime
                         let cookt = "";
                         cookt += (curDate.getYear() + 1900) + "-";
                         cookt += (curDate.getMonth() + 1) + "-";
                         cookt += (curDate.getDate()) + "T";
-                        console.log(t.hourOfDay);
                         let hours = 0 + t.hourOfDay;
         
                         //hours += 8;
-                        console.log(hours);
                         if (hours > 24) {
                             hours -= 24;
                         }
@@ -445,24 +369,18 @@ server.post('/notification/new', (req, res) => {
                         }
 
                         cookt += "00";
-                        console.log(cookt);
                         let temp = new Date(cookt);
                         temp = temp.getTime();
                         temp -= rectime * 60 * 1000
                         secs = temp % 60000;
                         temp -= secs;
                         let testDate = new Date(temp);
-
-                        console.log(testDate);
                         if (testDate < curDate) {
 
                             testDate.setDate(testDate.getDate() + 1)
                         }
-                        console.log(testDate);
-                        console.log(curDate);
                         let timeTillNot = testDate.getTime() - curDate.getTime();
                         if (timeTillNot < 0) {
-                            console.log("bad time");
                             res.status(404).json("Negative notificaion time");
                         } else {
 
@@ -478,13 +396,8 @@ server.post('/notification/new', (req, res) => {
 })
 
 function makeNewNotification(timeTillNot, notificationBody, recName) {
-    console.log(notificationBody.email)
     let timeOut = setTimeout(function () {
-        console.log(recName);
         db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
-            console.log(notificationBody.id.id)
-            console.log(result[0].token)
-            console.log(recName);
             var message = {
                 notification: {
                     title: "Time to cook",
@@ -499,9 +412,9 @@ function makeNewNotification(timeTillNot, notificationBody, recName) {
 
             // send message via firebase push notification to Kyle's phone
             admin.messaging().send(message).then((response) => {
-                console.log("message sent")
+                console.log("sending notification");
             }).catch((error) => {
-                console.log("Something went terribly wrong");
+                console.log(error);
             })
         })
     }, timeTillNot)
@@ -523,11 +436,8 @@ server.put("/user/token", (req, res) => {
 /* Attempt logging in a user 
  * Returns a token for later call authentication */
 server.post("/user/login", (req, res) => {
-    console.log("Logging in");
     let  user  = req.body;
-    console.log(user);
     db.collection("user").find({ "email": user.email }).toArray((err, result) => {
-        console.log(result);
         if (err) {
             login = new LoginResult(false, false, "asdnfjk");
             res.status(400).json(login) 
@@ -569,7 +479,6 @@ server.post("/user/register", (req, res) => {
                 if (err) {
                     login = new LoginResult(false, false, "asdnfjk");
                     res.status(400).json(login);
-                    return console.log(err);
                 } else {
                     login = new LoginResult(true, false, "asdnfjk");
                     res.status(200).json(login)
