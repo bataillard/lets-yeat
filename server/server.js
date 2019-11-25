@@ -60,30 +60,41 @@ mongoClient.connect(serverURL, { useNewUrlParser: true, useUnifiedTopology: true
 /******************************************************************************/
 /******************************************************************************/
 server.get('/test', (req, res) => {
-    
-       
-        db.collection("user").find({ "email": "kk" }).toArray((err, result) => {
-            let id = new RecipeID("5dcf98163c161c51d495594c")
-            var message = {
-                notification: {
-                    title: "Time to cook",
-                    body: "Get in the kitchen and make mama proud!",
-                },
-                data: {
-                    id: "5dcf98163c161c51d495594c",
-                    name: "Cranberry Cream Cheese Dip"
-                },
-                token: result[0].token
-            }
 
-            // send message via firebase push notification to Kyle's phone
-            admin.messaging().send(message).then((response) => {
-                console.log("message sent")
-            }).catch((error) => {
-                console.log("Something went terribly wrong");
-            })
-        })
-    
+    db.collection("recipe").find().limit(1).toArray((err, recipeResult) => {
+        if (err) {
+            res.status(400).json("Database Failure");
+        } else if (recipeResult.length == 0){
+            res.status(400).json("Bad Recipe ID");
+        } else {
+            console.log(recipeResult[0].time);
+            let recName = recipeResult[0].name;
+                    console.log(recipeResult[0]._id)
+                    idd = "" + recipeResult[0]._id;
+                    var message = {
+                        notification: {
+                            title: "Time to cook",
+                            body: "Get in the kitchen and make mama proud!",
+                        },
+                        data: {
+                            id: idd,
+                            name: "Cranberry Cream Cheese Dip"
+                        },
+                        token: "ciXArdyXx5U:APA91bF-d9JQPg97hFPrkPT57u5kzN6pJJVHndqV9cspF5Son4J-SpaV1qZuh_OojDNK5Hwl4d9ybZn1ywS0-837NxYpoL7UEea02jDmJAYvN1GDGN_1fjAKGU_X42rGI8yBUXSJQ9HR"
+                    }
+        
+                    // send message via firebase push notification to Kyle's phone
+                    admin.messaging().send(message).then((response) => {
+                        console.log("message sent")
+                    }).catch((error) => {
+                        console.log("Something went terribly wrong");
+                    })
+
+                    res.status(200).json("notification should be G");
+                }
+            
+        
+    })    
 })
 
 /**
@@ -96,29 +107,55 @@ server.get('/test', (req, res) => {
 
 server.get('/recipe/id', (req, res) => {
     let { id } = req.query;
-    console.log(id)
-	db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
-		console.log(result)
-        if (result.length == 0) {
-            res.status(401).json("No recipe with this ID");
-        } else {
-            recipID = new RecipeID(result[0]._id);
-            var ing = [];
-            ingredientes = result[0].ingredients;
-            ingredientes.forEach(function (element) {
-                var temp = new Ingredient(element.name, element.quantity, element.unit);
-                ing.push(temp);
-            });
-
-            var recipe = new Recipe(recipID, result[0].name, result[0].pictureUrl, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
-
-            if (err) {
-                res.status(400).json("Error with database");
+    console.log(id);
+    if(id == "notification_test"){
+        console.log("we testing");
+        db.collection("recipe").find().limit(1).toArray((err, result) => {
+            console.log(result)
+            if (result.length == 0) {
+                res.status(401).json("No recipe with this ID");
             } else {
-                res.status(200).json(recipe);
+                recipID = new RecipeID("notification_test");
+                var ing = [];
+                ingredientes = result[0].ingredients;
+                ingredientes.forEach(function (element) {
+                    var temp = new Ingredient(element.name, element.quantity, element.unit);
+                    ing.push(temp);
+                });
+    
+                var recipe = new Recipe(recipID, result[0].name, result[0].pictureUrl, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
+    
+                if (err) {
+                    res.status(400).json("Error with database");
+                } else {
+                    res.status(200).json(recipe);
+                }
             }
-        }
-    })
+        })
+    }else{
+        db.collection("recipe").find({ "_id": new ObjectId(id) }).toArray((err, result) => {
+            console.log(result)
+            if (result.length == 0) {
+                res.status(401).json("No recipe with this ID");
+            } else {
+                recipID = new RecipeID(result[0]._id);
+                var ing = [];
+                ingredientes = result[0].ingredients;
+                ingredientes.forEach(function (element) {
+                    var temp = new Ingredient(element.name, element.quantity, element.unit);
+                    ing.push(temp);
+                });
+
+                var recipe = new Recipe(recipID, result[0].name, result[0].pictureUrl, result[0].time, result[0].difficulty, ing, result[0].tags, result[0].instruction);
+
+                if (err) {
+                    res.status(400).json("Error with database");
+                } else {
+                    res.status(200).json(recipe);
+                }
+            }
+        })
+    }
 })
 /**
  * Input: user id (email in this case)
@@ -146,7 +183,7 @@ server.get('/recipe/suggest', (req, res) => {
     })
 
     getUserPromise.then(function (retrievedUser) {
-
+        console.log(retrievedUser.preferences);
         db.collection("recipe").find({ tags: { $all: retrievedUser.preferences } }).toArray((err, result) => {
             if (err) {
                 res.status(401).json("Database Failure");
@@ -160,7 +197,7 @@ server.get('/recipe/suggest', (req, res) => {
         })
 
     }, function (err) {
-        console.log(err);
+        console.log("error :" + err);
         res.status(400).json(err);
     });
 })
@@ -314,96 +351,130 @@ server.post('/notification/new', (req, res) => {
     let dt = Date.now();
     let curDate = new Date(dt);
     console.log(notificationBody.id)
-    db.collection("recipe").find({  "_id": new ObjectId(notificationBody.id.id) }).toArray((err, recipeResult) => {
-        if (err) {
-            res.status(400).json("Database Failure");
-        } else if (recipeResult.length == 0){
-            res.status(400).json("Bad Recipe ID");
-        } else {
-            console.log(recipeResult[0].time);
-            let recName = recipeResult[0].name;
-            if (notificationBody.time != undefined) {
-                let temp = new Date(notificationBody.time)
-                temp = temp.getTime();
-                temp -= recipeResult[0].time * 60 * 1000
-                //temp += (8 * 60 * 60 * 1000);
-                secs = temp % 60000;
-                temp -= secs;
-                testDate = new Date(temp);
-                console.log(testDate);
-                console.log(curDate);
-                let timeTillNot = testDate.getTime() - curDate.getTime();
-                if (timeTillNot < 0) {
-                    console.log("bad time");
-                    res.status(400).json("Negative notificaion time");
-                } else {
-
-                    makeNewNotification(timeTillNot, notificationBody, recName);
-
-                    res.status(200).json("notification should be G");
-                }
+    if(notificationBody.id.id == "notification_test"){
+        console.log("testing notification");
+        db.collection("recipe").find().limit(1).toArray((err, recipeResult) => {
+            if (err) {
+                res.status(400).json("Database Failure");
+            } else if (recipeResult.length == 0){
+                res.status(400).json("Bad Recipe ID");
             } else {
-                var rectime = recipeResult[0].time
-                db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
-                    if (result.length == 0) {
-                        res.status(401).json("Bad email");
-                    }
-                    console.log(result[0].cookTime)
-                    let t = result[0].cookTime
-                    let cookt = "";
-                    cookt += (curDate.getYear() + 1900) + "-";
-                    cookt += (curDate.getMonth() + 1) + "-";
-                    cookt += (curDate.getDate()) + "T";
-                    console.log(t.hourOfDay);
-                    let hours = 0 + t.hourOfDay;
-    
-                    //hours += 8;
-                    console.log(hours);
-                    if (hours > 24) {
-                        hours -= 24;
-                    }
-                    if (hours < 10) {
-                        cookt += "0" + hours + ":";
-                    } else {
-                        cookt += hours + ":";
-                    }
-
-                    if (t.minute < 10) {
-                        cookt += "0" + t.minute + ":";
-                    } else {
-                        cookt += t.minute + ":"
-                    }
-
-                    cookt += "00";
-                    console.log(cookt);
-                    let temp = new Date(cookt);
+                console.log(recipeResult[0].time);
+                let recName = recipeResult[0].name;
+                if (notificationBody.time != undefined) {
+                    let temp = new Date(notificationBody.time)
                     temp = temp.getTime();
-                    temp -= rectime * 60 * 1000
                     secs = temp % 60000;
                     temp -= secs;
-                    let testDate = new Date(temp);
-
-                    console.log(testDate);
-                    if (testDate < curDate) {
-
-                        testDate.setDate(testDate.getDate() + 1)
-                    }
+                    testDate = new Date(temp);
                     console.log(testDate);
                     console.log(curDate);
                     let timeTillNot = testDate.getTime() - curDate.getTime();
                     if (timeTillNot < 0) {
                         console.log("bad time");
-                        res.status(404).json("Negative notificaion time");
+                        res.status(400).json("Negative notificaion time");
+                    } else {
+                        console.log(recipeResult[0]._id)
+                        notificationBody.id.id = "" + recipeResult[0]._id;
+                        makeNewNotification(timeTillNot, notificationBody, recName);
+    
+                        res.status(200).json("notification should be G");
+                    }
+                }
+            }
+        })
+    }else{
+        db.collection("recipe").find({  "_id": new ObjectId(notificationBody.id.id) }).toArray((err, recipeResult) => {
+            if (err) {
+                res.status(400).json("Database Failure");
+            } else if (recipeResult.length == 0){
+                res.status(400).json("Bad Recipe ID");
+            } else {
+                console.log(recipeResult[0].time);
+                let recName = recipeResult[0].name;
+                if (notificationBody.time != undefined) {
+                    let temp = new Date(notificationBody.time)
+                    temp = temp.getTime();
+                    temp -= recipeResult[0].time * 60 * 1000
+                    //temp += (8 * 60 * 60 * 1000);
+                    secs = temp % 60000;
+                    temp -= secs;
+                    testDate = new Date(temp);
+                    console.log(testDate);
+                    console.log(curDate);
+                    let timeTillNot = testDate.getTime() - curDate.getTime();
+                    if (timeTillNot < 0) {
+                        console.log("bad time");
+                        res.status(400).json("Negative notificaion time");
                     } else {
 
                         makeNewNotification(timeTillNot, notificationBody, recName);
 
                         res.status(200).json("notification should be G");
                     }
-                })
+                } else {
+                    var rectime = recipeResult[0].time
+                    db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
+                        if (result.length == 0) {
+                            res.status(401).json("Bad email");
+                        }
+                        console.log(result[0].cookTime)
+                        let t = result[0].cookTime
+                        let cookt = "";
+                        cookt += (curDate.getYear() + 1900) + "-";
+                        cookt += (curDate.getMonth() + 1) + "-";
+                        cookt += (curDate.getDate()) + "T";
+                        console.log(t.hourOfDay);
+                        let hours = 0 + t.hourOfDay;
+        
+                        //hours += 8;
+                        console.log(hours);
+                        if (hours > 24) {
+                            hours -= 24;
+                        }
+                        if (hours < 10) {
+                            cookt += "0" + hours + ":";
+                        } else {
+                            cookt += hours + ":";
+                        }
+
+                        if (t.minute < 10) {
+                            cookt += "0" + t.minute + ":";
+                        } else {
+                            cookt += t.minute + ":"
+                        }
+
+                        cookt += "00";
+                        console.log(cookt);
+                        let temp = new Date(cookt);
+                        temp = temp.getTime();
+                        temp -= rectime * 60 * 1000
+                        secs = temp % 60000;
+                        temp -= secs;
+                        let testDate = new Date(temp);
+
+                        console.log(testDate);
+                        if (testDate < curDate) {
+
+                            testDate.setDate(testDate.getDate() + 1)
+                        }
+                        console.log(testDate);
+                        console.log(curDate);
+                        let timeTillNot = testDate.getTime() - curDate.getTime();
+                        if (timeTillNot < 0) {
+                            console.log("bad time");
+                            res.status(404).json("Negative notificaion time");
+                        } else {
+
+                            makeNewNotification(timeTillNot, notificationBody, recName);
+
+                            res.status(200).json("notification should be G");
+                        }
+                    })
+                }
             }
-        }
-    })
+        })
+    }
 })
 
 function makeNewNotification(timeTillNot, notificationBody, recName) {
@@ -411,7 +482,9 @@ function makeNewNotification(timeTillNot, notificationBody, recName) {
     let timeOut = setTimeout(function () {
         console.log(recName);
         db.collection("user").find({ "email": notificationBody.email }).toArray((err, result) => {
-            
+            console.log(notificationBody.id.id)
+            console.log(result[0].token)
+            console.log(recName);
             var message = {
                 notification: {
                     title: "Time to cook",
