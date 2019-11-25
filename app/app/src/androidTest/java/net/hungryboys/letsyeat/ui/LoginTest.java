@@ -57,11 +57,13 @@ public class LoginTest {
 
 
     @Rule
-    public IntentsTestRule<LoginActivity> intentsRule = new IntentsTestRule<>(LoginActivity.class);
+    public IntentsTestRule<LoginActivity> intentsRule = new IntentsTestRule<>(LoginActivity.class, false, false);
 
     private void launchActivityAsLoggedOut() {
+        intentsRule.launchActivity(new Intent());
         LoginRepository.getInstance(intentsRule.getActivity()).removeUserCredentials();
         intentsRule.finishActivity();
+
         intentsRule.launchActivity(new Intent());
     }
 
