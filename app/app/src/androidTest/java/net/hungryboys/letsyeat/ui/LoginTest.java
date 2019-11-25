@@ -82,6 +82,8 @@ public class LoginTest {
         intended(toPackage("com.google.android.gms"));
         device.wait(Until.findObject(By.pkg("com.google.android.gms")), DEFAULT_TIMEOUT);
         device.pressBack();
+
+        intentsRule.finishActivity();
     }
 
     @Test
@@ -102,19 +104,7 @@ public class LoginTest {
             LoginRepository repo = LoginRepository.getInstance(intentsRule.getActivity().getApplicationContext());
             assertTrue(repo.isLoggedIn());
         }
-    }
 
-    @Test
-    public void doesNotLoginWithGoogleWhenCanceled() {
-        launchActivityAsLoggedOut();
-
-        onView(withId(R.id.google_login_button)).perform(click());
-        device.wait(Until.findObject(By.pkg("com.google.android.gms").depth(0)), DEFAULT_TIMEOUT);
-        device.pressBack();
-
-        // Check toast appears
-        onView(withText(R.string.login_failed))
-                .inRoot(withDecorView(not(intentsRule.getActivity().getWindow().getDecorView())))
-                .check(matches(isDisplayed()));
+        intentsRule.finishActivity();
     }
 }

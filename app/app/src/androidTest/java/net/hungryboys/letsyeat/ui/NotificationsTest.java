@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 
+import androidx.test.espresso.IdlingPolicies;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -20,6 +21,7 @@ import androidx.test.uiautomator.Until;
 
 import net.hungryboys.letsyeat.R;
 import net.hungryboys.letsyeat.data.RecipeID;
+import net.hungryboys.letsyeat.login.LoginActivity;
 import net.hungryboys.letsyeat.login.LoginRepository;
 import net.hungryboys.letsyeat.recipe.RecipeActivity;
 
@@ -31,6 +33,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -56,6 +60,9 @@ public class NotificationsTest {
     @Rule
     public ActivityTestRule<RecipeActivity> rule = new ActivityTestRule<>(RecipeActivity.class, false, false);
 
+    @Rule
+    public  ActivityTestRule<LoginActivity> before = new ActivityTestRule<>(LoginActivity.class, false, false);
+
     @Before
     public void before() {
         // Initialize UiDevice instance
@@ -69,6 +76,14 @@ public class NotificationsTest {
     public void sendsNotificationInTwoMinutes() {
         final int ONE_MINUTE_TIMEOUT = 60*2000;
         final int BUFFER_TIME = 10000;
+
+        before.launchActivity(new Intent());
+        onView(withId(R.id.google_login_button)).perform(click());
+
+        device.wait(Until.findObject(By.pkg(Pattern.compile("net.hungryboys.letsyeat.(registration|browse)"))), DEFAULT_TIMEOUT);
+        before.finishActivity();
+
+        device.pressHome();
 
         Intent intent = new Intent();
         intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, new RecipeID(TEST_RECIPE_ID));
@@ -95,9 +110,13 @@ public class NotificationsTest {
         onView(withClassName(Matchers.equalTo(TimePicker.class.getName())))
                 .perform(setTime(inOneMinute.get(Calendar.HOUR_OF_DAY), inOneMinute.get(Calendar.MINUTE)));
         onView(withText("OK")).perform(click());
+        IdlingPolicies.setIdlingResourceTimeout(5, TimeUnit.SECONDS);
         onView(withText(R.string.cook_confirmed))
                 .inRoot(withDecorView(not(rule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
+
+        device.openNotification();
+        device.wait(Until.findObject(By.textContains("Let's Yeat")), ONE_MINUTE_TIMEOUT + BUFFER_TIME);
     }
 
     public static ViewAction setTime(final int hour, final int minute) {
