@@ -35,7 +35,15 @@ matrix:
                     - extra-google-google_play_services
                     - extra-google-m2repository
                     - extra-android-m2repository
-          
+
+                    - sys-img-x86-android-29
+          before_script:
+            - echo no | android create avd --force -n test -t android-29 --abi x86
+            - emulator -avd test -no-audio -no-window &
+            - android-wait-for-emulator
+            - adb shell input keyevent 82 &
+
           script:
             # android build
             - ./app/gradlew build 
+            - ./app/gradlew build connectedCheck
