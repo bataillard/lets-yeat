@@ -12,7 +12,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.SearchCondition;
+import androidx.test.uiautomator.UiCollection;
 import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
 
 import net.hungryboys.letsyeat.R;
@@ -31,10 +34,14 @@ import java.util.Calendar;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.Matchers.not;
 
 @RunWith(AndroidJUnit4.class)
 public class NotificationsTest {
@@ -42,12 +49,12 @@ public class NotificationsTest {
     private static final long DEFAULT_TIMEOUT = 5000;
     private static final String LOGIN_PACKAGE = "net.hungryboys.letsyeat.login";
 
-    private static final String TEST_RECIPE_ID = "";
+    private static final String TEST_RECIPE_ID = "notification_test";
 
     private UiDevice device;
 
     @Rule
-    public ActivityTestRule<RecipeActivity> rule = new ActivityTestRule<>(RecipeActivity.class);
+    public ActivityTestRule<RecipeActivity> rule = new ActivityTestRule<>(RecipeActivity.class, false, false);
 
     @Before
     public void before() {
@@ -56,28 +63,28 @@ public class NotificationsTest {
 
         // Start from the home screen
         device.pressHome();
-
     }
 
     @Test
-    public void sendsNotificationInOneMinute() {
-        final int ONE_MINUTE_TIMEOUT = 60*1000;
+    public void sendsNotificationInTwoMinutes() {
+        final int ONE_MINUTE_TIMEOUT = 60*2000;
         final int BUFFER_TIME = 10000;
 
         Intent intent = new Intent();
-        intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, RecipeID.placeholder());
+        intent.putExtra(RecipeActivity.EXTRA_RECIPE_ID, new RecipeID(TEST_RECIPE_ID));
         rule.launchActivity(intent);
 
-
         // Make sure user is already logged in.
-        // TODO Actually login beforehand instead of just failing
         assertTrue(LoginRepository.getInstance(rule.getActivity().getApplicationContext()).isLoggedIn());
 
         Calendar inOneMinute = Calendar.getInstance();
-        inOneMinute.add(Calendar.MINUTE, 1);
+        inOneMinute.add(Calendar.MINUTE, 2);
 
-        onView(withId(R.id.yeat_button)).perform(click());
+        device.wait(Until.findObject(By.textContains("Cook")), DEFAULT_TIMEOUT);
+
         onView(withId(R.id.recipe_cook_button)).perform(click());
+
+        device.wait(Until.findObject(By.textContains("Custom Time")), DEFAULT_TIMEOUT);
 
         onView(withText("Custom Time")).perform(click());
 
@@ -88,10 +95,9 @@ public class NotificationsTest {
         onView(withClassName(Matchers.equalTo(TimePicker.class.getName())))
                 .perform(setTime(inOneMinute.get(Calendar.HOUR_OF_DAY), inOneMinute.get(Calendar.MINUTE)));
         onView(withText("OK")).perform(click());
-
-        device.openNotification();
-        device.wait(Until.hasObject(By.text("Let's yeat")), ONE_MINUTE_TIMEOUT + BUFFER_TIME);
-        assertTrue(device.hasObject(By.text("Let's yeat")));
+        onView(withText(R.string.cook_confirmed))
+                .inRoot(withDecorView(not(rule.getActivity().getWindow().getDecorView())))
+                .check(matches(isDisplayed()));
     }
 
     public static ViewAction setTime(final int hour, final int minute) {

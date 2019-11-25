@@ -127,7 +127,7 @@ public class CookNotification  extends FirebaseMessagingService{
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_groceries_black_24dp)
+                        .setSmallIcon(R.drawable.ic_yeat)
                         .setContentTitle(getString(R.string.notification_title))
                         .setContentText(recipeName)
                         .setAutoCancel(true)
