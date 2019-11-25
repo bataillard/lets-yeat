@@ -46,7 +46,7 @@ test("Tests helper function inPast", () => {
 });
 
 test("parse correct tags", () => {
-	expect(budget.parseTags(testHtml1)[0]).toBe("meat");
+	expect(budget.parseTags(testHtml1, "")[0]).toBe("meat");
 });
 
 test("parse correct image source", () => {
