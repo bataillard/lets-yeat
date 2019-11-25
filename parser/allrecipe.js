@@ -203,6 +203,17 @@ function parseTags($){
     return tags;
 }
 
+
+module.exports.parseRecipeImage = parseRecipeImage;
+module.exports.parseTags = parseTags;
+module.exports.parseCookingTime = parseCookingTime;
+module.exports.parseIngredients = parseIngredients;
+module.exports.parseCookingInstructions = parseCookingInstructions;
+module.exports.parseRecipeFromUrl = parseRecipeFromUrl;
+module.exports.getRecipeUrls = getRecipeUrls;
+module.exports.getAllRecipes = getAllRecipes;
+
+
 // example test code: this is how you request recipes
 // var x = 10;
 // var count = 0;

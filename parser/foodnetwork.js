@@ -14,8 +14,6 @@ const recipe_count_buffer = 10;
 
 const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__dirname,"./tags.json"))).tags);
 
-module.exports = {getRecipes};
-
  // ================================ Navigating Site ================================= //
 const FOODNETWORK_BASE = "https://www.foodnetwork.ca";
 const CATEGORY = "/everyday-cooking/recipes";
@@ -218,6 +216,16 @@ function parseTags($){
     return tags;
 }
 
+
+
+module.exports.parseRecipeImage = parseRecipeImage;
+module.exports.parseTags = parseTags;
+module.exports.parseCookingTime = parseCookingTime;
+module.exports.parseIngredients = parseIngredients;
+module.exports.parseCookingInstructions = parseCookingInstructions;
+module.exports.parseRecipeFromUrl = parseRecipeFromUrl;
+module.exports.getRecipeUrls = getRecipeUrls;
+module.exports.getRecipes = getRecipes;
 
 // getRecipes(10).then(x=>{
 //     console.log(x)
