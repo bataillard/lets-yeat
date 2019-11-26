@@ -8,6 +8,6 @@ module.exports = {
     binary: {
       skipMD5: true
     },
-    autoStart: true
+    autoStart: false
   }
 };
