@@ -14,7 +14,6 @@ const possible_tags = new Set(JSON.parse(require('fs').readFileSync(path.join(__
 const minutes_in_hour = 60;
 const recipes_per_page = 8;
 const recipe_count_buffer = 10;
-module.exports = {getRecipes};
 
 // ================================ Site Navigation  ================================= //
 const FOOD_BASE = "https://www.food.com";
@@ -193,7 +192,7 @@ function parseIngredients($){
         // e.g. "1 -2" should be "1-2" meaning 1 to 2
         item = item.replace(/\s+/g, ' ').replace(/\s-/,'-');
         if (item != null){
-            ingredients.push(new Ingredients(item.trim()));
+            ingredients.push(new Ingredient(item.trim()));
         }
     })
     return ingredients;
@@ -238,6 +237,18 @@ function parseTags($, name){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
+
+
+
+module.exports.parseRecipeImage = parseRecipeImage;
+module.exports.parseTags = parseTags;
+module.exports.parseCookingTime = parseCookingTime;
+module.exports.parseIngredients = parseIngredients;
+module.exports.parseCookingInstructions = parseCookingInstructions;
+module.exports.parseRecipeFromUrl = parseRecipeFromUrl;
+module.exports.getRecipeUrls = getRecipeUrls;
+module.exports.getRecipes = getRecipes;
+
 // var x = 1;
 // getRecipes(x).then(x => {
 //     for (rec in x){
