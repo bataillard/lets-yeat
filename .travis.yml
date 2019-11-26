@@ -11,8 +11,8 @@ matrix:
         - language: node_js
           node_js:
             - 12
-          services: 
-            - mongodb
+#          services: 
+#            - mongodb
 
           install:
             - npm install --dev
