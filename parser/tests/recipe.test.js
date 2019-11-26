@@ -17,3 +17,9 @@ test("checks if fraction converts", () => {
 	expect(Recipe.Ingredient.convertQuantity("1/4")).toBe(.25);
 });
 
+test("checks if length empty return null", () => {
+	expect(Recipe.Ingredient.convertQuantity("")).toBe(null);
+});
+
+
+
