@@ -11,8 +11,8 @@ matrix:
         - language: node_js
           node_js:
             - 12
-#          services: ## removed per issue: mongod starts by default thus unable to bind to default port
-#            - mongodb
+#          services:     ## removed per issue: mongod starts by default thus unable to bind to default port
+#            - mongodb   ## https://github.com/travis-ci/travis-ci/issues/6443
 
           install:
             - npm install --dev
