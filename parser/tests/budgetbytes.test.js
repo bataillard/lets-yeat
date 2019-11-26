@@ -67,3 +67,12 @@ test("parse correct instructions", () => {
 	expect(budget.parseInstructions(testRecipe)[0]).toBe("Prepare the balsamic sauce first. In a small bowl, stir together the balsamic vinegar, soy sauce, brown sugar, minced garlic, and dried thyme. Set the sauce aside.");
 });
 
+test("parse url correctly", async () => {
+	var recipe_promise = budget.parseUrl("https://www.budgetbytes.com/one-pot-creamy-pesto-chicken-pasta/");
+	var recipe = await recipe_promise.then();
+console.log(recipe);
+	expect(recipe.url).toBe("https://www.budgetbytes.com/one-pot-creamy-pesto-chicken-pasta/");
+	expect(recipe.name).toBe("One Pot Creamy Pesto Chicken Pasta");
+	expect(recipe.tags).toStrictEqual([ "pasta", "chicken", "creamy" ]);
+});
+

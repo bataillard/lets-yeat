@@ -195,6 +195,7 @@ module.exports.parseTags = parseTags;
 module.exports.parseTime = parseTime;
 module.exports.parseIngredients = parseIngredients;
 module.exports.parseInstructions = parseInstructions;
+module.exports.parseUrl = parseUrl;
 
 // ================ Parsing Functions ================
 

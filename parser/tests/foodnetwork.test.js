@@ -40,7 +40,7 @@ test("parse recipe from URL", async () => {
 	expect(recipe.tags).toStrictEqual(["cheese", "chicken"]);
 });
 
-test("", async () => {
+test("get Urls", async () => {
 	var recipe_Url_promise = fn.getRecipeUrls(testUrl);
 	var recipe_Url = await recipe_Url_promise.then();
 	expect(recipe_Url[0]).toBe("https://www.foodnetwork.ca/recipe/stewed-chicken-refried-beans-and-oaxaca-cheese-quesadillas/23063/");
