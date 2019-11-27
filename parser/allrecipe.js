@@ -101,12 +101,13 @@ function parseRecipeFromUrl(ar_url){
         var $ = cheerio.load(html);
         const time_in_minutes = parseCookingTime($);
         const picture_url = parseRecipeImage($);
-        const tags = parseTags($);
+        const recipe_title = $("#recipe-main-content").text()
+        const tags = parseTags($, recipe_title);
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
         
-        const recipe_title = $("#recipe-main-content").text()
+        
         if (time_in_minutes != null && picture_url != null)
             return new Recipe(ar_url, recipe_title, picture_url, 
                 time_in_minutes, difficulty, ingredients, 
@@ -192,14 +193,22 @@ function parseRecipeImage($){
  * input: function with loaded HTML of recipe
  * return: array of tags
  */
-function parseTags($){
-    potential_tags = [];
-    // tags in all recipe is under "toggle-similar__title" class
-    $(".toggle-similar__title").each(function(i, elem){
-        potential_tags.push($(this).html().toLowerCase().trim());
-    })
+function parseTags($, name){
+    var potential_tags = [];
+    if ($!= null)
+        // tags in all recipe is under "toggle-similar__title" class
+        $(".toggle-similar__title").each(function(i, elem){
+            potential_tags.push($(this).html().toLowerCase().trim());
+        })
+    var match_words = new RegExp(/(\w)+/ig);
+    potential_tags = potential_tags.concat(name.match(match_words));
+    
+    var lower_case = []
+    for (tag of potential_tags){
+        lower_case.push(tag.toLowerCase());
+    }
     // Intersection of words and potential tags
-    const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
+    const tags = [...new Set(lower_case)].filter(w => possible_tags.has(w));
     return tags;
 }
 
@@ -218,8 +227,7 @@ module.exports.getAllRecipes = getAllRecipes;
 var x = 10;
 var count = 0;
 getRecipes(x).then(x => {
-    for (rec of x){
-        count++
-    }
-    console.log(count)
+    console.log(x)
 })
+
+//console.log(parseTags(null, "beef"))
