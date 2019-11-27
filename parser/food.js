@@ -265,6 +265,6 @@ module.exports.getRecipes = getRecipes;
 // getRecipeUrls(url3)
 
 
-getAllRecipes(20).then(x=>{
-    console.log(x)
-})
+// getAllRecipes(20).then(x=>{
+//     console.log(x)
+// })
