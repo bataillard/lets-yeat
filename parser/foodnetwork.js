@@ -157,7 +157,7 @@ function parseCookingTime($){
     // total prep time in food network is always provided in minutes
     const minutes = $("*[itemprop = 'totalTime']").text()
     // https://stackoverflow.com/questions/39320900/cheerio-itemprop-attribute-content-selection
-    return minutes;
+    return parseInt(minutes,10);
 }
 
 /**

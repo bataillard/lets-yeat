@@ -169,7 +169,7 @@ function parseIngredients($){
     var list = $("*[itemprop = 'recipeIngredient']").each(function(_,element){
         var item = $(this).html()
         if (item != null){
-            ingredients.push(new Ingredients(item.trim()));
+            ingredients.push(new Ingredient(item.trim()));
         }
     })
     return ingredients;
@@ -215,11 +215,11 @@ module.exports.getAllRecipes = getAllRecipes;
 
 
 // example test code: this is how you request recipes
-// var x = 10;
-// var count = 0;
-// getRecipes(x).then(x => {
-//     for (rec of x){
-//         count++
-//     }
-//     console.log(count)
-// })
+var x = 10;
+var count = 0;
+getRecipes(x).then(x => {
+    for (rec of x){
+        count++
+    }
+    console.log(count)
+})
