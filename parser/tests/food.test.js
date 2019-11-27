@@ -14,8 +14,8 @@ var testImg = "https://images.video.snidigital.com/image/upload/w_1024,h_576,c_f
 var testName = "Creamy Cajun Chicken Pasta"
 
 //not working properly
-test.skip("parse correct tags", () => {
-	expect(f.parseTags(cheerio.load(testHtml), "chicken breast")).toStrictEqual(["chicken breast"]);
+test("parse correct tags", () => {
+	expect(f.parseTags(cheerio.load(testHtml), "chicken breast")).toStrictEqual(["chicken"]);
 });
 test("parse correct image source", () => {
 	expect(f.parseRecipeImage(cheerio.load(testHtml))).toBe(testImg);
@@ -32,3 +32,23 @@ test("parse correct cooking instructions", () => {
 	expect(f.parseCookingInstructions(cheerio.load(testHtml))[3]).toBe("Pour over hot linguine and toss with Parmesan cheese.");
 });
 
+
+test("parse recipe from URL", async () => {
+	var recipe_promise = f.parseRecipeFromUrl(testUrl);
+	var recipe = await recipe_promise.then();
+	expect(recipe.url).toBe(testUrl);
+	expect(recipe.name).toBe(testName);
+	expect(recipe.tags).toStrictEqual(["chicken"]);
+});
+
+test("get Urls", async () => {
+	var recipe_Url_promise = f.getRecipeUrls(testUrl);
+	var recipe_Url = await recipe_Url_promise.then();
+	expect.anything(recipe_Url[0]);
+});
+
+test("get recipes", async () => {
+	var recipe_Url_promise = f.getRecipes(10);
+	var recipe_Url = await recipe_Url_promise.then();
+	expect.anything(recipe_Url[0]);
+});

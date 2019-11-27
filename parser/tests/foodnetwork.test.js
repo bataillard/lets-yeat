@@ -25,7 +25,7 @@ test("parse correct ingredients", () => {
 });
 
 test("parse correct cooking time", () => {
-	expect(fn.parseCookingTime(cheerio.load(testHtml))).toBe("40");
+	expect(fn.parseCookingTime(cheerio.load(testHtml))).toBe(40);
 });
 test("parse correct cooking instructions", () => {
 	expect(fn.parseCookingInstructions(cheerio.load(testHtml))[0]).toBe("1. Heat 1 tablespoon of the olive oil in a skillet over high heat. Sprinkle the chicken with salt, pepper and taco seasoning. Add the chicken to the skillet and saute over medium-high heat until done, about 4 minute per side. Remove from the skillet and dice into cubes. Set aside.");
