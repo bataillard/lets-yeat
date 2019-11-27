@@ -183,6 +183,7 @@ function parseIngredients($){
 function parseRecipeImage($){
     try{
         const image_src = $(".rec-photo")
+        console.log()
         return image_src[0].attribs["src"];
     } catch (err){
         // if error, link will be null as flag to recipient to discard
@@ -230,4 +231,4 @@ module.exports.getAllRecipes = getAllRecipes;
 //     console.log(x)
 // })
 
-//console.log(parseTags(null, "beef"))
+// console.log(parseTags(null, "beef chicken easy CHEESE"))
