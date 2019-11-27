@@ -25,7 +25,7 @@ test("parse correct ingredients", () => {
 });
 
 test("parse correct cooking time", () => {
-	expect(fn.parseCookingTime(cheerio.load(testHtml))).toBe("40");
+	expect(fn.parseCookingTime(cheerio.load(testHtml))).toBe(40);
 });
 test("parse correct cooking instructions", () => {
 	expect(fn.parseCookingInstructions(cheerio.load(testHtml))[0]).toBe("1. Heat 1 tablespoon of the olive oil in a skillet over high heat. Sprinkle the chicken with salt, pepper and taco seasoning. Add the chicken to the skillet and saute over medium-high heat until done, about 4 minute per side. Remove from the skillet and dice into cubes. Set aside.");
@@ -45,3 +45,10 @@ test("get Urls", async () => {
 	var recipe_Url = await recipe_Url_promise.then();
 	expect(recipe_Url[0]).toBe("https://www.foodnetwork.ca/recipe/stewed-chicken-refried-beans-and-oaxaca-cheese-quesadillas/23063/");
 });
+
+test("get recipes", async () => {
+	var recipe_Url_promise = fn.getRecipes(10);
+	var recipe_Url = await recipe_Url_promise.then();
+	expect.anything(recipe_Url[0]);
+});
+
