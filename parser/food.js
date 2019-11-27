@@ -230,7 +230,6 @@ function parseRecipeImage($){
  * return: array of tags
  */
 function parseTags($, name){
-    console.log("in")
     potential_tags = [];
     // tags in all recipe is under "toggle-similar__title" class
     $(".recipe-breadcrumbs__text.category").each(function(i, elem){
