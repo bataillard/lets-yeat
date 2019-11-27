@@ -238,8 +238,13 @@ function parseTags($, name){
         })
     var match_words = new RegExp(/(\w)+/ig);
     potential_tags = potential_tags.concat(name.match(match_words));
+    
+    var lower_case = []
+    for (tag of potential_tags){
+        lower_case.push(tag.toLowerCase());
+    }
     // Intersection of words and potential tags
-    const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
+    const tags = [...new Set(lower_case)].filter(w => possible_tags.has(w));
     return tags;
 }
 
@@ -265,8 +270,8 @@ module.exports.getRecipes = getRecipes;
 // getRecipeUrls(url3)
 
 
-// getAllRecipes(20).then(x=>{
-//     console.log(x)
-// })
+getAllRecipes(20).then(x=>{
+    console.log(x)
+})
 
 // console.log(parseTags(null, "chicken breast"))
