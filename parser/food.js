@@ -230,13 +230,14 @@ function parseRecipeImage($){
  * return: array of tags
  */
 function parseTags($, name){
-    potential_tags = [];
-    // tags in all recipe is under "toggle-similar__title" class
-    $(".recipe-breadcrumbs__text.category").each(function(i, elem){
-        potential_tags.push($(this).html().toLowerCase().trim());
-    })
+    var potential_tags = [];
+    if ($ != undefined)
+        // tags in all recipe is under "toggle-similar__title" class
+        $(".recipe-breadcrumbs__text.category").each(function(i, elem){
+            potential_tags.push($(this).html().toLowerCase().trim());
+        })
     var match_words = new RegExp(/(\w)+/ig);
-    potential_tags.concat(name.match(match_words));
+    potential_tags = potential_tags.concat(name.match(match_words));
     // Intersection of words and potential tags
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
@@ -267,3 +268,5 @@ module.exports.getRecipes = getRecipes;
 // getAllRecipes(20).then(x=>{
 //     console.log(x)
 // })
+
+// console.log(parseTags(null, "chicken breast"))
