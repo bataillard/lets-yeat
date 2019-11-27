@@ -7,6 +7,7 @@ const cheerio = require("cheerio");
 const fs = require("fs");
 const path = require("path");
 const testHtml = fs.readFileSync(path.resolve(__dirname, "./allrecipe.html"), "utf8");
+const testHtml2 = fs.readFileSync(path.resolve(__dirname, "./allrecipe2.html"), "utf8");
 jest.dontMock("fs");
 jest.setTimeout(30000);
 
@@ -15,7 +16,8 @@ var testImg = "https://images.media-allrecipes.com/userphotos/560x315/5779399.jp
 var testName = "Instant Pot® Roasted Brussels Sprouts";
 
 test("parse correct tags", () => {
-	expect(ar.parseTags(cheerio.load(testHtml), testName)).toStrictEqual(["chicken", "pizza"]);
+	expect(ar.parseTags(cheerio.load(testHtml), testName)).toStrictEqual([]);
+	expect(ar.parseTags(cheerio.load(testHtml2), "pan pizza")).toStrictEqual(["pizza"]);
 });
 test("parse correct image source", () => {
 	expect(ar.parseRecipeImage(cheerio.load(testHtml))).toBe(testImg);
@@ -36,11 +38,17 @@ test("parse recipe from URL", async () => {
 	var recipe = await recipe_promise.then();
 	expect(recipe.url).toBe(testUrl);
 	expect(recipe.name).toBe(testName);
-	expect(recipe.tags).toStrictEqual(["cheese", "chicken"]);
+	expect(recipe.tags).toStrictEqual([]);
 });
 
 test("get Urls", async () => {
 	var recipe_Url_promise = ar.getRecipeUrls(testUrl);
+	var recipe_Url = await recipe_Url_promise.then();
+	expect.anything(recipe_Url[0]);
+});
+
+test("get recipes", async () => {
+	var recipe_Url_promise = ar.getRecipes(10);
 	var recipe_Url = await recipe_Url_promise.then();
 	expect.anything(recipe_Url[0]);
 });
