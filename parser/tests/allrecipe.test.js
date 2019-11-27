@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const testHtml = fs.readFileSync(path.resolve(__dirname, "./allrecipe.html"), "utf8");
 jest.dontMock("fs");
-
+jest.setTimeout(30000);
 
 var testUrl = "https://www.allrecipes.com/recipe/74375/unbelievably-awesome-barbeque-chicken-pizza/";
 var testImg = "https://images.media-allrecipes.com/userphotos/3149364.jpg";

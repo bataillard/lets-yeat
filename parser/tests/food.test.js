@@ -8,6 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const testHtml = fs.readFileSync(path.resolve(__dirname, "./food.html"), "utf8");
 jest.dontMock("fs");
+jest.setTimeout(30000);
 
 var testUrl = "https://www.food.com/recipe/creamy-cajun-chicken-pasta-39087";
 var testImg = "https://images.video.snidigital.com/image/upload/w_1024,h_576,c_fit/prod/genius/sni1uss-aakamaihdnetScripps_-_Genius_Kitchen130257170925_4179517_Creamy_Cajun_Chicken_Pasta_1520353859jpg.jpg";
@@ -38,7 +39,7 @@ test("parse recipe from URL", async () => {
 	var recipe = await recipe_promise.then();
 	expect(recipe.url).toBe(testUrl);
 	expect(recipe.name).toBe(testName);
-	expect(recipe.tags).toStrictEqual(["chicken"]);
+	expect(recipe.tags).toStrictEqual(["creamy", "chicken", "pasta"]);
 });
 
 test("get Urls", async () => {

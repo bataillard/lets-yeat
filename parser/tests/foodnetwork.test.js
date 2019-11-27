@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const testHtml = fs.readFileSync(path.resolve(__dirname, "./foodnetwork.html"), "utf8");
 jest.dontMock("fs");
-
+jest.setTimeout(30000);
 
 var testUrl = "http://www.foodnetwork.ca/recipe/chicken-quesadillas-with-pico-de-gallo/23062/";
 var testImg = "media.foodnetwork.ca/recipetracker/403fe151-6790-4e3c-90fc-36783dc27c4f_chicken-quesadillas_webready.jpg";

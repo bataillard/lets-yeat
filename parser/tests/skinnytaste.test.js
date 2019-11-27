@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 const testHtml = fs.readFileSync(path.resolve(__dirname, "./skinnytaste.html"), "utf8");
 jest.dontMock("fs");
-
+jest.setTimeout(30000);
 
 var testUrl = "https://www.skinnytaste.com/chicken-zucchini-stir-fry/";
 var testImg = "https://www.skinnytaste.com/wp-content/uploads/2019/08/Chicken-and-Zucchini-Stir-Fry-RS-5-170x255.jpg";

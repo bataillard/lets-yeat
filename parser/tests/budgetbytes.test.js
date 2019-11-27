@@ -15,7 +15,7 @@ const path = require("path");
 const testHtml1 = fs.readFileSync(path.resolve(__dirname, "./test.html"), "utf8");
 const testHtml2 = fs.readFileSync(path.resolve(__dirname, "./test2.html"), "utf8");
 jest.dontMock("fs");
-
+jest.setTimeout(30000);
 
 const testUrlString = "https://www.budgetbytes.com/balsamic-chicken-and-mushrooms/";
 const testIngArray = [new Ingredient("balsamic vinegar", "4", "Tbsp"),
