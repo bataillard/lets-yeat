@@ -224,10 +224,10 @@ module.exports.getAllRecipes = getAllRecipes;
 
 
 // example test code: this is how you request recipes
-var x = 10;
-var count = 0;
-getRecipes(x).then(x => {
-    console.log(x)
-})
+// var x = 10;
+// var count = 0;
+// getRecipes(x).then(x => {
+//     console.log(x)
+// })
 
 //console.log(parseTags(null, "beef"))
