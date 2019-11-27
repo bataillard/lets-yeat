@@ -43,7 +43,7 @@ test("parse recipe from URL", async () => {
 });
 
 test("get Urls", async () => {
-	var recipe_Url_promise = f.getRecipeUrls(testUrl);
+	var recipe_Url_promise = f.getRecipeUrls("https://www.food.com/recipe?ref=nav");
 	var recipe_Url = await recipe_Url_promise.then();
 	expect.anything(recipe_Url[0]);
 });
