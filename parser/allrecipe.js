@@ -215,11 +215,11 @@ module.exports.getAllRecipes = getAllRecipes;
 
 
 // example test code: this is how you request recipes
-// var x = 10;
-// var count = 0;
-// getRecipes(x).then(x => {
-//     for (rec of x){
-//         count++
-//     }
-//     console.log(count)
-// })
+var x = 10;
+var count = 0;
+getRecipes(x).then(x => {
+    for (rec of x){
+        count++
+    }
+    console.log(count)
+})

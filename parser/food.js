@@ -127,11 +127,14 @@ function parseRecipeFromUrl(f_url){
         const ingredients = parseIngredients($);
         const instructions = parseCookingInstructions($);
         const difficulty = 3;
-
+        
         if (time_in_minutes != null)// && picture_url != null)
             return new Recipe(f_url, recipe_title, picture_url, 
                 time_in_minutes, difficulty, ingredients, 
                 instructions, tags);
+        else{
+            return null;
+        }
     })
     .catch(function(error){
         //console.log("Encountered error.",error)
@@ -226,6 +229,7 @@ function parseRecipeImage($){
  * return: array of tags
  */
 function parseTags($, name){
+    console.log("in")
     potential_tags = [];
     // tags in all recipe is under "toggle-similar__title" class
     $(".recipe-breadcrumbs__text.category").each(function(i, elem){
@@ -238,8 +242,6 @@ function parseTags($, name){
     return tags;
 }
 
-
-
 module.exports.parseRecipeImage = parseRecipeImage;
 module.exports.parseTags = parseTags;
 module.exports.parseCookingTime = parseCookingTime;
@@ -249,21 +251,19 @@ module.exports.parseRecipeFromUrl = parseRecipeFromUrl;
 module.exports.getRecipeUrls = getRecipeUrls;
 module.exports.getRecipes = getRecipes;
 
-// var x = 1;
+// var x = 10;
 // getRecipes(x).then(x => {
-//     for (rec in x){
-//         console.log(`${rec} ${x[rec]}`)
-//     }
+//     console.log(x)
 //     console.log("done");
 // })
-// var url1 = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786#activity-feed"
+// var url1 = "https://www.food.com/recipe/beths-melt-in-your-mouth-barbecue-ribs-oven-107786"
 // var url2 = "https://www.food.com/recipe/kittencals-italian-melt-in-your-mouth-meatballs-69173"
-// parseRecipeFromUrl(url1)
+// parseRecipeFromUrl(url1).then(r => {console.log("done")})
 
 // var url3 = "https://www.food.com/recipe?ref=nav"
 // getRecipeUrls(url3)
 
 
-// getRecipes(10).then(x=>{
-//     console.log(x)
-// })
+getAllRecipes(20).then(x=>{
+    console.log(x)
+})
