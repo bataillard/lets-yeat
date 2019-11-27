@@ -45,3 +45,9 @@ test("get Urls", async () => {
 	var recipe_Url = await recipe_Url_promise.then();
 	expect.anything(recipe_Url[0]);
 });
+
+test("get recipes", async () => {
+	var recipe_promise = st.getAllRecipes(10);
+	var recipe = await recipe_promise.then();
+	expect.anything(recipe[0]);
+});

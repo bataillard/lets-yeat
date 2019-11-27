@@ -225,6 +225,7 @@ module.exports.parseCookingInstructions = parseCookingInstructions;
 module.exports.parseRecipeFromUrl = parseRecipeFromUrl;
 module.exports.getRecipeUrls = getRecipeUrls;
 module.exports.getRecipes = getRecipes;
+module.exports.getAllRecipes = getAllRecipes;
 
 /** How to batch parse recipes */
 // x = 50

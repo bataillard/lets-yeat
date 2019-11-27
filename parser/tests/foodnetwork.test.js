@@ -45,3 +45,10 @@ test("get Urls", async () => {
 	var recipe_Url = await recipe_Url_promise.then();
 	expect(recipe_Url[0]).toBe("https://www.foodnetwork.ca/recipe/stewed-chicken-refried-beans-and-oaxaca-cheese-quesadillas/23063/");
 });
+
+test("get recipes", async () => {
+	var recipe_Url_promise = fn.getRecipes(10);
+	var recipe_Url = await recipe_Url_promise.then();
+	expect.anything(recipe_Url[0]);
+});
+
