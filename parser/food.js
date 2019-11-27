@@ -117,10 +117,11 @@ function parseRecipeFromUrl(f_url){
         // do nothing
     },500);
     return rp(f_url).then(html =>{
-        const recipe_title = $(".recipe-title h1").text()
+        
         // $ is function with our loaded HTML, ready for us to use
         // param is just selectors.
         var $ = cheerio.load(html);
+        const recipe_title = $(".recipe-title h1").text()
         const time_in_minutes = parseCookingTime($);
         const picture_url = parseRecipeImage($);
         const tags = parseTags($, recipe_title);
