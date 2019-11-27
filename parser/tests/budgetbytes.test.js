@@ -75,3 +75,15 @@ test("parse url correctly", async () => {
 	expect(recipe.tags).toStrictEqual([ "pasta", "chicken", "creamy" ]);
 });
 
+test("find recipe in archives", async () => {
+	var recipe_Url_promise = budget.findRecipesInArchive(2009,5);
+	var recipe_Url = await recipe_Url_promise.then();
+	expect.anything(recipe_Url[0]);
+});
+
+test("parse by Date", async () => {
+	var recipe_Url_promise = budget.parseByDate(10, 2010, 10, 2010, 12);
+	var recipe_Url = await recipe_Url_promise.then();
+	expect.anything(recipe_Url[0]);
+});
+
