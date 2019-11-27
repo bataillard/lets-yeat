@@ -174,7 +174,7 @@ function parseIngredients($){
     var list = $("li.wprm-recipe-ingredient").each(function(_,element){
         var item = $(this).text();
         if (item != null){
-            ingredients.push(new Ingredients(item.trim()));
+            ingredients.push(new Ingredient(item.trim()));
         }
     })
     return ingredients;
@@ -215,6 +215,16 @@ function parseTags($,name){
     const tags = [...new Set(potential_tags)].filter(w => possible_tags.has(w));
     return tags;
 }
+
+
+module.exports.parseRecipeImage = parseRecipeImage;
+module.exports.parseTags = parseTags;
+module.exports.parseCookingTime = parseCookingTime;
+module.exports.parseIngredients = parseIngredients;
+module.exports.parseCookingInstructions = parseCookingInstructions;
+module.exports.parseRecipeFromUrl = parseRecipeFromUrl;
+module.exports.getRecipeUrls = getRecipeUrls;
+module.exports.getRecipes = getRecipes;
 
 /** How to batch parse recipes */
 // x = 50
